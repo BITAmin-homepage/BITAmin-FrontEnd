@@ -1,0 +1,43 @@
+import { type NextRequest, NextResponse } from "next/server"
+
+// 프로젝트 썸네일 업로드
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const token = request.headers.get("Authorization")?.replace("Bearer ", "")
+    if (!token) {
+      return NextResponse.json({ success: false, error: "인증이 필요합니다." }, { status: 401 })
+    }
+
+    const { id } = params
+    const formData = await request.formData()
+
+    // 백엔드로 FormData 전달
+    const response = await fetch(`${process.env.BACKEND_URL}/api/projects/${id}/thumbnail`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
+
+    const result = await response.json()
+
+    if (response.ok && result.success) {
+      return NextResponse.json({
+        success: true,
+        data: result.data,
+      })
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.message || "썸네일 업로드에 실패했습니다.",
+        },
+        { status: response.status },
+      )
+    }
+  } catch (error) {
+    console.error("Thumbnail upload API error:", error)
+    return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
+  }
+}
