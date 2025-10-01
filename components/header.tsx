@@ -4,27 +4,25 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { Menu, X, User, LogOut, UserPlus } from "lucide-react"
+import { Menu, X, User, LogOut } from "lucide-react"
 import { useAuth } from "@/lib/auth"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ApplyModal } from "./apply-modal"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
   const { user, logout, isAuthenticated } = useAuth()
 
   return (
     <>
-      <header className="bg-gradient-to-r from-black to-[#d3431a] border-b border-orange-800">
+      <header className="relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center">
                 <Image
-                  src="/images/bitamin-logo-main.png"
+                  src="/images/bitamin-logo-white.png"
                   alt="비타민 로고"
-                  width={120}
+                  width={150}
                   height={40}
                   className="h-10 w-auto"
                 />
@@ -34,25 +32,19 @@ export function Header() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <Link href="/about" className="text-gray-300 hover:text-[#d3431a] transition-colors">
-                동아리 소개
+                About
               </Link>
               <Link href="/members" className="text-gray-300 hover:text-[#d3431a] transition-colors">
-                멤버
+                Members
               </Link>
-              <div className="flex items-center space-x-4">
-                <Link href="/projects" className="text-gray-300 hover:text-[#d3431a] transition-colors">
-                  프로젝트
+              <Link href="/projects" className="text-gray-300 hover:text-[#d3431a] transition-colors">
+                Project
+              </Link>
+              {!isAuthenticated && (
+                <Link href="/register" className="text-gray-300 hover:text-[#d3431a] transition-colors">
+                  Recruiting
                 </Link>
-                {!isAuthenticated && (
-                  <Button
-                    onClick={() => setIsApplyModalOpen(true)}
-                    className="bg-gradient-to-r from-[#d3431a] to-[#ff6b35] hover:from-[#b8371a] hover:to-[#e55a2b] text-white text-sm px-3 py-1 h-8"
-                  >
-                    <UserPlus className="h-3 w-3 mr-1" />
-                    지원하기
-                  </Button>
-                )}
-              </div>
+              )}
               {isAuthenticated && (
                 <>
                   <Link href="/sessions" className="text-gray-300 hover:text-[#d3431a] transition-colors">
@@ -95,13 +87,11 @@ export function Header() {
                 </DropdownMenu>
               ) : (
                 <>
-                  <Link href="/login">
-                    <Button className="bg-white text-[#d3431a] hover:bg-gray-100 border border-[#d3431a]">
-                      로그인
-                    </Button>
+                  <Link href="/login" className="text-gray-300 hover:text-[#d3431a] transition-colors">
+                    Login
                   </Link>
-                  <Link href="/register">
-                    <Button className="bg-[#d3431a] hover:bg-[#b8371a] text-white">회원가입</Button>
+                  <Link href="/register" className="text-gray-300 hover:text-[#d3431a] transition-colors">
+                    Signup
                   </Link>
                 </>
               )}
@@ -118,27 +108,21 @@ export function Header() {
           {/* Mobile Navigation */}
           {isMenuOpen && (
             <div className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-black border-t border-gray-800">
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <Link href="/about" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
                   동아리 소개
                 </Link>
                 <Link href="/members" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
                   멤버
                 </Link>
-                <div className="flex items-center justify-between px-3 py-2">
-                  <Link href="/projects" className="text-gray-300 hover:text-[#d3431a]">
-                    프로젝트
+                <Link href="/projects" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
+                  프로젝트
+                </Link>
+                {!isAuthenticated && (
+                  <Link href="/register" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
+                    지원하기
                   </Link>
-                  {!isAuthenticated && (
-                    <Button
-                      onClick={() => setIsApplyModalOpen(true)}
-                      className="bg-gradient-to-r from-[#d3431a] to-[#ff6b35] hover:from-[#b8371a] hover:to-[#e55a2b] text-white text-sm px-3 py-1 h-8 ml-2"
-                    >
-                      <UserPlus className="h-3 w-3 mr-1" />
-                      지원하기
-                    </Button>
-                  )}
-                </div>
+                )}
                 {isAuthenticated && (
                   <>
                     <Link href="/sessions" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
@@ -174,16 +158,11 @@ export function Header() {
                     </>
                   ) : (
                     <>
-                      <Link href="/login">
-                        <Button
-                          variant="outline"
-                          className="w-full border-[#d3431a] text-[#d3431a] hover:bg-[#d3431a] hover:text-white bg-transparent"
-                        >
-                          로그인
-                        </Button>
+                      <Link href="/login" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
+                        로그인
                       </Link>
-                      <Link href="/register">
-                        <Button className="w-full bg-[#d3431a] hover:bg-[#b8371a] text-white">회원가입</Button>
+                      <Link href="/register" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
+                        회원가입
                       </Link>
                     </>
                   )}
@@ -194,8 +173,6 @@ export function Header() {
         </div>
       </header>
 
-      {/* Apply Modal */}
-      <ApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
     </>
   )
 }
