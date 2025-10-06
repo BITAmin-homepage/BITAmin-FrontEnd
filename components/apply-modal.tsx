@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Clock, Users, ExternalLink, Instagram, Github } from "lucide-react"
+import { Calendar, Clock, Users, ExternalLink, Instagram} from "lucide-react"
 import Link from "next/link"
 
 interface ApplyModalProps {
@@ -161,16 +161,6 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                       Instagram
                     </Link>
                   </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
-                  >
-                    <Link href="https://github.com/bitamin" target="_blank" rel="noopener noreferrer">
-                      <Github className="h-4 w-4 mr-2" />
-                      GitHub
-                    </Link>
-                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -200,16 +190,6 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                     <Link href="https://instagram.com/bitamin_official" target="_blank" rel="noopener noreferrer">
                       <Instagram className="h-4 w-4 mr-2" />
                       Instagram
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
-                  >
-                    <Link href="https://github.com/bitamin" target="_blank" rel="noopener noreferrer">
-                      <Github className="h-4 w-4 mr-2" />
-                      GitHub
                     </Link>
                   </Button>
                 </div>

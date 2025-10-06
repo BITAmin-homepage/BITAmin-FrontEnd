@@ -41,7 +41,7 @@ export function Hero({ onOpenApplyModal }: HeroProps) {
               onClick={onOpenApplyModal}
               className="bg-black/50 hover:bg-black/90 text-white font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              지원하기  →
+              지원하기
             </Button>
           </div>
         </div>

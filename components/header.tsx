@@ -8,7 +8,11 @@ import { Menu, X, User, LogOut } from "lucide-react"
 import { useAuth } from "@/lib/auth"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-export function Header() {
+interface HeaderProps {
+  onOpenApplyModal?: () => void
+}
+
+export function Header({ onOpenApplyModal }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { user, logout, isAuthenticated } = useAuth()
 
@@ -41,9 +45,13 @@ export function Header() {
                 Project
               </Link>
               {!isAuthenticated && (
-                <Link href="/register" className="text-gray-300 hover:text-[#d3431a] transition-colors">
+                <button
+                  type="button"
+                  onClick={() => onOpenApplyModal && onOpenApplyModal()}
+                  className="text-gray-300 hover:text-[#d3431a] transition-colors"
+                >
                   Recruiting
-                </Link>
+                </button>
               )}
               {isAuthenticated && (
                 <>
@@ -119,9 +127,13 @@ export function Header() {
                   프로젝트
                 </Link>
                 {!isAuthenticated && (
-                  <Link href="/register" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApplyModal && onOpenApplyModal()}
+                    className="block px-3 py-2 text-left text-gray-300 hover:text-[#d3431a] w-full"
+                  >
                     지원하기
-                  </Link>
+                  </button>
                 )}
                 {isAuthenticated && (
                   <>
