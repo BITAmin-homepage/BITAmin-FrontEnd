@@ -3,9 +3,11 @@ import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { Footer } from "@/components/footer"
 import { ActivitiesSection } from "@/components/activities"
+import { ApplyProcessSection } from "@/components/apply"
 import { ApplyModal } from "@/components/apply-modal"
 import { useState } from "react"
 import { UniversitiesSection } from "@/components/university"
+import { ReviewSection } from "@/components/review"
 export default function HomePage() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
 
@@ -40,6 +42,10 @@ export default function HomePage() {
       <ActivitiesSection />
       
       <UniversitiesSection />
+      
+      <ReviewSection />
+      
+      <ApplyProcessSection />
       <Footer />
       
       <ApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
