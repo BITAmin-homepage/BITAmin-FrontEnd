@@ -26,7 +26,7 @@ import {
   Users,
   Plus,
   Edit,
-  Search,
+  
   Mail,
   Phone,
   School,
@@ -62,7 +62,6 @@ export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [pendingMembers, setPendingMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
   const [selectedCohort, setSelectedCohort] = useState("all")
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -277,12 +276,8 @@ export default function MembersPage() {
   }
 
   const filteredMembers = members.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.school.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCohort = selectedCohort === "all" || member.cohort.toString() === selectedCohort
-    return matchesSearch && matchesCohort
+    return matchesCohort
   })
 
   const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
@@ -326,19 +321,11 @@ export default function MembersPage() {
             </TabsTrigger>
           </TabsList>
 
-          {/* 승인된 멤버 탭 */}
+          {/* 승인된 멤버 탭 */
+          }
           <TabsContent value="approved" className="space-y-6">
-            {/* 검색 및 필터 */}
+            {/* 필터 */}
             <div className="mb-6 flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="이름, 이메일, 학교로 검색..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
               <Select value={selectedCohort} onValueChange={setSelectedCohort}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="기수 선택" />

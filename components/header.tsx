@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { ApplyModal } from "@/components/apply-modal"
 import { Menu, X, User, LogOut } from "lucide-react"
 import { useAuth } from "@/lib/auth"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -14,6 +15,7 @@ interface HeaderProps {
 
 export function Header({ onOpenApplyModal }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
   const { user, logout, isAuthenticated } = useAuth()
 
   return (
@@ -47,7 +49,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
               {!isAuthenticated && (
                 <button
                   type="button"
-                  onClick={() => onOpenApplyModal && onOpenApplyModal()}
+                  onClick={() => (onOpenApplyModal ? onOpenApplyModal() : setIsApplyModalOpen(true))}
                   className="text-gray-300 hover:text-[#d3431a] transition-colors"
                 >
                   Recruiting
@@ -129,7 +131,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                 {!isAuthenticated && (
                   <button
                     type="button"
-                    onClick={() => onOpenApplyModal && onOpenApplyModal()}
+                    onClick={() => (onOpenApplyModal ? onOpenApplyModal() : setIsApplyModalOpen(true))}
                     className="block px-3 py-2 text-left text-gray-300 hover:text-[#d3431a] w-full"
                   >
                     지원하기
@@ -184,6 +186,11 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
           )}
         </div>
       </header>
+
+      {/* Local modal fallback so it works on any page even without prop */}
+      {!onOpenApplyModal && (
+        <ApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
+      )}
 
     </>
   )

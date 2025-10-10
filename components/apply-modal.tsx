@@ -19,7 +19,7 @@ const RECRUITMENT_CONFIG = {
   startDate: "2024-03-01", // 모집 시작일
   endDate: "2024-03-31", // 모집 마감일
   googleFormUrl: "https://forms.google.com/d/e/1FAIpQLSe_example_form_id/viewform", // 구글폼 링크
-  cohort: 17, // 기수
+  cohort: 16, // 기수
   maxMembers: 20, // 최대 모집 인원
 }
 

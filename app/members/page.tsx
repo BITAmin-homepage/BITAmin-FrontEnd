@@ -5,9 +5,8 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Github, School, User } from "lucide-react"
+import { Github, School, User } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -31,7 +30,6 @@ interface Member {
 export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
   const [selectedCohort, setSelectedCohort] = useState("all")
   const [selectedRole, setSelectedRole] = useState("all")
 
@@ -57,13 +55,9 @@ export default function MembersPage() {
   }
 
   const filteredMembers = members.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.school.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (member.major && member.major.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesCohort = selectedCohort === "all" || member.cohort.toString() === selectedCohort
     const matchesRole = selectedRole === "all" || member.role === selectedRole
-    return matchesSearch && matchesCohort && matchesRole
+    return matchesCohort && matchesRole
   })
 
   const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
@@ -101,18 +95,8 @@ export default function MembersPage() {
           <p className="text-gray-600">비타민 동아리 멤버들을 소개합니다</p>
         </div>
 
-        {/* 검색 및 필터 */}
-        <div className="mb-8 space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="이름, 학교, 전공으로 검색..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
+        {/* 필터 */}
+        <div className="mb-8">
           <div className="flex flex-wrap gap-4">
             <Select value={selectedCohort} onValueChange={setSelectedCohort}>
               <SelectTrigger className="w-full sm:w-48">
@@ -214,8 +198,8 @@ export default function MembersPage() {
         {filteredMembers.length === 0 && (
           <div className="text-center py-12">
             <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">검색 결과가 없습니다</h3>
-            <p className="text-gray-500">다른 검색어나 필터를 시도해보세요</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">표시할 멤버가 없습니다</h3>
+            <p className="text-gray-500">다른 필터를 시도해보세요</p>
           </div>
         )}
       </div>
