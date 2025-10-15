@@ -8,7 +8,7 @@ interface HeroProps {
 
 export function Hero({ onOpenApplyModal }: HeroProps) {
   return (
-    <section className="relative text-white py-20 pt-72 md:pt-80 overflow-hidden">
+    <section className="relative text-white py-20 pt-44 md:pt-56 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-32 h-32 bg-orange-500 rounded-full blur-3xl opacity-20"></div>

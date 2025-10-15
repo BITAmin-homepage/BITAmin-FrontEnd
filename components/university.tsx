@@ -19,7 +19,7 @@ export function UniversitiesSection() {
       <div className="text-center mb-8">
         <p className="text-base md:text-lg text-gray-400 font-medium mb-1">활동 대학</p>
         <h2 className="text-2xl md:text-4xl font-bold text-[#ff5722]">
-          BITAmin은 23개의 소속 학교의 학생들 함께 모여 학습합니다
+          BITAmin은 28개의 소속 학교의 학생들 함께 모여 학습합니다
         </h2>
       </div>
 
