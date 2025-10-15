@@ -152,11 +152,11 @@ export default function ProjectsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-black text-white">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-center items-center h-64">
-            <div className="text-lg text-gray-600">프로젝트를 불러오는 중...</div>
+            <div className="text-lg text-white/70">프로젝트를 불러오는 중...</div>
           </div>
         </div>
       </div>
@@ -164,30 +164,32 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-white">
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">프로젝트</h1>
-          <p className="text-gray-600">비타민 동아리의 우수 프로젝트 결과물을 확인하세요</p>
+        <div className="text-center mb-16">
+          <p className="text-sm text-white/60 mb-2">프로젝트</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#ff6b35]">
+            프로젝트를 통해 이론을 현실로, 아이디어를 결과로 만들어갑니다
+          </h2>
         </div>
 
         {/* 검색 및 필터 */}
         <div className="mb-6 space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40 h-4 w-4" />
             <Input
               placeholder="프로젝트 제목, 설명, 카테고리로 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-[#141414] border-white/10 text-white placeholder:text-white/40"
             />
           </div>
 
           <div className="flex flex-wrap gap-4">
             <Select value={selectedCohort} onValueChange={setSelectedCohort}>
-              <SelectTrigger className="w-full sm:w-48">
+              <SelectTrigger className="w-full sm:w-48 bg-[#141414] border-white/10 text-white">
                 <SelectValue placeholder="기수 선택" />
               </SelectTrigger>
               <SelectContent>
@@ -201,7 +203,7 @@ export default function ProjectsPage() {
             </Select>
 
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-full sm:w-32">
+              <SelectTrigger className="w-full sm:w-32 bg-[#141414] border-white/10 text-white">
                 <SelectValue placeholder="기간" />
               </SelectTrigger>
               <SelectContent>
@@ -212,7 +214,7 @@ export default function ProjectsPage() {
             </Select>
 
             <Select value={selectedAward} onValueChange={setSelectedAward}>
-              <SelectTrigger className="w-full sm:w-40">
+              <SelectTrigger className="w-full sm:w-40 bg-[#141414] border-white/10 text-white">
                 <SelectValue placeholder="수상" />
               </SelectTrigger>
               <SelectContent>
@@ -239,9 +241,9 @@ export default function ProjectsPage() {
         {/* 프로젝트 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <Card key={project.id} className="hover:shadow-lg transition-all duration-300 group">
+            <Card key={project.id} className="hover:shadow-lg transition-all duration-300 group bg-[#111] border-white/10 text-white">
               <div className="relative">
-                <div className="aspect-video relative overflow-hidden rounded-t-lg bg-gray-200">
+                <div className="aspect-video relative overflow-hidden rounded-t-lg bg-white/10">
                   <Image
                     src={project.thumbnail || "/placeholder.svg"}
                     alt={project.title}
@@ -281,26 +283,26 @@ export default function ProjectsPage() {
 
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-white/20 text-white/80">
                     {project.cohort}
                   </Badge>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-white/20 text-white/80">
                     {project.category}
                   </Badge>
                 </div>
                 <CardTitle className="text-lg line-clamp-2 group-hover:text-[#d3431a] transition-colors">
                   {project.title}
                 </CardTitle>
-                <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+                <CardDescription className="line-clamp-2 text-white/70">{project.description}</CardDescription>
               </CardHeader>
 
               <CardContent className="pt-0">
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-sm text-white/70">
                     <Users className="h-4 w-4" />
                     <span className="truncate">{project.teamMembers.join(", ")}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-sm text-white/70">
                     <Calendar className="h-4 w-4" />
                     <span>{project.projectPeriod}</span>
                   </div>
@@ -308,7 +310,7 @@ export default function ProjectsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full bg-transparent"
+                      className="w-full bg-transparent border-white/20 text-white hover:bg-white/10"
                       onClick={() => handleDownloadPPT(project)}
                     >
                       <FileText className="h-4 w-4 mr-2" />
@@ -323,9 +325,9 @@ export default function ProjectsPage() {
 
         {projects.length === 0 && (
           <div className="text-center py-12">
-            <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">검색 결과가 없습니다</h3>
-            <p className="text-gray-500">다른 검색어나 필터를 시도해보세요</p>
+            <Award className="h-12 w-12 text-white/40 mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2">검색 결과가 없습니다</h3>
+            <p className="text-white/60">다른 검색어나 필터를 시도해보세요</p>
           </div>
         )}
       </div>
