@@ -1,62 +1,76 @@
-import { type NextRequest, NextResponse } from "next/server"
-
-// 테스트용 임시 계정
-const TEST_ACCOUNTS = [
-  {
-    id: "1",
-    username: "admin",
-    password: "admin",
-    name: "관리자",
-    email: "admin@bitamin.com",
-    role: "management",
-    cohort: 1,
-    status: "approved",
-  },
-  {
-    id: "2",
-    username: "member",
-    password: "member",
-    name: "테스트 멤버",
-    email: "member@bitamin.com",
-    role: "member",
-    cohort: 3,
-    status: "approved",
-  },
-]
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password } = await request.json()
+    const body = await request.json()
+    
+    const response = await fetch('http://52.78.66.115:8080/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
 
-    // 테스트 계정 확인
-    const testAccount = TEST_ACCOUNTS.find((account) => account.username === username && account.password === password)
-
-    if (testAccount) {
-      // 간단한 토큰 생성 (실제 환경에서는 JWT 사용)
-      const token = `token_${testAccount.id}_${Date.now()}`
-
-      const { password: _, ...userWithoutPassword } = testAccount
-
-      return NextResponse.json({
-        success: true,
-        token,
-        user: userWithoutPassword,
-        message: "로그인 성공",
-      })
+    let data
+    const contentType = response.headers.get("content-type")
+    
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json()
+    } else {
+      const text = await response.text()
+      data = { message: text }
     }
 
-    return NextResponse.json({
-      success: false,
-      message: "아이디 또는 비밀번호가 올바르지 않습니다.",
+    // 403 Forbidden (승인 대기) 처리
+    if (response.status === 403) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "아직 승인되지 않은 유저입니다. 운영진의 승인을 기다려주세요." 
+        },
+        { 
+          status: 403,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
+      )
+    }
+
+    // 404 Not Found 처리
+    if (response.status === 404) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "사용자를 찾을 수 없습니다." 
+        },
+        { 
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
+      )
+    }
+    
+    return NextResponse.json(data, { 
+      status: response.status,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
     })
   } catch (error) {
-    console.error("Login API error:", error)
+    console.error('Login proxy error:', error)
     return NextResponse.json(
-      {
-        success: false,
-        message: "서버 오류가 발생했습니다.",
-      },
-      { status: 500 },
+      { success: false, message: '서버 오류가 발생했습니다.' },
+      { status: 500 }
     )
   }
 }

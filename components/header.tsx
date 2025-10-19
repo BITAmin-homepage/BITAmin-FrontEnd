@@ -55,16 +55,6 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                   Recruiting
                 </button>
               )}
-              {isAuthenticated && (
-                <>
-                  <Link href="/sessions" className="text-gray-300 hover:text-[#d3431a] transition-colors">
-                    세션 자료
-                  </Link>
-                  <Link href="/assignments" className="text-gray-300 hover:text-[#d3431a] transition-colors">
-                    과제
-                  </Link>
-                </>
-              )}
             </nav>
 
             <div className="hidden md:flex items-center space-x-4">
@@ -77,7 +67,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-gray-900 border-gray-700">
-                    {user?.role === "management" && (
+                    {user?.role === "ADMIN" && (
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard" className="text-white hover:text-[#d3431a]">
                           대시보드
@@ -137,20 +127,10 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                     지원하기
                   </button>
                 )}
-                {isAuthenticated && (
-                  <>
-                    <Link href="/sessions" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                      세션 자료
-                    </Link>
-                    <Link href="/assignments" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                      과제
-                    </Link>
-                  </>
-                )}
                 <div className="flex flex-col space-y-2 px-3 py-2">
                   {isAuthenticated ? (
                     <>
-                      {user?.role === "management" && (
+                      {user?.role === "ADMIN" && (
                         <Link href="/dashboard">
                           <Button variant="ghost" className="w-full text-white hover:text-[#d3431a] justify-start">
                             대시보드

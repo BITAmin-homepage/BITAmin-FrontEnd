@@ -2,14 +2,15 @@
 
 import type React from "react"
 import { useState, useEffect, createContext, useContext } from "react"
+import { API_ENDPOINTS } from "./api"
 
 interface User {
   id: string
   name: string
   email: string
-  role: "member" | "management"
+  role: "MEMBER" | "ADMIN"
   cohort: number
-  status?: "pending" | "approved" | "rejected"
+  status?: "PENDING" | "APPROVED" | "REJECTED"
 }
 
 interface AuthContextType {
@@ -34,30 +35,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem("auth_token")
-      if (!token) {
+      const userData = localStorage.getItem("user_data")
+      
+      if (!token || !userData) {
         setLoading(false)
         return
       }
 
-      const response = await fetch("/api/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        if (result.success) {
-          setUser(result.data)
-        } else {
-          localStorage.removeItem("auth_token")
-        }
-      } else {
+      // 토큰이 있으면 사용자 정보를 복원
+      try {
+        const user = JSON.parse(userData)
+        setUser(user)
+      } catch (error) {
+        console.error("Failed to parse user data:", error)
         localStorage.removeItem("auth_token")
+        localStorage.removeItem("user_data")
       }
     } catch (error) {
       console.error("Auth check failed:", error)
       localStorage.removeItem("auth_token")
+      localStorage.removeItem("user_data")
     } finally {
       setLoading(false)
     }
@@ -65,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,14 +70,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ username, password }),
       })
 
-      const result = await response.json()
+      console.log("로그인 응답 상태:", response.status)
 
-      if (result.success) {
-        localStorage.setItem("auth_token", result.token)
-        setUser(result.user)
-        return true
+      if (response.ok) {
+        const result = await response.json()
+        console.log("로그인 성공 응답:", result)
+        
+        // BE API 응답 형식에 맞게 처리
+        if (result.success && result.data) {
+          const userData = result.data
+          localStorage.setItem("auth_token", userData.accessToken)
+          localStorage.setItem("user_data", JSON.stringify({
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role,
+            cohort: userData.cohort,
+            status: userData.status
+          }))
+          setUser({
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role,
+            cohort: userData.cohort,
+            status: userData.status
+          })
+          return true
+        } else {
+          alert(result.message || "로그인에 실패했습니다.")
+          return false
+        }
       } else {
-        alert(result.message || "로그인에 실패했습니다.")
+        // 에러 응답 처리
+        let errorMessage = "로그인에 실패했습니다."
+        try {
+          const result = await response.json()
+          errorMessage = result.message || errorMessage
+        } catch (e) {
+          // JSON 파싱 실패 시 상태 코드별 기본 메시지
+          if (response.status === 403) {
+            errorMessage = "아직 승인되지 않은 유저입니다. 운영진의 승인을 기다려주세요."
+          } else if (response.status === 404) {
+            errorMessage = "사용자를 찾을 수 없습니다."
+          }
+        }
+        alert(errorMessage)
         return false
       }
     } catch (error) {
@@ -94,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const token = localStorage.getItem("auth_token")
       if (token) {
-        await fetch("/api/auth/logout", {
+        await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -105,6 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Logout failed:", error)
     } finally {
       localStorage.removeItem("auth_token")
+      localStorage.removeItem("user_data")
       setUser(null)
     }
   }

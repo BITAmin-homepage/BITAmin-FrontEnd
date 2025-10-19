@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth"
 import { Header } from "@/components/header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Upload, Users, FileText, Calendar, FolderOpen } from "lucide-react"
+import { Upload, Users, FolderOpen } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -14,7 +14,7 @@ export default function DashboardPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && (!isAuthenticated || user?.role !== "management")) {
+    if (!loading && (!isAuthenticated || user?.role !== "ADMIN")) {
       router.push("/")
       return
     }
@@ -31,7 +31,7 @@ export default function DashboardPage() {
     )
   }
 
-  if (!isAuthenticated || user?.role !== "management") {
+  if (!isAuthenticated || user?.role !== "ADMIN") {
     return null
   }
 
@@ -68,45 +68,6 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* 세션 자료 업로드 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-blue-600" />
-                세션 자료 관리
-              </CardTitle>
-              <CardDescription>세션 자료 업로드 및 관리</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">정기 세션에서 사용할 자료를 업로드하고 관리할 수 있습니다.</p>
-              <Link href="/sessions/write">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                  <Upload className="h-4 w-4 mr-2" />
-                  세션 자료 업로드
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* 과제 관리 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-green-600" />
-                과제 관리
-              </CardTitle>
-              <CardDescription>과제 파일 업로드 및 관리</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">멤버들에게 제공할 과제 파일을 업로드하고 관리할 수 있습니다.</p>
-              <Link href="/assignments/write">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                  <Upload className="h-4 w-4 mr-2" />
-                  과제 파일 업로드
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
 
           {/* 프로젝트 관리 */}
           <Card>

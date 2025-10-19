@@ -1,22 +1,32 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    // 실제 환경에서는 토큰을 블랙리스트에 추가하거나 무효화
-    // 현재는 클라이언트에서 토큰을 제거하는 것으로 충분
+    const authHeader = request.headers.get('authorization')
+    
+    const response = await fetch('https://bitamin.ai.kr/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader || '',
+      },
+    })
 
-    return NextResponse.json({
-      success: true,
-      message: "로그아웃 되었습니다.",
+    const data = await response.json()
+    
+    // 200~299 범위의 상태 코드는 모두 성공으로 처리
+    return NextResponse.json(data, { 
+      status: response.status,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
     })
   } catch (error) {
-    console.error("Logout error:", error)
+    console.error('Logout proxy error:', error)
     return NextResponse.json(
-      {
-        success: false,
-        message: "로그아웃 중 오류가 발생했습니다.",
-      },
-      { status: 500 },
+      { success: false, message: '서버 오류가 발생했습니다.' },
+      { status: 500 }
     )
   }
 }

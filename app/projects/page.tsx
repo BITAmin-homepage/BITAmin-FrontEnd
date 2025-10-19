@@ -228,7 +228,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* 업로드 버튼 (운영진만) */}
-        {user?.role === "management" && (
+        {user?.role === "ADMIN" && (
           <div className="mb-6">
             <Link href="/projects/write">
               <Button className="bg-[#d3431a] hover:bg-[#b8371a] text-white">
@@ -262,7 +262,7 @@ export default function ProjectsPage() {
                   </Badge>
                 </div>
                 {/* 운영진용 수정/삭제 버튼 */}
-                {user?.role === "management" && (
+                {user?.role === "ADMIN" && (
                   <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Link href={`/projects/edit/${project.id}`}>
                       <Button size="sm" variant="secondary" className="bg-white bg-opacity-90 hover:bg-opacity-100">

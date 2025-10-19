@@ -99,27 +99,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-4 p-4 bg-gray-800 rounded-lg">
-            <p className="text-sm text-gray-400 mb-3">🧪 테스트 계정:</p>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => handleTestLogin("admin", "admin")}
-                className="w-full text-left p-2 rounded bg-gray-700 hover:bg-gray-600 transition-colors"
-              >
-                <p className="text-xs text-green-400">관리자 계정</p>
-                <p className="text-xs text-gray-300">ID: admin / PW: admin</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTestLogin("member", "member")}
-                className="w-full text-left p-2 rounded bg-gray-700 hover:bg-gray-600 transition-colors"
-              >
-                <p className="text-xs text-blue-400">멤버 계정</p>
-                <p className="text-xs text-gray-300">ID: member / PW: member</p>
-              </button>
-            </div>
-          </div>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-400">

@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { API_ENDPOINTS } from "@/lib/api"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,13 +62,34 @@ export default function RegisterPage() {
         }),
       })
 
-      const result = await response.json()
+      if (response.ok) {
+        console.log("회원가입 성공, 응답 상태:", response.status);
+        let resultText = "";
+        try {
+          const contentType = response.headers.get("content-type");
+          console.log("Content-Type:", contentType);
+          if (contentType && contentType.includes("application/json")) {
+            const result = await response.json();
+            resultText = result.message || "회원가입이 완료되었습니다. 운영진의 승인을 기다려주세요.";
+          } else {
+            resultText = await response.text();
+            console.log("텍스트 응답:", resultText);
+          }
+        } catch (e) {
+          console.log("응답 파싱 오류:", e);
+          resultText = "회원가입이 완료되었습니다. 운영진의 승인을 기다려주세요.";
+        }
 
-      if (result.success) {
-        alert(result.message || "회원가입이 완료되었습니다! 운영진의 승인을 기다려주세요.")
-        router.push("/")
+        console.log("표시할 메시지:", resultText);
+        alert(resultText);
+        // 메인 화면으로 리다이렉트
+        console.log("리다이렉트 시작");
+        setTimeout(() => {
+          console.log("리다이렉트 실행");
+          window.location.href = "/";
+        }, 100);
       } else {
-        alert(result.message || "회원가입에 실패했습니다.")
+        alert("회원가입에 실패했습니다.");
       }
     } catch (error) {
       console.error("Registration error:", error)
@@ -231,11 +253,11 @@ export default function RegisterPage() {
                     <SelectValue placeholder="역할을 선택하세요" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gray-600">
-                    <SelectItem value="member" className="text-white hover:bg-gray-700">
+                    <SelectItem value="MEMBER" className="text-white hover:bg-gray-700">
                       멤버
                     </SelectItem>
-                    <SelectItem value="management" className="text-white hover:bg-gray-700">
-                      운영진
+                    <SelectItem value="ADMIN" className="text-white hover:bg-gray-700">
+                      관리자
                     </SelectItem>
                   </SelectContent>
                 </Select>
