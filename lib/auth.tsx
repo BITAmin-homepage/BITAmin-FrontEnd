@@ -6,11 +6,18 @@ import { API_ENDPOINTS } from "./api"
 
 interface User {
   id: string
+  memberId?: number
   name: string
   email: string
+  phone?: string
+  school?: string
+  gender?: string
+  birthDate?: string
   role: "MEMBER" | "ADMIN"
   cohort: number
   status?: "PENDING" | "APPROVED" | "REJECTED"
+  link1?: string
+  link2?: string
 }
 
 interface AuthContextType {
@@ -74,12 +81,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         const result = await response.json()
-        console.log("로그인 성공 응답:", result)
         
         // BE API 응답 형식에 맞게 처리
         if (result.success && result.data) {
           const userData = result.data
-          localStorage.setItem("auth_token", userData.accessToken)
+          
+          // 다양한 가능한 필드명 확인
+          const token = userData.accessToken || userData.access_token || userData.token || userData.jwt
+          
+          localStorage.setItem("auth_token", token)
           localStorage.setItem("user_data", JSON.stringify({
             id: userData.id,
             name: userData.name,

@@ -96,13 +96,17 @@ export default function MembersPage() {
       })
       const result = await response.json()
 
+      console.log("Approved members API response:", result)
+
       if (result.success) {
         setMembers(result.data)
       } else {
         console.error("Failed to fetch members:", result.message)
+        setMembers([]) // 빈 배열로 초기화
       }
     } catch (error) {
       console.error("Error fetching members:", error)
+      setMembers([]) // 에러 시 빈 배열로 초기화
     }
   }
 
@@ -114,13 +118,17 @@ export default function MembersPage() {
       })
       const result = await response.json()
 
+      console.log("Pending members API response:", result)
+
       if (result.success) {
         setPendingMembers(result.data)
       } else {
         console.error("Failed to fetch pending members:", result.message)
+        setPendingMembers([]) // 빈 배열로 초기화
       }
     } catch (error) {
       console.error("Error fetching pending members:", error)
+      setPendingMembers([]) // 에러 시 빈 배열로 초기화
     } finally {
       setLoading(false)
     }
@@ -129,8 +137,8 @@ export default function MembersPage() {
   const handleApproveMember = async (memberId: number) => {
     try {
       const token = localStorage.getItem("auth_token")
-      const response = await fetch(`/api/members/approve/${memberId}`, {
-        method: "POST",
+      const response = await fetch(`/api/members/status/${memberId}`, {
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -162,8 +170,8 @@ export default function MembersPage() {
 
     try {
       const token = localStorage.getItem("auth_token")
-      const response = await fetch(`/api/members/reject/${memberId}`, {
-        method: "POST",
+      const response = await fetch(`/api/members/delete/${memberId}`, {
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -172,7 +180,7 @@ export default function MembersPage() {
 
       if (result.success) {
         setPendingMembers(pendingMembers.filter((m) => m.memberId !== memberId))
-        alert(`${memberToReject.name}님의 가입이 거부되었습니다.`)
+        alert(`${memberToReject.name}님의 가입이 거절되었습니다.`)
       } else {
         alert(result.message || "멤버 거부에 실패했습니다.")
       }
@@ -309,12 +317,12 @@ export default function MembersPage() {
         </div>
 
         <Tabs defaultValue="approved" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="approved" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-2 bg-[#1a1a1a] border-white/10">
+            <TabsTrigger value="approved" className="flex items-center gap-2 data-[state=active]:bg-[#d3431a] data-[state=active]:text-white text-gray-300">
               <UserCheck className="h-4 w-4" />
               승인된 멤버
             </TabsTrigger>
-            <TabsTrigger value="pending" className="flex items-center gap-2">
+            <TabsTrigger value="pending" className="flex items-center gap-2 data-[state=active]:bg-[#d3431a] data-[state=active]:text-white text-gray-300">
               <Clock className="h-4 w-4" />
               승인 대기 ({pendingMembers.length})
             </TabsTrigger>
@@ -326,13 +334,13 @@ export default function MembersPage() {
             {/* 필터 */}
             <div className="mb-6 flex flex-col sm:flex-row gap-4">
               <Select value={selectedCohort} onValueChange={setSelectedCohort}>
-                <SelectTrigger className="w-full sm:w-48">
+                <SelectTrigger className="w-full sm:w-48 bg-[#1a1a1a] border-white/10 text-white">
                   <SelectValue placeholder="기수 선택" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체 기수</SelectItem>
+                <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                  <SelectItem value="all" className="text-white hover:bg-gray-700 focus:bg-gray-700">전체 기수</SelectItem>
                   {cohorts.map((cohort) => (
-                    <SelectItem key={cohort} value={cohort.toString()}>
+                    <SelectItem key={cohort} value={cohort.toString()} className="text-white hover:bg-gray-700 focus:bg-gray-700">
                       {cohort}기
                     </SelectItem>
                   ))}
@@ -472,12 +480,12 @@ export default function MembersPage() {
                       <div className="space-y-2">
                         <Label htmlFor="cohort">기수 *</Label>
                         <Select onValueChange={(value) => setNewMember({ ...newMember, cohort: value })}>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-[#1a1a1a] border-white/10 text-white">
                             <SelectValue placeholder="기수 선택" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                             {Array.from({ length: 30 }, (_, i) => i + 1).map((cohort) => (
-                              <SelectItem key={cohort} value={cohort.toString()}>
+                              <SelectItem key={cohort} value={cohort.toString()} className="text-white hover:bg-gray-700 focus:bg-gray-700">
                                 {cohort}기
                               </SelectItem>
                             ))}
@@ -491,12 +499,12 @@ export default function MembersPage() {
                             setNewMember({ ...newMember, role: value })
                           }
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-[#1a1a1a] border-white/10 text-white">
                             <SelectValue placeholder="역할 선택" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="MEMBER">멤버</SelectItem>
-                            <SelectItem value="ADMIN">관리자</SelectItem>
+                          <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                            <SelectItem value="MEMBER" className="text-white hover:bg-gray-700 focus:bg-gray-700">멤버</SelectItem>
+                            <SelectItem value="ADMIN" className="text-white hover:bg-gray-700 focus:bg-gray-700">관리자</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -516,50 +524,50 @@ export default function MembersPage() {
 
             {/* 통계 카드 */}
             <div className="grid md:grid-cols-4 gap-4 mb-8">
-              <Card>
+              <Card className="bg-[#1a1a1a] border-white/10">
                 <CardContent className="p-6">
                   <div className="flex items-center">
                     <Users className="h-8 w-8 text-[#d3431a]" />
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">전체 멤버</p>
-                      <p className="text-2xl font-bold text-gray-900">{members.length}</p>
+                      <p className="text-sm font-medium text-gray-300">전체 멤버</p>
+                      <p className="text-2xl font-bold text-white">{members.length}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="bg-[#1a1a1a] border-white/10">
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <Users className="h-8 w-8 text-blue-600" />
+                    <Users className="h-8 w-8 text-blue-400" />
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">운영진</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-sm font-medium text-gray-300">운영진</p>
+                      <p className="text-2xl font-bold text-white">
                         {members.filter((m) => m.role === "ADMIN").length}
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="bg-[#1a1a1a] border-white/10">
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <Users className="h-8 w-8 text-green-600" />
+                    <Users className="h-8 w-8 text-green-400" />
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">일반 멤버</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-sm font-medium text-gray-300">일반 멤버</p>
+                      <p className="text-2xl font-bold text-white">
                         {members.filter((m) => m.role === "MEMBER").length}
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="bg-[#1a1a1a] border-white/10">
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <Clock className="h-8 w-8 text-orange-600" />
+                    <Clock className="h-8 w-8 text-orange-400" />
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">승인 대기</p>
-                      <p className="text-2xl font-bold text-gray-900">{pendingMembers.length}</p>
+                      <p className="text-sm font-medium text-gray-300">승인 대기</p>
+                      <p className="text-2xl font-bold text-white">{pendingMembers.length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -567,17 +575,24 @@ export default function MembersPage() {
             </div>
 
             {/* 승인된 멤버 목록 */}
-            <Card>
+            <Card className="bg-[#121212] border-white/10">
               <CardHeader>
-                <CardTitle>승인된 멤버 목록</CardTitle>
-                <CardDescription>총 {filteredMembers.length}명의 멤버</CardDescription>
+                <CardTitle className="text-white">승인된 멤버 목록</CardTitle>
+                <CardDescription className="text-gray-400">총 {filteredMembers.length}명의 멤버</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {filteredMembers.map((member) => (
+                {filteredMembers.length === 0 ? (
+                  <div className="text-center py-12">
+                    <UserCheck className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-white mb-2">승인된 멤버가 없습니다</h3>
+                    <p className="text-gray-400">멤버를 추가하거나 승인 대기 목록을 확인해보세요</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredMembers.map((member) => (
                     <div
                       key={member.memberId}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                      className="flex items-center justify-between p-4 border border-white/10 rounded-lg hover:bg-gray-800 bg-[#1a1a1a]"
                     >
                       <div className="flex items-start space-x-4 flex-1">
                         <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
@@ -590,33 +605,33 @@ export default function MembersPage() {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-3">
-                            <h3 className="font-semibold text-gray-900">{member.name}</h3>
+                            <h3 className="font-semibold text-white">{member.name}</h3>
                             <Badge
                               className={
-                                member.role === "ADMIN" ? "bg-[#d3431a] text-white" : "bg-gray-100 text-gray-800"
+                                member.role === "ADMIN" ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
                               }
                             >
                               {member.role === "ADMIN" ? "관리자" : "멤버"}
                             </Badge>
-                            <Badge variant="outline">{member.cohort}기</Badge>
+                            <Badge variant="outline" className="border-white/20 text-white">{member.cohort}기</Badge>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-300">
                             <div className="flex items-center gap-2">
-                              <Mail className="h-3 w-3 flex-shrink-0" />
+                              <Mail className="h-3 w-3 flex-shrink-0 text-gray-400" />
                               <span className="truncate">{member.email}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Phone className="h-3 w-3 flex-shrink-0" />
+                              <Phone className="h-3 w-3 flex-shrink-0 text-gray-400" />
                               <span>{member.phone}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <School className="h-3 w-3 flex-shrink-0" />
+                              <School className="h-3 w-3 flex-shrink-0 text-gray-400" />
                               <span className="truncate">
                                 {member.school} {member.major && `(${member.major})`}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Github className="h-3 w-3 flex-shrink-0" />
+                              <Github className="h-3 w-3 flex-shrink-0 text-gray-400" />
                               <span className="truncate">
                                 {member.github ? (
                                   <a
@@ -649,31 +664,32 @@ export default function MembersPage() {
                       </Button>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* 승인 대기 멤버 탭 */}
           <TabsContent value="pending" className="space-y-6">
-            <Card>
+            <Card className="bg-[#121212] border-white/10">
               <CardHeader>
-                <CardTitle>승인 대기 중인 멤버</CardTitle>
-                <CardDescription>총 {pendingMembers.length}명이 승인을 기다리고 있습니다</CardDescription>
+                <CardTitle className="text-white">승인 대기 중인 멤버</CardTitle>
+                <CardDescription className="text-gray-400">총 {pendingMembers.length}명이 승인을 기다리고 있습니다</CardDescription>
               </CardHeader>
               <CardContent>
                 {pendingMembers.length === 0 ? (
                   <div className="text-center py-12">
                     <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">승인 대기 중인 멤버가 없습니다</h3>
-                    <p className="text-gray-500">새로운 가입 신청이 있으면 여기에 표시됩니다</p>
+                    <h3 className="text-lg font-medium text-white mb-2">승인 대기 중인 멤버가 없습니다</h3>
+                    <p className="text-gray-400">새로운 가입 신청이 있으면 여기에 표시됩니다</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {pendingMembers.map((member) => (
                       <div
                         key={member.memberId}
-                        className="flex items-center justify-between p-4 border rounded-lg bg-yellow-50 border-yellow-200"
+                        className="flex items-center justify-between p-4 border border-orange-500/20 rounded-lg bg-orange-500/5"
                       >
                         <div className="flex items-start space-x-4 flex-1">
                           <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
@@ -686,22 +702,22 @@ export default function MembersPage() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-3">
-                              <h3 className="font-semibold text-gray-900">{member.name}</h3>
-                              <Badge className="bg-yellow-100 text-yellow-800">승인 대기</Badge>
-                              <Badge variant="outline">{member.cohort}기</Badge>
-                              <Badge variant="outline">{member.role === "ADMIN" ? "관리자" : "멤버"}</Badge>
+                              <h3 className="font-semibold text-white">{member.name}</h3>
+                              <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">승인 대기</Badge>
+                              <Badge variant="outline" className="border-white/20 text-white">{member.cohort}기</Badge>
+                              <Badge variant="outline" className="border-white/20 text-white">{member.role === "ADMIN" ? "관리자" : "멤버"}</Badge>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-300">
                               <div className="flex items-center gap-2">
-                                <Mail className="h-3 w-3 flex-shrink-0" />
+                                <Mail className="h-3 w-3 flex-shrink-0 text-gray-400" />
                                 <span className="truncate">{member.email}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Phone className="h-3 w-3 flex-shrink-0" />
+                                <Phone className="h-3 w-3 flex-shrink-0 text-gray-400" />
                                 <span>{member.phone}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <School className="h-3 w-3 flex-shrink-0" />
+                                <School className="h-3 w-3 flex-shrink-0 text-gray-400" />
                                 <span className="truncate">{member.school}</span>
                               </div>
                             </div>
@@ -881,12 +897,12 @@ export default function MembersPage() {
                       value={editingMember.cohort.toString()}
                       onValueChange={(value) => setEditingMember({ ...editingMember, cohort: Number.parseInt(value) })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[#1a1a1a] border-white/10 text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                         {Array.from({ length: 30 }, (_, i) => i + 1).map((cohort) => (
-                          <SelectItem key={cohort} value={cohort.toString()}>
+                          <SelectItem key={cohort} value={cohort.toString()} className="text-white hover:bg-gray-700 focus:bg-gray-700">
                             {cohort}기
                           </SelectItem>
                         ))}
@@ -901,12 +917,12 @@ export default function MembersPage() {
                         setEditingMember({ ...editingMember, role: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[#1a1a1a] border-white/10 text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="MEMBER">멤버</SelectItem>
-                        <SelectItem value="ADMIN">관리자</SelectItem>
+                      <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                        <SelectItem value="MEMBER" className="text-white hover:bg-gray-700 focus:bg-gray-700">멤버</SelectItem>
+                        <SelectItem value="ADMIN" className="text-white hover:bg-gray-700 focus:bg-gray-700">관리자</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

@@ -184,10 +184,10 @@ export default function MembersPage() {
               <SelectTrigger className="w-full sm:w-48 bg-[#141414] border-white/10 text-white">
                 <SelectValue placeholder="기수 선택" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">전체 기수</SelectItem>
+              <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                <SelectItem value="all" className="text-white hover:bg-gray-700 focus:bg-gray-700">전체 기수</SelectItem>
                 {cohorts.map((cohort) => (
-                  <SelectItem key={cohort} value={cohort.toString()}>
+                  <SelectItem key={cohort} value={cohort.toString()} className="text-white hover:bg-gray-700 focus:bg-gray-700">
                     {cohort}기
                   </SelectItem>
                 ))}
@@ -198,10 +198,10 @@ export default function MembersPage() {
               <SelectTrigger className="w-full sm:w-40 bg-[#141414] border-white/10 text-white">
                 <SelectValue placeholder="역할" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">전체</SelectItem>
-                <SelectItem value="management">운영진</SelectItem>
-                <SelectItem value="member">멤버</SelectItem>
+              <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                <SelectItem value="all" className="text-white hover:bg-gray-700 focus:bg-gray-700">전체</SelectItem>
+                <SelectItem value="management" className="text-white hover:bg-gray-700 focus:bg-gray-700">운영진</SelectItem>
+                <SelectItem value="member" className="text-white hover:bg-gray-700 focus:bg-gray-700">멤버</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -12,8 +12,8 @@ export const API_ENDPOINTS = {
   },
   MEMBERS: {
     LIST: `${API_BASE_URL}/api/members`,
-    APPROVE: (id: string) => `${API_BASE_URL}/api/members/approve/${id}`,
-    REJECT: (id: string) => `${API_BASE_URL}/api/members/reject/${id}`,
+    STATUS: (id: string) => `${API_BASE_URL}/api/members/status/${id}`,
+    DELETE: (id: string) => `${API_BASE_URL}/api/members/${id}`,
     PENDING: `${API_BASE_URL}/api/members/pending`,
   },
   PROJECTS: {

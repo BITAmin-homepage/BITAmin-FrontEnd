@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(
+export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const token = request.headers.get('authorization')
     
-    const response = await fetch(`http://52.78.66.115:8080/api/members/reject/${params.id}`, {
-      method: 'POST',
+    const response = await fetch(`http://52.78.66.115:8080/api/members/status/${params.id}`, {
+      method: 'PUT',
       headers: {
         'Authorization': token || '',
         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export async function POST(
       }
     })
   } catch (error) {
-    console.error('Member reject error:', error)
+    console.error('Member status update error:', error)
     return NextResponse.json(
       { success: false, message: '서버 오류가 발생했습니다.' },
       { status: 500 }
