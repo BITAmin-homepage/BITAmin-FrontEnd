@@ -40,7 +40,7 @@ import {
 import Image from "next/image"
 
 interface Member {
-  id: string
+  memberId: number
   name: string
   email: string
   phone: string
@@ -49,11 +49,10 @@ interface Member {
   gender: string
   birthDate: string
   cohort: number
-  role: "member" | "management"
-  joinDate: string
+  role: "MEMBER" | "ADMIN"
+  status: "PENDING" | "APPROVED" | "REJECTED"
   profileImage?: string
   github?: string
-  status?: "pending" | "approved" | "rejected"
 }
 
 export default function MembersPage() {
@@ -76,12 +75,12 @@ export default function MembersPage() {
     gender: "",
     birthDate: "",
     cohort: "",
-    role: "member" as "member" | "management",
+    role: "MEMBER" as "MEMBER" | "ADMIN",
     github: "",
   })
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== "management") {
+    if (!isAuthenticated || user?.role !== "ADMIN") {
       router.push("/dashboard")
     } else {
       fetchMembers()
@@ -92,7 +91,7 @@ export default function MembersPage() {
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem("auth_token")
-      const response = await fetch("/api/members?status=approved", {
+      const response = await fetch("/api/members?status=APPROVED", {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       const result = await response.json()
@@ -100,7 +99,7 @@ export default function MembersPage() {
       if (result.success) {
         setMembers(result.data)
       } else {
-        console.error("Failed to fetch members:", result.error)
+        console.error("Failed to fetch members:", result.message)
       }
     } catch (error) {
       console.error("Error fetching members:", error)
@@ -110,7 +109,7 @@ export default function MembersPage() {
   const fetchPendingMembers = async () => {
     try {
       const token = localStorage.getItem("auth_token")
-      const response = await fetch("/api/members?status=pending", {
+      const response = await fetch("/api/members?status=PENDING", {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       const result = await response.json()
@@ -118,7 +117,7 @@ export default function MembersPage() {
       if (result.success) {
         setPendingMembers(result.data)
       } else {
-        console.error("Failed to fetch pending members:", result.error)
+        console.error("Failed to fetch pending members:", result.message)
       }
     } catch (error) {
       console.error("Error fetching pending members:", error)
@@ -127,7 +126,7 @@ export default function MembersPage() {
     }
   }
 
-  const handleApproveMember = async (memberId: string) => {
+  const handleApproveMember = async (memberId: number) => {
     try {
       const token = localStorage.getItem("auth_token")
       const response = await fetch(`/api/members/approve/${memberId}`, {
@@ -140,14 +139,14 @@ export default function MembersPage() {
 
       if (result.success) {
         // 승인된 멤버를 pending에서 제거하고 approved로 이동
-        const approvedMember = pendingMembers.find((m) => m.id === memberId)
+        const approvedMember = pendingMembers.find((m) => m.memberId === memberId)
         if (approvedMember) {
-          setPendingMembers(pendingMembers.filter((m) => m.id !== memberId))
-          setMembers([...members, { ...approvedMember, status: "approved" }])
+          setPendingMembers(pendingMembers.filter((m) => m.memberId !== memberId))
+          setMembers([...members, { ...approvedMember, status: "APPROVED" }])
           alert(`${approvedMember.name}님의 가입이 승인되었습니다.`)
         }
       } else {
-        alert(result.error || "멤버 승인에 실패했습니다.")
+        alert(result.message || "멤버 승인에 실패했습니다.")
       }
     } catch (error) {
       console.error("Error approving member:", error)
@@ -155,8 +154,8 @@ export default function MembersPage() {
     }
   }
 
-  const handleRejectMember = async (memberId: string) => {
-    const memberToReject = pendingMembers.find((m) => m.id === memberId)
+  const handleRejectMember = async (memberId: number) => {
+    const memberToReject = pendingMembers.find((m) => m.memberId === memberId)
     if (!memberToReject) return
 
     if (!confirm(`${memberToReject.name}님의 가입을 거부하시겠습니까?`)) return
@@ -172,10 +171,10 @@ export default function MembersPage() {
       const result = await response.json()
 
       if (result.success) {
-        setPendingMembers(pendingMembers.filter((m) => m.id !== memberId))
+        setPendingMembers(pendingMembers.filter((m) => m.memberId !== memberId))
         alert(`${memberToReject.name}님의 가입이 거부되었습니다.`)
       } else {
-        alert(result.error || "멤버 거부에 실패했습니다.")
+        alert(result.message || "멤버 거부에 실패했습니다.")
       }
     } catch (error) {
       console.error("Error rejecting member:", error)
@@ -214,14 +213,14 @@ export default function MembersPage() {
           gender: "",
           birthDate: "",
           cohort: "",
-          role: "member",
+          role: "MEMBER",
           github: "",
         })
         setProfilePreview("")
         setIsAddDialogOpen(false)
         alert("멤버가 추가되었습니다!")
       } else {
-        alert(result.error || "멤버 추가에 실패했습니다.")
+        alert(result.message || "멤버 추가에 실패했습니다.")
       }
     } catch (error) {
       console.error("Error adding member:", error)
@@ -234,7 +233,7 @@ export default function MembersPage() {
 
     try {
       const token = localStorage.getItem("auth_token")
-      const response = await fetch(`/api/members/${editingMember.id}`, {
+      const response = await fetch(`/api/members/${editingMember.memberId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -246,13 +245,13 @@ export default function MembersPage() {
       const result = await response.json()
 
       if (result.success) {
-        setMembers(members.map((member) => (member.id === editingMember.id ? result.data : member)))
+        setMembers(members.map((member) => (member.memberId === editingMember.memberId ? result.data : member)))
         setEditingMember(null)
         setProfilePreview("")
         setIsEditDialogOpen(false)
         alert("멤버 정보가 수정되었습니다!")
       } else {
-        alert(result.error || "멤버 수정에 실패했습니다.")
+        alert(result.message || "멤버 수정에 실패했습니다.")
       }
     } catch (error) {
       console.error("Error editing member:", error)
@@ -282,17 +281,17 @@ export default function MembersPage() {
 
   const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
 
-  if (!isAuthenticated || user?.role !== "management") {
+  if (!isAuthenticated || user?.role !== "ADMIN") {
     return null
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-black">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-center items-center h-64">
-            <div className="text-lg text-gray-600">멤버 정보를 불러오는 중...</div>
+            <div className="text-lg text-white">멤버 정보를 불러오는 중...</div>
           </div>
         </div>
       </div>
@@ -300,13 +299,13 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-white">
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">멤버 관리</h1>
-          <p className="text-gray-600">동아리 멤버들의 정보를 관리하세요</p>
+          <h1 className="text-3xl font-bold text-white mb-2">멤버 관리</h1>
+          <p className="text-gray-300">동아리 멤버들의 정보를 관리하세요</p>
         </div>
 
         <Tabs defaultValue="approved" className="space-y-6">
@@ -488,7 +487,7 @@ export default function MembersPage() {
                       <div className="space-y-2">
                         <Label htmlFor="role">역할 *</Label>
                         <Select
-                          onValueChange={(value: "member" | "management") =>
+                          onValueChange={(value: "MEMBER" | "ADMIN") =>
                             setNewMember({ ...newMember, role: value })
                           }
                         >
@@ -496,8 +495,8 @@ export default function MembersPage() {
                             <SelectValue placeholder="역할 선택" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="member">멤버</SelectItem>
-                            <SelectItem value="management">운영진</SelectItem>
+                            <SelectItem value="MEMBER">멤버</SelectItem>
+                            <SelectItem value="ADMIN">관리자</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -535,7 +534,7 @@ export default function MembersPage() {
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">운영진</p>
                       <p className="text-2xl font-bold text-gray-900">
-                        {members.filter((m) => m.role === "management").length}
+                        {members.filter((m) => m.role === "ADMIN").length}
                       </p>
                     </div>
                   </div>
@@ -548,7 +547,7 @@ export default function MembersPage() {
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">일반 멤버</p>
                       <p className="text-2xl font-bold text-gray-900">
-                        {members.filter((m) => m.role === "member").length}
+                        {members.filter((m) => m.role === "MEMBER").length}
                       </p>
                     </div>
                   </div>
@@ -577,7 +576,7 @@ export default function MembersPage() {
                 <div className="space-y-4">
                   {filteredMembers.map((member) => (
                     <div
-                      key={member.id}
+                      key={member.memberId}
                       className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
                     >
                       <div className="flex items-start space-x-4 flex-1">
@@ -594,10 +593,10 @@ export default function MembersPage() {
                             <h3 className="font-semibold text-gray-900">{member.name}</h3>
                             <Badge
                               className={
-                                member.role === "management" ? "bg-[#d3431a] text-white" : "bg-gray-100 text-gray-800"
+                                member.role === "ADMIN" ? "bg-[#d3431a] text-white" : "bg-gray-100 text-gray-800"
                               }
                             >
-                              {member.role === "management" ? "운영진" : "멤버"}
+                              {member.role === "ADMIN" ? "관리자" : "멤버"}
                             </Badge>
                             <Badge variant="outline">{member.cohort}기</Badge>
                           </div>
@@ -673,7 +672,7 @@ export default function MembersPage() {
                   <div className="space-y-4">
                     {pendingMembers.map((member) => (
                       <div
-                        key={member.id}
+                        key={member.memberId}
                         className="flex items-center justify-between p-4 border rounded-lg bg-yellow-50 border-yellow-200"
                       >
                         <div className="flex items-start space-x-4 flex-1">
@@ -690,7 +689,7 @@ export default function MembersPage() {
                               <h3 className="font-semibold text-gray-900">{member.name}</h3>
                               <Badge className="bg-yellow-100 text-yellow-800">승인 대기</Badge>
                               <Badge variant="outline">{member.cohort}기</Badge>
-                              <Badge variant="outline">{member.role === "management" ? "운영진" : "멤버"}</Badge>
+                              <Badge variant="outline">{member.role === "ADMIN" ? "관리자" : "멤버"}</Badge>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
@@ -712,7 +711,7 @@ export default function MembersPage() {
                           <Button
                             size="sm"
                             className="bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() => handleApproveMember(member.id)}
+                            onClick={() => handleApproveMember(member.memberId)}
                           >
                             <Check className="h-4 w-4 mr-2" />
                             승인
@@ -721,7 +720,7 @@ export default function MembersPage() {
                             size="sm"
                             variant="outline"
                             className="border-red-300 text-red-600 hover:bg-red-50 bg-transparent"
-                            onClick={() => handleRejectMember(member.id)}
+                            onClick={() => handleRejectMember(member.memberId)}
                           >
                             <X className="h-4 w-4 mr-2" />
                             거부
@@ -898,7 +897,7 @@ export default function MembersPage() {
                     <Label htmlFor="edit-role">역할 *</Label>
                     <Select
                       value={editingMember.role}
-                      onValueChange={(value: "member" | "management") =>
+                      onValueChange={(value: "MEMBER" | "ADMIN") =>
                         setEditingMember({ ...editingMember, role: value })
                       }
                     >
@@ -906,8 +905,8 @@ export default function MembersPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="member">멤버</SelectItem>
-                        <SelectItem value="management">운영진</SelectItem>
+                        <SelectItem value="MEMBER">멤버</SelectItem>
+                        <SelectItem value="ADMIN">관리자</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

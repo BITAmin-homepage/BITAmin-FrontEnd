@@ -57,6 +57,24 @@ export async function POST(request: NextRequest) {
         }
       )
     }
+
+    // 500 Internal Server Error 처리 (DB 중복 데이터 등)
+    if (response.status === 500) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "아직 승인 대기 중인 유저입니다." 
+        },
+        { 
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
+      )
+    }
     
     return NextResponse.json(data, { 
       status: response.status,

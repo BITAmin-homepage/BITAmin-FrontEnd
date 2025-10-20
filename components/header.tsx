@@ -61,27 +61,47 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="text-white hover:text-[#d3431a]">
+                    <Button
+                      variant="ghost"
+                      className="text-white hover:text-[#d3431a] hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent"
+                    >
                       <User className="h-4 w-4 mr-2" />
                       {user?.name}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-gray-900 border-gray-700">
+                  <DropdownMenuContent className="bg-[#141414] border border-white/10 shadow-lg rounded-lg p-1 w-auto min-w-32 mt-1 flex flex-col space-y-0" align="start">
                     {user?.role === "ADMIN" && (
-                      <DropdownMenuItem asChild>
-                        <Link href="/dashboard" className="text-white hover:text-[#d3431a]">
+                      <DropdownMenuItem
+                        asChild
+                        className="p-0 m-0 rounded-md focus:bg-gray-800 hover:bg-gray-800 focus:text-[#ff6b35] data-[highlighted]:text-[#ff6b35]"
+                      >
+                        <Link 
+                          href="/dashboard" 
+                          className="text-gray-300 hover:text-[#ff6b35] transition-colors px-2 py-1 block"
+                        >
                           대시보드
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem asChild>
-                      <Link href="/mypage" className="text-white hover:text-[#d3431a]">
+                    <DropdownMenuItem
+                      asChild
+                      className="p-0 m-0 rounded-md focus:bg-gray-800 hover:bg-gray-800 focus:text-[#ff6b35] data-[highlighted]:text-[#ff6b35]"
+                    >
+                      <Link 
+                        href="/mypage" 
+                        className="text-gray-300 hover:text-[#ff6b35] transition-colors px-2 py-1 block"
+                      >
                         마이페이지
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={logout} className="text-white hover:text-[#d3431a]">
-                      <LogOut className="h-4 w-4 mr-2" />
-                      로그아웃
+                    <DropdownMenuItem 
+                      asChild
+                      className="p-0 m-0 rounded-md focus:bg-gray-800 hover:bg-gray-800 focus:text-[#ff6b35] data-[highlighted]:text-[#ff6b35]"
+                    >
+                      <button type="button" onClick={logout} className="w-full text-left text-gray-300 hover:text-[#ff6b35] transition-colors px-2 py-1 block">
+                        <LogOut className="h-4 w-4 mr-2 inline-block" />
+                        로그아웃
+                      </button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -108,7 +128,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
           {/* Mobile Navigation */}
           {isMenuOpen && (
             <div className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <div className="px-2 pt-2 pb-3 space-y-0.5 sm:px-3">
                 <Link href="/about" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
                   동아리 소개
                 </Link>
@@ -127,7 +147,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                     지원하기
                   </button>
                 )}
-                <div className="flex flex-col space-y-2 px-3 py-2">
+                <div className="flex flex-col space-y-0.5 px-3 py-2">
                   {isAuthenticated ? (
                     <>
                       {user?.role === "ADMIN" && (

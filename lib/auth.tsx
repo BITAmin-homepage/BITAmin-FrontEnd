@@ -113,6 +113,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             errorMessage = "아직 승인되지 않은 유저입니다. 운영진의 승인을 기다려주세요."
           } else if (response.status === 404) {
             errorMessage = "사용자를 찾을 수 없습니다."
+          } else if (response.status === 500) {
+            errorMessage = "아직 승인대기 중인 유저입니다."
           }
         }
         alert(errorMessage)

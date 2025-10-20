@@ -1,75 +1,48 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from 'next/server'
 
-// 승인된 멤버 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get("Authorization")?.replace("Bearer ", "")
-    const searchParams = request.nextUrl.searchParams
-    const status = searchParams.get("status") || "approved"
-
-    const response = await fetch(`${process.env.BACKEND_URL}/api/members?status=${status}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-
-    const result = await response.json()
-
-    if (response.ok && result.success) {
-      return NextResponse.json({
-        success: true,
-        data: result.data,
-      })
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: result.message || "Failed to fetch members",
-        },
-        { status: response.status },
-      )
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status')
+    
+    const token = request.headers.get('authorization')
+    
+    let url = 'http://52.78.66.115:8080/api/members'
+    if (status) {
+      url += `?status=${status}`
     }
-  } catch (error) {
-    console.error("Members API error:", error)
-    return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
-  }
-}
-
-// 새 멤버 추가
-export async function POST(request: NextRequest) {
-  try {
-    const token = request.headers.get("Authorization")?.replace("Bearer ", "")
-    if (!token) {
-      return NextResponse.json({ success: false, error: "인증이 필요합니다." }, { status: 401 })
-    }
-
-    const memberData = await request.json()
-
-    const response = await fetch(`${process.env.BACKEND_URL}/api/members`, {
-      method: "POST",
+    
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        'Authorization': token || '',
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(memberData),
     })
 
-    const result = await response.json()
-
-    if (response.ok && result.success) {
-      return NextResponse.json({
-        success: true,
-        data: result.data,
-      })
+    let data
+    const contentType = response.headers.get("content-type")
+    
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json()
     } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: result.message || "Failed to create member",
-        },
-        { status: response.status },
-      )
+      const text = await response.text()
+      data = { message: text }
     }
+
+    return NextResponse.json(data, { 
+      status: response.status,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    })
   } catch (error) {
-    console.error("Create member API error:", error)
-    return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
+    console.error('Members fetch error:', error)
+    return NextResponse.json(
+      { success: false, message: '서버 오류가 발생했습니다.' },
+      { status: 500 }
+    )
   }
 }

@@ -27,13 +27,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/sessions" className="text-gray-400 hover:text-[#d3431a] transition-colors">
-                  세션 자료
-                </Link>
-              </li>
-              <li>
-                <Link href="/assignments" className="text-gray-400 hover:text-[#d3431a] transition-colors">
-                  과제
+                <Link href="/members" className="text-gray-400 hover:text-[#d3431a] transition-colors">
+                  멤버
                 </Link>
               </li>
               <li>
