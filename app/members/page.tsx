@@ -11,126 +11,36 @@ import Image from "next/image"
 import Link from "next/link"
 
 interface Member {
-  id: string
-  name: string
-  email: string
-  phone: string
-  school: string
-  major?: string
-  gender: string
-  birthDate: string
   cohort: number
-  role: "member" | "management"
-  joinDate: string
-  profileImage?: string
-  github?: string
-  otherLink?: string
-  status?: "pending" | "approved" | "rejected"
-  position?: "회장" | "기획부" | "교육부" | "총무부" | "멤버"
+  name: string
+  link1: string | null
+  link2: string | null
+  depart: string | null
 }
 
 export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCohort, setSelectedCohort] = useState("all")
-  const [selectedRole, setSelectedRole] = useState("all")
 
   useEffect(() => {
     fetchMembers()
   }, [])
 
   const fetchMembers = async () => {
-    const dummyMembers: Member[] = [
-      {
-        id: "d1",
-        name: "노승수",
-        email: "seoyeon@example.com",
-        phone: "010-1111-2222",
-        school: "",
-        major: "",
-        gender: "female",
-        birthDate: "2001-05-10",
-        cohort: 15,
-        role: "management",
-        position: "회장",
-        joinDate: "2024-03-01",
-        profileImage: "/placeholder-user.jpg",
-        github: "https://github.com/example1",
-        otherLink: "https://techblog.example.com",
-        status: "approved",
-      },
-      {
-        id: "d2",
-        name: "서정훈",
-        email: "junho@example.com",
-        phone: "010-3333-4444",
-        school: "",
-        major: "",
-        gender: "male",
-        birthDate: "2000-11-22",
-        cohort: 15,
-        role: "member",
-        position: "기획부",
-        joinDate: "2023-09-01",
-        profileImage: "/placeholder-user.jpg",
-        github: "https://github.com/example2",
-        otherLink: "https://www.linkedin.com/in/example2",
-        status: "approved",
-      },
-      {
-        id: "d3",
-        name: "박승현",
-        email: "jihu@example.com",
-        phone: "010-5555-6666",
-        school: "",
-        major: "",
-        gender: "male",
-        birthDate: "2002-02-14",
-        cohort: 16,
-        role: "member",
-        position: "기획부",
-        joinDate: "2024-03-01",
-        profileImage: "/placeholder-user.jpg",
-        github: "",
-        otherLink: "https://blog.example.com/jihu",
-        status: "approved",
-      },
-      {
-        id: "d4",
-        name: "최지민",
-        email: "jimin@example.com",
-        phone: "010-7777-8888",
-        school: "",
-        major: "",
-        gender: "female",
-        birthDate: "2001-08-30",
-        cohort: 14,
-        role: "member",
-        position: "멤버",
-        joinDate: "2022-09-01",
-        profileImage: "/placeholder-user.jpg",
-        github: "https://github.com/example3",
-        otherLink: "https://portfolio.example.com/jimin",
-        status: "approved",
-      },
-    ]
     try {
-      const response = await fetch("/api/members?status=approved")
+      const response = await fetch("/api/members/all")
       const result = await response.json()
-
-      if (result.success) {
-        if (Array.isArray(result.data) && result.data.length > 0) {
-          setMembers(result.data)
-        } else {
-          setMembers(dummyMembers)
-        }
+      
+      if (result.success && result.data) {
+        setMembers(result.data)
       } else {
-        console.error("Failed to fetch members:", result.error)
-        setMembers(dummyMembers)
+        console.error("Failed to fetch members:", result.message)
+        setMembers([])
       }
     } catch (error) {
       console.error("Error fetching members:", error)
-      setMembers(dummyMembers)
+      setMembers([])
     } finally {
       setLoading(false)
     }
@@ -138,8 +48,7 @@ export default function MembersPage() {
 
   const filteredMembers = members.filter((member) => {
     const matchesCohort = selectedCohort === "all" || member.cohort.toString() === selectedCohort
-    const matchesRole = selectedRole === "all" || member.role === selectedRole
-    return matchesCohort && matchesRole
+    return matchesCohort
   })
 
   const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
@@ -194,16 +103,6 @@ export default function MembersPage() {
               </SelectContent>
             </Select>
 
-            <Select value={selectedRole} onValueChange={setSelectedRole}>
-              <SelectTrigger className="w-full sm:w-40 bg-[#141414] border-white/10 text-white">
-                <SelectValue placeholder="역할" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
-                <SelectItem value="all" className="text-white hover:bg-gray-700 focus:bg-gray-700">전체</SelectItem>
-                <SelectItem value="management" className="text-white hover:bg-gray-700 focus:bg-gray-700">운영진</SelectItem>
-                <SelectItem value="member" className="text-white hover:bg-gray-700 focus:bg-gray-700">멤버</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
 
@@ -224,12 +123,12 @@ export default function MembersPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {cohortMembers.map((member) => (
-                    <Card key={member.id} className="transition-transform hover:-translate-y-0.5 bg-[#121212] border-white/10">
+                    <Card key={`${member.name}-${member.cohort}`} className="transition-transform hover:-translate-y-0.5 bg-[#121212] border-white/10">
                       <CardContent className="p-6">
                         <div className="flex flex-col items-center text-center space-y-4">
                           <div className="relative w-20 h-20 rounded-full overflow-hidden bg-white/10 border border-white/10">
                             <Image
-                              src={member.profileImage || "/placeholder.svg?height=80&width=80&text=프로필"}
+                              src="/placeholder.svg?height=80&width=80&text=프로필"
                               alt={`${member.name} 프로필`}
                               fill
                               className="object-cover"
@@ -238,16 +137,29 @@ export default function MembersPage() {
 
                           <div className="space-y-3">
                             <div className="flex flex-col items-center justify-center gap-1">
-                              <Badge className="bg-white/10 text-white px-3 py-1">
-                                {member.position || (member.role === "management" ? "운영진" : "멤버")}
-                              </Badge>
+                              {member.depart && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-[#ff6b35] text-white text-xs px-2 py-1 rounded-full"
+                                >
+                                  {member.depart}
+                                </Badge>
+                              )}
+                              {!member.depart && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="bg-white/10 text-white text-xs px-2 py-1 rounded-full"
+                                >
+                                  멤버
+                                </Badge>
+                              )}
                               <h3 className="font-semibold text-lg text-white">{member.name}</h3>
                             </div>
 
                             <div className="flex items-center justify-center gap-3">
-                              {member.github && (
+                              {member.link1 && (
                                 <Link
-                                  href={member.github}
+                                  href={member.link1}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 text-sm text-[#ff6b35] hover:text-[#ff875c] transition-colors"
@@ -256,9 +168,9 @@ export default function MembersPage() {
                                   GitHub
                                 </Link>
                               )}
-                              {member.otherLink && (
+                              {member.link2 && (
                                 <Link
-                                  href={member.otherLink}
+                                  href={member.link2}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 text-sm text-[#ff6b35] hover:text-[#ff875c] transition-colors"

@@ -190,6 +190,35 @@ export default function MembersPage() {
     }
   }
 
+  // 승인된 멤버 삭제 (거부와 동일 API 사용)
+  const handleDeleteApprovedMember = async (memberId: number) => {
+    const memberToDelete = members.find((m) => m.memberId === memberId)
+    if (!memberToDelete) return
+
+    if (!confirm(`${memberToDelete.name} 회원을 삭제하시겠습니까?`)) return
+
+    try {
+      const token = localStorage.getItem("auth_token")
+      const response = await fetch(`/api/members/delete/${memberId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const result = await response.json()
+
+      if (result.success) {
+        setMembers(members.filter((m) => m.memberId !== memberId))
+        alert(`${memberToDelete.name} 회원이 삭제되었습니다.`)
+      } else {
+        alert(result.message || "멤버 삭제에 실패했습니다.")
+      }
+    } catch (error) {
+      console.error("Error deleting member:", error)
+      alert("멤버 삭제 중 오류가 발생했습니다.")
+    }
+  }
+
   const handleAddMember = async () => {
     try {
       const token = localStorage.getItem("auth_token")
@@ -287,7 +316,13 @@ export default function MembersPage() {
     return matchesCohort
   })
 
-  const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
+  const cohorts = Array.from(
+    new Set(
+      members
+        .map((m) => m.cohort)
+        .filter((c): c is number => c !== null && c !== undefined)
+    )
+  ).sort((a, b) => b - a)
 
   if (!isAuthenticated || user?.role !== "ADMIN") {
     return null
@@ -650,18 +685,28 @@ export default function MembersPage() {
                           </div>
                         </div>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setEditingMember(member)
-                          setProfilePreview(member.profileImage || "")
-                          setIsEditDialogOpen(true)
-                        }}
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        편집
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setEditingMember(member)
+                            setProfilePreview(member.profileImage || "")
+                            setIsEditDialogOpen(true)
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          편집
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteApprovedMember(member.memberId)}
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          삭제
+                        </Button>
+                      </div>
                     </div>
                   ))}
                   </div>
@@ -872,15 +917,7 @@ export default function MembersPage() {
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-major">전공</Label>
-                  <Input
-                    id="edit-major"
-                    value={editingMember.major || ""}
-                    onChange={(e) => setEditingMember({ ...editingMember, major: e.target.value })}
-                    placeholder="예: 컴퓨터공학과"
-                  />
-                </div>
+                {/* 전공 입력 제거 */}
                 <div className="space-y-2">
                   <Label htmlFor="edit-github">GitHub 주소</Label>
                   <Input
@@ -888,6 +925,15 @@ export default function MembersPage() {
                     value={editingMember.github || ""}
                     onChange={(e) => setEditingMember({ ...editingMember, github: e.target.value })}
                     placeholder="https://github.com/username"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-link2">기타 링크</Label>
+                  <Input
+                    id="edit-link2"
+                    value={(editingMember as any).link2 || ""}
+                    onChange={(e) => setEditingMember({ ...editingMember, link2: (e.target as HTMLInputElement).value } as any)}
+                    placeholder="블로그, LinkedIn 등"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">

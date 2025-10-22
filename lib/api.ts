@@ -12,7 +12,9 @@ export const API_ENDPOINTS = {
   },
   MEMBERS: {
     LIST: `${API_BASE_URL}/api/members`,
+    DETAIL: (id: string) => `${API_BASE_URL}/api/members/${id}`,
     STATUS: (id: string) => `${API_BASE_URL}/api/members/status/${id}`,
+    UPDATE: (id: string) => `${API_BASE_URL}/api/members/update/${id}`,
     DELETE: (id: string) => `${API_BASE_URL}/api/members/${id}`,
     PENDING: `${API_BASE_URL}/api/members/pending`,
   },

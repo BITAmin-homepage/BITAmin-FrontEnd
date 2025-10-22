@@ -44,6 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const token = localStorage.getItem("auth_token")
       const userData = localStorage.getItem("user_data")
       
+      
       if (!token || !userData) {
         setLoading(false)
         return
@@ -85,27 +86,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // BE API 응답 형식에 맞게 처리
         if (result.success && result.data) {
           const userData = result.data
+          console.log("BE 응답 userData:", userData)
           
           // 다양한 가능한 필드명 확인
           const token = userData.accessToken || userData.access_token || userData.token || userData.jwt
           
+          const userToStore = {
+            id: userData.id,
+            memberId: userData.memberId || userData.id, // memberId가 없으면 id 사용
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone || "010-1234-5678",
+            school: userData.school || "00대학교",
+            gender: userData.gender || "female",
+            birthDate: userData.birthDate || "2025-10-01",
+            role: userData.role,
+            cohort: userData.cohort,
+            status: userData.status,
+            link1: userData.link1 || "",
+            link2: userData.link2 || ""
+          }
+          
+          console.log("저장할 userToStore:", userToStore)
+          
           localStorage.setItem("auth_token", token)
-          localStorage.setItem("user_data", JSON.stringify({
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            role: userData.role,
-            cohort: userData.cohort,
-            status: userData.status
-          }))
-          setUser({
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            role: userData.role,
-            cohort: userData.cohort,
-            status: userData.status
-          })
+          localStorage.setItem("user_data", JSON.stringify(userToStore))
+          setUser(userToStore)
           return true
         } else {
           alert(result.message || "로그인에 실패했습니다.")

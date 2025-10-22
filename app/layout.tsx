@@ -9,8 +9,12 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "비타민 - 대학생 연합 빅데이터 동아리",
   description: "대학생 연합 빅데이터 동아리 비타민 공식 홈페이지",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
-    generator: 'v0.app'
+  generator: 'v0.app'
+}
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 }
 
 export default function RootLayout({
