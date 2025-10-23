@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     const projectData = await request.json()
+    console.log("Project data to send:", projectData)
 
     const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
     const response = await fetch(`${backendUrl}/api/project`, {

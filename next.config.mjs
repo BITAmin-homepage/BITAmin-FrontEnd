@@ -8,6 +8,14 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'bitamin-bucket.s3.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 }
 

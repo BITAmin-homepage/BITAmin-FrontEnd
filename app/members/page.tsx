@@ -25,6 +25,17 @@ export default function MembersPage() {
 
   useEffect(() => {
     fetchMembers()
+    
+    // 페이지 포커스 시 데이터 새로고침 (마이페이지에서 돌아올 때)
+    const handleFocus = () => {
+      fetchMembers()
+    }
+    
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [])
 
   const fetchMembers = async () => {
@@ -102,7 +113,6 @@ export default function MembersPage() {
                 ))}
               </SelectContent>
             </Select>
-
           </div>
         </div>
 

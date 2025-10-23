@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -12,8 +11,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, X, FileText, ImageIcon, Trophy, Medal, Star, ChevronRight, ChevronLeft, Check } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Upload, X, FileText, ImageIcon, Trophy, Medal, Star, ChevronRight, ChevronLeft, Check, Calendar as CalendarIcon } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import { format } from "date-fns"
+import { ko } from "date-fns/locale"
 
 export default function WriteProjectPage() {
   const { isAuthenticated, user } = useAuth()
@@ -25,25 +29,44 @@ export default function WriteProjectPage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    cohort: "",
-    period: "",
+    domain: "",
+    customDomain: "",
+    cohort: [] as number[],
+    startDate: null as Date | null,
+    endDate: null as Date | null,
     award: "",
-    category: "",
     teamMembers: "",
-    projectPeriod: "",
+    conferenceName: "",
   })
 
-  const [pptFile, setPptFile] = useState<File | null>(null)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
+  const [projectFile, setProjectFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("")
 
+  const domains = [
+    "NLP",
+    "CV", 
+    "TimeSeries",
+    "Multimodal",
+    "추천시스템",
+    "기타"
+  ]
+
+  const awards = [
+    { value: "GRAND_PRIZE", label: "대상", icon: Trophy },
+    { value: "EXCELLENCE_PRIZE", label: "최우수상", icon: Medal },
+    { value: "MERIT_PRIZE", label: "우수상", icon: Star },
+  ]
+
+  const cohorts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== "management") {
+    if (!isAuthenticated || user?.role !== "ADMIN") {
       router.push("/projects")
     }
   }, [isAuthenticated, user, router])
 
-  // Step 1: 기본 정보 저장
+  // Step 1: 프로젝트 정보 저장
   const handleStep1Submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -51,22 +74,60 @@ export default function WriteProjectPage() {
     try {
       const token = localStorage.getItem("auth_token")
 
-      const response = await fetch("/api/projects", {
+      // 백엔드 API 스펙에 맞게 데이터 구성 (ProjectInfoDto 형식)
+      const projectData = {
+        title: formData.title || "",
+        category: formData.domain === "기타" ? formData.customDomain : formData.domain || "",
+        description: formData.description || "",
+        cohort: formData.cohort.map(c => `${c}기`), // ["15기", "16기"] 형식으로 변환
+        startDate: formData.startDate?.toISOString().split('T')[0] || "", // YYYY-MM-DD 형식
+        endDate: formData.endDate?.toISOString().split('T')[0] || "", // YYYY-MM-DD 형식
+        award: formData.award === "GRAND_PRIZE" ? "GRAND_PRIZE" : 
+               formData.award === "EXCELLENCE_AWARD" ? "GOLD_PRIZE" : 
+               formData.award === "MERIT_AWARD" ? "MERIT_AWARD" : 
+               formData.award === "EXCELLENCE_PRIZE" ? "EXCELLENCE_AWARD" : 
+               formData.award === "MERIT_PRIZE" ? "MERIT_AWARD" : "GRAND_PRIZE",
+        member: formData.teamMembers || "",
+        period: formData.conferenceName || "",
+      }
+
+      console.log("Project data to send:", projectData)
+      console.log("Token:", token)
+      
+      // 필수 필드 검증
+      if (!formData.title || !formData.description || formData.cohort.length === 0) {
+        throw new Error("필수 필드를 모두 입력해주세요.")
+      }
+
+      const response = await fetch("/api/project/uploadInfo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(projectData),
       })
 
       const result = await response.json()
+      console.log("API Response:", result)
 
       if (!result.success) {
         throw new Error(result.error || "프로젝트 생성에 실패했습니다.")
       }
 
-      setProjectId(result.data.id)
+      // 백엔드 응답에서 projectId 추출
+      let projectId = result.data?.projectId
+      
+      console.log("Extracted projectId:", projectId)
+      console.log("Full result structure:", JSON.stringify(result, null, 2))
+      
+      // projectId가 없거나 null이면 에러
+      if (!projectId || projectId === null) {
+        console.error("No projectId from backend:", result)
+        throw new Error("프로젝트 ID를 받지 못했습니다. 응답: " + JSON.stringify(result))
+      }
+
+      setProjectId(projectId)
       setCurrentStep(2)
     } catch (error) {
       console.error("Error creating project:", error)
@@ -76,12 +137,17 @@ export default function WriteProjectPage() {
     }
   }
 
-  // Step 2: 썸네일 업로드
+  // Step 2: 썸네일과 프로젝트 파일 업로드
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!thumbnailFile) {
-      setCurrentStep(3)
+    if (!projectId) {
+      alert("프로젝트 ID가 없습니다. 1단계를 다시 진행해주세요.")
+      return
+    }
+
+    if (!thumbnailFile || !projectFile) {
+      alert("썸네일과 프로젝트 파일을 모두 선택해주세요.")
       return
     }
 
@@ -89,67 +155,76 @@ export default function WriteProjectPage() {
 
     try {
       const token = localStorage.getItem("auth_token")
-      const formDataFiles = new FormData()
-      formDataFiles.append("thumbnail", thumbnailFile)
+      
+      // 1. 썸네일 업로드
+      const thumbnailFormData = new FormData()
+      thumbnailFormData.append("file", thumbnailFile)
+      thumbnailFormData.append("type", `thumbnail/${formData.title}`)
+      thumbnailFormData.append("projectId", projectId.toString())
+      
+      console.log("Thumbnail upload - type:", `thumbnail/${formData.title}`)
+      console.log("Thumbnail upload - projectId:", projectId)
+      console.log("Thumbnail file:", thumbnailFile.name, thumbnailFile.size)
+      
+      // projectId가 없으면 에러
+      if (!projectId) {
+        throw new Error("프로젝트 ID가 없습니다. 1단계를 다시 진행해주세요.")
+      }
 
-      const response = await fetch(`/api/projects/${projectId}/thumbnail`, {
+      const thumbnailResponse = await fetch(`/api/project/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formDataFiles,
+        body: thumbnailFormData,
       })
 
-      const result = await response.json()
+      const thumbnailResult = await thumbnailResponse.json()
+      console.log("Thumbnail upload result:", thumbnailResult)
+      
+      if (!thumbnailResult.success) {
+        throw new Error(thumbnailResult.error || "썸네일 업로드에 실패했습니다.")
+      }
+      
+      console.log("Thumbnail S3 URL:", thumbnailResult.url || thumbnailResult.data?.url || thumbnailResult.data)
 
-      if (!result.success) {
-        throw new Error(result.error || "썸네일 업로드에 실패했습니다.")
+      // 2. 프로젝트 파일 업로드
+      const projectFormData = new FormData()
+      projectFormData.append("file", projectFile)
+      projectFormData.append("type", `ppt/${formData.title}`)
+      projectFormData.append("projectId", projectId.toString())
+      
+      console.log("Project file upload - type:", `ppt/${formData.title}`)
+      console.log("Project file upload - projectId:", projectId)
+      console.log("Project file:", projectFile.name, projectFile.size)
+      
+      // projectId가 없으면 에러
+      if (!projectId) {
+        throw new Error("프로젝트 ID가 없습니다. 1단계를 다시 진행해주세요.")
       }
 
-      setCurrentStep(3)
-    } catch (error) {
-      console.error("Error uploading thumbnail:", error)
-      alert("썸네일 업로드 중 오류가 발생했습니다.")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Step 3: PPT 파일 업로드
-  const handleStep3Submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!pptFile) {
-      alert("PPT 파일을 선택해주세요.")
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const token = localStorage.getItem("auth_token")
-      const formDataFiles = new FormData()
-      formDataFiles.append("ppt", pptFile)
-
-      const response = await fetch(`/api/projects/${projectId}/ppt`, {
+      const projectResponse = await fetch(`/api/project/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formDataFiles,
+        body: projectFormData,
       })
 
-      const result = await response.json()
-
-      if (!result.success) {
-        throw new Error(result.error || "PPT 파일 업로드에 실패했습니다.")
+      const projectResult = await projectResponse.json()
+      console.log("Project file upload result:", projectResult)
+      
+      if (!projectResult.success) {
+        throw new Error(projectResult.error || "프로젝트 파일 업로드에 실패했습니다.")
       }
+      
+      console.log("Project file S3 URL:", projectResult.url || projectResult.data?.url || projectResult.data)
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")
       router.push("/projects")
     } catch (error) {
-      console.error("Error uploading PPT:", error)
-      alert("PPT 파일 업로드 중 오류가 발생했습니다.")
+      console.error("Error uploading files:", error)
+      alert("파일 업로드 중 오류가 발생했습니다.")
     } finally {
       setLoading(false)
     }
@@ -167,10 +242,22 @@ export default function WriteProjectPage() {
     }
   }
 
-  const handlePptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProjectFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setPptFile(file)
+      setProjectFile(file)
+    }
+  }
+
+  const handleCohortToggle = (cohort: number) => {
+    if (formData.cohort.includes(cohort)) {
+      // 이미 선택된 기수면 제거
+      setFormData(prev => ({ ...prev, cohort: prev.cohort.filter(c => c !== cohort) }))
+    } else {
+      // 새로운 기수 선택 (최대 2개)
+      if (formData.cohort.length < 2) {
+        setFormData(prev => ({ ...prev, cohort: [...prev.cohort, cohort] }))
+      }
     }
   }
 
@@ -180,24 +267,23 @@ export default function WriteProjectPage() {
     }
   }
 
-  if (!isAuthenticated || user?.role !== "management") {
+  if (!isAuthenticated || user?.role !== "ADMIN") {
     return null
   }
 
   const steps = [
-    { number: 1, title: "기본 정보", description: "프로젝트 기본 정보를 입력하세요" },
-    { number: 2, title: "썸네일 이미지", description: "프로젝트 썸네일을 업로드하세요" },
-    { number: 3, title: "PPT 파일", description: "프로젝트 발표 자료를 업로드하세요" },
+    { number: 1, title: "프로젝트 정보", description: "프로젝트 기본 정보를 입력하세요" },
+    { number: 2, title: "파일 업로드", description: "프로젝트 파일을 업로드하세요" },
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-white">
       <Header />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">프로젝트 업로드</h1>
-          <p className="text-gray-600">새로운 프로젝트를 단계별로 업로드하세요</p>
+          <h1 className="text-3xl font-bold text-white mb-2">프로젝트 업로드</h1>
+          <p className="text-gray-300">새로운 프로젝트를 단계별로 업로드하세요</p>
         </div>
 
         {/* Progress Bar */}
@@ -211,18 +297,18 @@ export default function WriteProjectPage() {
                       ? "bg-green-500 border-green-500 text-white"
                       : currentStep === step.number
                         ? "bg-[#d3431a] border-[#d3431a] text-white"
-                        : "bg-white border-gray-300 text-gray-500"
+                        : "bg-[#121212] border-gray-600 text-gray-400"
                   }`}
                 >
                   {currentStep > step.number ? <Check className="w-5 h-5" /> : step.number}
                 </div>
                 <div className="ml-3">
                   <p
-                    className={`text-sm font-medium ${currentStep >= step.number ? "text-gray-900" : "text-gray-500"}`}
+                    className={`text-sm font-medium ${currentStep >= step.number ? "text-white" : "text-gray-400"}`}
                   >
                     {step.title}
                   </p>
-                  <p className="text-xs text-gray-500">{step.description}</p>
+                  <p className="text-xs text-gray-400">{step.description}</p>
                 </div>
                 {index < steps.length - 1 && <ChevronRight className="w-5 h-5 text-gray-400 mx-4" />}
               </div>
@@ -231,144 +317,203 @@ export default function WriteProjectPage() {
           <Progress value={(currentStep / steps.length) * 100} className="w-full" />
         </div>
 
-        <Card>
+        <Card className="bg-[#121212] border-white/10">
           <CardHeader>
-            <CardTitle>
-              {currentStep === 1 && "1단계: 프로젝트 기본 정보"}
-              {currentStep === 2 && "2단계: 썸네일 이미지 업로드"}
-              {currentStep === 3 && "3단계: PPT 파일 업로드"}
+            <CardTitle className="text-white">
+              {currentStep === 1 && "1단계: 프로젝트 정보 입력"}
+              {currentStep === 2 && "2단계: 프로젝트 파일 업로드"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Step 1: 기본 정보 입력 */}
+            {/* Step 1: 프로젝트 정보 입력 */}
             {currentStep === 1 && (
               <form onSubmit={handleStep1Submit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">프로젝트 제목 *</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      placeholder="프로젝트 제목을 입력하세요"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="category">카테고리 *</Label>
-                    <Input
-                      id="category"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      placeholder="예: 금융, 의료, 교통 등"
-                      required
-                    />
-                  </div>
-                </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="description">프로젝트 설명 *</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="프로젝트에 대한 상세한 설명을 입력하세요"
-                    rows={4}
+                  <Label htmlFor="title" className="text-white">프로젝트 제목 *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="프로젝트 제목을 입력하세요"
+                    className="bg-black border-white/20 text-white"
                     required
                   />
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cohort">기수 *</Label>
-                    <Select
-                      value={formData.cohort}
-                      onValueChange={(value) => setFormData({ ...formData, cohort: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="기수 선택" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="13-14기">13-14기</SelectItem>
-                        <SelectItem value="14-15기">14-15기</SelectItem>
-                        <SelectItem value="15-16기">15-16기</SelectItem>
-                        <SelectItem value="16-17기">16-17기</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="period">기간 *</Label>
-                    <Select
-                      value={formData.period}
-                      onValueChange={(value) => setFormData({ ...formData, period: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="기간 선택" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="방학">방학</SelectItem>
-                        <SelectItem value="학기">학기</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="award">수상 *</Label>
-                    <Select
-                      value={formData.award}
-                      onValueChange={(value) => setFormData({ ...formData, award: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="수상 선택" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="대상">
-                          <div className="flex items-center gap-2">
-                            <Trophy className="h-4 w-4 text-yellow-600" />
-                            대상
-                          </div>
+                <div className="space-y-2">
+                  <Label className="text-white">기술 도메인 *</Label>
+                  <Select
+                    value={formData.domain}
+                    onValueChange={(value) => setFormData({ ...formData, domain: value })}
+                  >
+                    <SelectTrigger className="bg-black border-white/20 text-white">
+                      <SelectValue placeholder="기술 도메인을 선택하세요" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                      {domains.map((domain) => (
+                        <SelectItem key={domain} value={domain} className="text-white hover:bg-gray-700 focus:bg-gray-700">
+                          {domain}
                         </SelectItem>
-                        <SelectItem value="최우수상">
-                          <div className="flex items-center gap-2">
-                            <Medal className="h-4 w-4 text-blue-600" />
-                            최우수상
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="우수상">
-                          <div className="flex items-center gap-2">
-                            <Star className="h-4 w-4 text-green-600" />
-                            우수상
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  {formData.domain === "기타" && (
+                    <Input
+                      value={formData.customDomain}
+                      onChange={(e) => setFormData({ ...formData, customDomain: e.target.value })}
+                      placeholder="기타 도메인을 입력하세요"
+                      className="bg-black border-white/20 text-white mt-2"
+                    />
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-white">프로젝트 설명 *</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="프로젝트의 내용을 3~4문장 정도로 간단하게 요약해주세요"
+                    rows={4}
+                    className="bg-black border-white/20 text-white"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-white">참여 기수 * (최대 2개)</Label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {cohorts.map((cohort) => (
+                      <Button
+                        key={cohort}
+                        type="button"
+                        variant={formData.cohort.includes(cohort) ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleCohortToggle(cohort)}
+                        disabled={!formData.cohort.includes(cohort) && formData.cohort.length >= 2}
+                        className={`${
+                          formData.cohort.includes(cohort)
+                            ? "bg-[#d3431a] hover:bg-[#b8371a] text-white"
+                            : "bg-[#1a1a1a] border-white/20 text-white hover:bg-white/10"
+                        } ${
+                          !formData.cohort.includes(cohort) && formData.cohort.length >= 2
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
+                      >
+                        {cohort}기
+                      </Button>
+                    ))}
                   </div>
+                  {formData.cohort.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <span className="text-sm text-gray-400">선택된 기수:</span>
+                      {formData.cohort.map((cohort) => (
+                        <Badge key={cohort} variant="secondary" className="bg-[#d3431a] text-white">
+                          {cohort}기
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="teamMembers">팀원 *</Label>
+                    <Label className="text-white">프로젝트 시작일 *</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal bg-black border-white/20 text-white hover:bg-white/10"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.startDate ? format(formData.startDate, "yyyy-MM-dd", { locale: ko }) : "시작일 선택"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-[#1a1a1a] border-white/10">
+                        <Calendar
+                          mode="single"
+                          selected={formData.startDate || undefined}
+                          onSelect={(date) => setFormData({ ...formData, startDate: date || null })}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">프로젝트 종료일 *</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal bg-black border-white/20 text-white hover:bg-white/10"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {formData.endDate ? format(formData.endDate, "yyyy-MM-dd", { locale: ko }) : "종료일 선택"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-[#1a1a1a] border-white/10">
+                        <Calendar
+                          mode="single"
+                          selected={formData.endDate || undefined}
+                          onSelect={(date) => setFormData({ ...formData, endDate: date || null })}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-white">수상 *</Label>
+                  <Select
+                    value={formData.award}
+                    onValueChange={(value) => setFormData({ ...formData, award: value })}
+                  >
+                    <SelectTrigger className="bg-black border-white/20 text-white">
+                      <SelectValue placeholder="수상을 선택하세요" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                      {awards.map((award) => (
+                        <SelectItem key={award.value} value={award.value} className="text-white hover:bg-gray-700 focus:bg-gray-700">
+                          <div className="flex items-center gap-2">
+                            <award.icon className="h-4 w-4" />
+                            {award.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="teamMembers" className="text-white">팀원 *</Label>
                     <Input
                       id="teamMembers"
                       value={formData.teamMembers}
                       onChange={(e) => setFormData({ ...formData, teamMembers: e.target.value })}
                       placeholder="팀원 이름을 쉼표로 구분하여 입력하세요"
+                      className="bg-black border-white/20 text-white"
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="projectPeriod">프로젝트 수행 기간 *</Label>
+                    <Label htmlFor="conferenceName" className="text-white">컨퍼런스명 *</Label>
                     <Input
-                      id="projectPeriod"
-                      value={formData.projectPeriod}
-                      onChange={(e) => setFormData({ ...formData, projectPeriod: e.target.value })}
-                      placeholder="예: 2024.01 - 2024.02"
+                      id="conferenceName"
+                      value={formData.conferenceName}
+                      onChange={(e) => setFormData({ ...formData, conferenceName: e.target.value })}
+                      placeholder="예: 2024년-1학기"
+                      className="bg-black border-white/20 text-white"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-4">
-                  <Button type="button" variant="outline" onClick={() => router.push("/projects")}>
+                  <Button type="button" variant="outline" onClick={() => router.push("/projects")} className="border-white/20 text-white hover:bg-white/10">
                     취소
                   </Button>
                   <Button type="submit" className="bg-[#d3431a] hover:bg-[#b8371a] text-white" disabled={loading}>
@@ -379,131 +524,125 @@ export default function WriteProjectPage() {
               </form>
             )}
 
-            {/* Step 2: 썸네일 업로드 */}
+            {/* Step 2: 썸네일과 프로젝트 파일 업로드 */}
             {currentStep === 2 && (
               <form onSubmit={handleStep2Submit} className="space-y-6">
                 <div className="text-center">
-                  <ImageIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">썸네일 이미지 업로드</h3>
-                  <p className="text-gray-600 mb-6">프로젝트를 대표하는 썸네일 이미지를 업로드하세요 (선택사항)</p>
+                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">파일 업로드</h3>
+                  <p className="text-gray-300 mb-6">썸네일 이미지와 프로젝트 파일을 업로드하세요</p>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex justify-center">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleThumbnailUpload}
-                      className="hidden"
-                      id="thumbnail-upload"
-                    />
-                    <label
-                      htmlFor="thumbnail-upload"
-                      className="inline-flex items-center px-6 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#d3431a] hover:bg-orange-50 transition-colors"
-                    >
-                      <ImageIcon className="h-6 w-6 mr-3 text-gray-400" />
-                      <span className="text-gray-600">이미지 파일을 선택하거나 드래그하세요</span>
-                    </label>
-                  </div>
-
-                  {thumbnailPreview && (
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* 썸네일 업로드 */}
+                  <div className="space-y-4">
+                    <h4 className="text-white font-medium">썸네일 이미지 *</h4>
                     <div className="flex justify-center">
-                      <div className="relative">
-                        <img
-                          src={thumbnailPreview || "/placeholder.svg"}
-                          alt="썸네일 미리보기"
-                          className="w-64 h-40 object-cover rounded-lg border shadow-md"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600 rounded-full p-1"
-                          onClick={() => {
-                            setThumbnailFile(null)
-                            setThumbnailPreview("")
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailUpload}
+                        className="hidden"
+                        id="thumbnail-upload"
+                      />
+                      <label
+                        htmlFor="thumbnail-upload"
+                        className="inline-flex items-center px-6 py-3 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-[#d3431a] hover:bg-orange-50/10 transition-colors"
+                      >
+                        <ImageIcon className="h-6 w-6 mr-3 text-gray-400" />
+                        <span className="text-gray-300">썸네일 이미지 선택</span>
+                      </label>
                     </div>
-                  )}
-                </div>
 
-                <div className="flex justify-between gap-4">
-                  <Button type="button" variant="outline" onClick={goToPreviousStep}>
-                    <ChevronLeft className="w-4 h-4 mr-2" />
-                    이전 단계
-                  </Button>
-                  <Button type="submit" className="bg-[#d3431a] hover:bg-[#b8371a] text-white" disabled={loading}>
-                    {loading ? "업로드 중..." : "다음 단계"}
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
-              </form>
-            )}
+                    {thumbnailPreview && (
+                      <div className="flex justify-center">
+                        <div className="relative">
+                          <img
+                            src={thumbnailPreview}
+                            alt="썸네일 미리보기"
+                            className="w-48 h-32 object-cover rounded-lg border shadow-md"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600 rounded-full p-1"
+                            onClick={() => {
+                              setThumbnailFile(null)
+                              setThumbnailPreview("")
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
 
-            {/* Step 3: PPT 파일 업로드 */}
-            {currentStep === 3 && (
-              <form onSubmit={handleStep3Submit} className="space-y-6">
-                <div className="text-center">
-                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">PPT 파일 업로드</h3>
-                  <p className="text-gray-600 mb-6">프로젝트 발표 자료(PPT)를 업로드하세요</p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex justify-center">
-                    <input
-                      type="file"
-                      accept=".ppt,.pptx"
-                      onChange={handlePptUpload}
-                      className="hidden"
-                      id="ppt-upload"
-                    />
-                    <label
-                      htmlFor="ppt-upload"
-                      className="inline-flex items-center px-6 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#d3431a] hover:bg-orange-50 transition-colors"
-                    >
-                      <Upload className="h-6 w-6 mr-3 text-gray-400" />
-                      <span className="text-gray-600">PPT 파일을 선택하세요 (.ppt, .pptx)</span>
-                    </label>
+                    {thumbnailFile && (
+                      <div className="flex items-center justify-between p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
+                        <div className="flex items-center gap-3">
+                          <ImageIcon className="h-6 w-6 text-[#d3431a]" />
+                          <div>
+                            <p className="text-sm font-medium text-white">{thumbnailFile.name}</p>
+                            <p className="text-xs text-gray-400">{(thumbnailFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {pptFile && (
+                  {/* 프로젝트 파일 업로드 */}
+                  <div className="space-y-4">
+                    <h4 className="text-white font-medium">프로젝트 파일 *</h4>
                     <div className="flex justify-center">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border max-w-md w-full">
+                      <input
+                        type="file"
+                        accept=".pdf,.ppt,.pptx,.doc,.docx"
+                        onChange={handleProjectFileUpload}
+                        className="hidden"
+                        id="project-file-upload"
+                      />
+                      <label
+                        htmlFor="project-file-upload"
+                        className="inline-flex items-center px-6 py-3 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-[#d3431a] hover:bg-orange-50/10 transition-colors"
+                      >
+                        <FileText className="h-6 w-6 mr-3 text-gray-400" />
+                        <span className="text-gray-300">프로젝트 파일 선택</span>
+                      </label>
+                    </div>
+
+                    {projectFile && (
+                      <div className="flex items-center justify-between p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
                         <div className="flex items-center gap-3">
-                          <FileText className="h-8 w-8 text-orange-500" />
+                          <FileText className="h-6 w-6 text-[#d3431a]" />
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{pptFile.name}</p>
-                            <p className="text-xs text-gray-500">{(pptFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                            <p className="text-sm font-medium text-white">{projectFile.name}</p>
+                            <p className="text-xs text-gray-400">{(projectFile.size / (1024 * 1024)).toFixed(2)} MB</p>
                           </div>
                         </div>
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          onClick={() => setPptFile(null)}
+                          onClick={() => setProjectFile(null)}
                           className="text-red-500 hover:text-red-700"
                         >
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex justify-between gap-4">
-                  <Button type="button" variant="outline" onClick={goToPreviousStep}>
+                  <Button type="button" variant="outline" onClick={goToPreviousStep} className="border-white/20 text-white hover:bg-white/10">
                     <ChevronLeft className="w-4 h-4 mr-2" />
                     이전 단계
                   </Button>
                   <Button
                     type="submit"
                     className="bg-[#d3431a] hover:bg-[#b8371a] text-white"
-                    disabled={loading || !pptFile}
+                    disabled={loading || !thumbnailFile || !projectFile}
                   >
                     {loading ? "업로드 중..." : "업로드 완료"}
                     <Check className="w-4 h-4 ml-2" />

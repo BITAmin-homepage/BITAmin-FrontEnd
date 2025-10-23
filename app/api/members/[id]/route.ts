@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tokenHeader = request.headers.get("Authorization") || request.headers.get("authorization") || ""
-    const backendBase = process.env.BACKEND_URL || "http://52.78.66.115:8080"
+    const backendBase = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080" || "http://52.78.66.115:8080"
     const { id } = params
 
     const response = await fetch(`${backendBase}/api/members/${id}`, {
@@ -48,7 +48,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const { id } = params
     const memberData = await request.json()
 
-    const response = await fetch(`${process.env.BACKEND_URL}/api/members/${id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"}/api/members/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +89,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const { id } = params
 
-    const response = await fetch(`${process.env.BACKEND_URL}/api/members/${id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"}/api/members/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
