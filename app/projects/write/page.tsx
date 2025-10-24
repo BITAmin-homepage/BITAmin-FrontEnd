@@ -221,7 +221,12 @@ export default function WriteProjectPage() {
       console.log("Project file S3 URL:", projectResult.url || projectResult.data?.url || projectResult.data)
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")
-      router.push("/projects")
+      // 프로젝트 목록 페이지로 이동하면서 강제 새로고침
+      router.push("/projects?refresh=true")
+      // 추가적인 새로고침 보장
+      setTimeout(() => {
+        window.location.href = "/projects?refresh=true"
+      }, 200)
     } catch (error) {
       console.error("Error uploading files:", error)
       alert("파일 업로드 중 오류가 발생했습니다.")
@@ -513,7 +518,7 @@ export default function WriteProjectPage() {
                 </div>
 
                 <div className="flex justify-end gap-4">
-                  <Button type="button" variant="outline" onClick={() => router.push("/projects")} className="border-white/20 text-white hover:bg-white/10">
+                  <Button type="button" variant="outline" onClick={() => router.push("/projects")} className="border-gray-600 text-gray-800 hover:bg-gray-600 hover:text-white hover:border-gray-500">
                     취소
                   </Button>
                   <Button type="submit" className="bg-[#d3431a] hover:bg-[#b8371a] text-white" disabled={loading}>
@@ -635,7 +640,7 @@ export default function WriteProjectPage() {
                 </div>
 
                 <div className="flex justify-between gap-4">
-                  <Button type="button" variant="outline" onClick={goToPreviousStep} className="border-white/20 text-white hover:bg-white/10">
+                  <Button type="button" variant="outline" onClick={goToPreviousStep} className="border-gray-600 text-gray-800 hover:bg-gray-600 hover:text-white hover:border-gray-500">
                     <ChevronLeft className="w-4 h-4 mr-2" />
                     이전 단계
                   </Button>

@@ -366,7 +366,7 @@ export default function MyPage() {
                   <Button
                     variant="outline"
                     onClick={() => setIsEditDialogOpen(false)}
-                    className="flex-1 border-white/20 text-white hover:bg-white/10"
+                    className="flex-1 border-white/20 text-gray-800 hover:bg-white/10"
                   >
                     취소
                   </Button>

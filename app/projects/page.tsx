@@ -40,6 +40,21 @@ export default function ProjectsPage() {
     fetchProjects()
   }, [])
 
+  // URL 파라미터에서 refresh가 있으면 새로고침
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('refresh') === 'true') {
+      console.log("Refresh parameter detected, fetching projects...")
+      // 강제 새로고침을 위해 약간의 지연 후 실행
+      setTimeout(() => {
+        fetchProjects(true) // 강제 새로고침
+        // URL에서 refresh 파라미터 제거
+        const newUrl = window.location.pathname
+        window.history.replaceState({}, '', newUrl)
+      }, 100)
+    }
+  }, [])
+
   useEffect(() => {
     filterProjects()
   }, [projects, searchQuery, selectedCohort, selectedAward])
@@ -76,10 +91,23 @@ export default function ProjectsPage() {
     setSelectedAward("all")
   }
 
-  const fetchProjects = async () => {
+  const fetchProjects = async (forceRefresh = false) => {
     try {
       setLoading(true)
-      const response = await fetch("/api/project/all")
+      // 캐시 방지를 위해 timestamp와 랜덤 파라미터 추가
+      const timestamp = Date.now()
+      const random = Math.random()
+      const response = await fetch(`/api/project/all?t=${timestamp}&r=${random}&force=${forceRefresh}`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'If-Modified-Since': '0',
+          'If-None-Match': '*'
+        },
+        cache: 'no-store'
+      })
       const result = await response.json()
 
       if (result.success) {
@@ -177,9 +205,9 @@ export default function ProjectsPage() {
                   <SelectValue placeholder="기수 선택" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="all">전체 기수</SelectItem>
+                  <SelectItem value="all" className="text-white hover:bg-gray-700 focus:bg-gray-700 data-[state=checked]:bg-gray-700 data-[state=checked]:text-white">전체 기수</SelectItem>
                   {Array.from({ length: 20 }, (_, i) => (
-                    <SelectItem key={i + 1} value={`${i + 1}기`}>
+                    <SelectItem key={i + 1} value={`${i + 1}기`} className="text-white hover:bg-gray-700 focus:bg-gray-700 data-[state=checked]:bg-gray-700 data-[state=checked]:text-white">
                       {i + 1}기
                     </SelectItem>
                   ))}
@@ -191,10 +219,10 @@ export default function ProjectsPage() {
                   <SelectValue placeholder="수상 선택" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="all">전체 수상</SelectItem>
-                  <SelectItem value="GRAND_PRIZE">대상</SelectItem>
-                  <SelectItem value="GOLD_PRIZE">최우수상</SelectItem>
-                  <SelectItem value="MERIT_AWARD">우수상</SelectItem>
+                  <SelectItem value="all" className="text-white hover:bg-gray-700 focus:bg-gray-700 data-[state=checked]:bg-gray-700 data-[state=checked]:text-white">전체 수상</SelectItem>
+                  <SelectItem value="GRAND_PRIZE" className="text-white hover:bg-gray-700 focus:bg-gray-700 data-[state=checked]:bg-gray-700 data-[state=checked]:text-white">대상</SelectItem>
+                  <SelectItem value="GOLD_PRIZE" className="text-white hover:bg-gray-700 focus:bg-gray-700 data-[state=checked]:bg-gray-700 data-[state=checked]:text-white">최우수상</SelectItem>
+                  <SelectItem value="MERIT_AWARD" className="text-white hover:bg-gray-700 focus:bg-gray-700 data-[state=checked]:bg-gray-700 data-[state=checked]:text-white">우수상</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -211,7 +239,7 @@ export default function ProjectsPage() {
               <p className="text-gray-400 text-lg">검색 결과가 없습니다.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project, index) => {
                 const awardBadge = project.award ? getAwardBadge(project.award) : null
                 console.log("Project:", project, "ProjectId:", project.projectId)
@@ -219,19 +247,23 @@ export default function ProjectsPage() {
                 return (
                 <Card
                   key={index}
-                  className="bg-gray-800/50 border-gray-700 hover:border-[#d3431a] transition-all cursor-pointer group overflow-hidden"
+                  className="bg-gray-800/50 border-gray-700 hover:border-[#d3431a] transition-all cursor-pointer group overflow-hidden shadow-lg hover:shadow-xl"
                 >
-                  <div className="relative h-48 overflow-hidden">
-                    {project.thumbnail ? (
+                  <div className="relative h-64 overflow-hidden">
+                    {project.thumbnail && !project.thumbnail.includes('null') ? (
                       <Image
                         src={project.thumbnail}
                         alt={project.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                         unoptimized={true}
                         onError={(e) => {
                           console.error("Image load error:", project.thumbnail)
+                          console.error("Image URL:", project.thumbnail)
                           e.currentTarget.style.display = 'none'
+                        }}
+                        onLoad={() => {
+                          console.log("Image loaded successfully:", project.thumbnail)
                         }}
                       />
                     ) : (
@@ -244,24 +276,9 @@ export default function ProjectsPage() {
                       </div>
                     )}
                     
-                    <div className="absolute top-2 right-2 flex flex-wrap gap-2 justify-end">
-                      {project.cohort.map((cohort) => (
-                        <Badge
-                          key={cohort}
-                          variant="outline"
-                          className="bg-gray-900/80 text-[#d3431a] border-[#d3431a]"
-                        >
-                          {cohort}
-                        </Badge>
-                      ))}
-                      <Badge variant="outline" className="bg-gray-900/80 text-blue-400 border-blue-600">
-                        {project.period}
-                      </Badge>
-                    </div>
-                    
                     {awardBadge && (
-                      <div className="absolute top-2 left-2">
-                        <Badge className={`${awardBadge.color} border`}>
+                      <div className="absolute top-3 left-3">
+                        <Badge className={`${awardBadge.color} border shadow-lg`}>
                           <awardBadge.icon className="w-3 h-3 mr-1" />
                           {getAwardText(project.award)}
                         </Badge>
@@ -276,27 +293,40 @@ export default function ProjectsPage() {
                       </h3>
                     </div>
 
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-gray-500 text-sm">
+                    {/* 기술 도메인과 기수를 한 줄에 배치 */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <Badge variant="outline" className="text-gray-400 border-gray-600">
+                        {project.category}
+                      </Badge>
+                      {/* 기수 정보를 2번째 사진처럼 동그라미 배지로 */}
+                      {project.cohort.map((cohort) => (
+                        <Badge
+                          key={cohort}
+                          className="bg-gray-800 text-orange-500 border-orange-500 rounded-full px-3 py-1 text-xs font-medium"
+                        >
+                          {cohort}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    {/* 기간과 참여자 이름을 한 줄에 배치 */}
+                    <div className="flex items-center gap-4 text-gray-500 text-sm mb-4">
+                      <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4 text-[#d3431a]" />
                         <span>{project.period}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-gray-500 text-sm">
+                      <div className="flex items-center gap-1">
                         <Users className="w-4 h-4 text-[#d3431a]" />
                         <span className="line-clamp-1">{project.member}</span>
                       </div>
                     </div>
-
-                    <Badge variant="outline" className="text-gray-400 border-gray-600 mb-4">
-                      {project.category}
-                    </Badge>
 
                     <div className="flex gap-2">
                       {project.projectId ? (
                         <Link href={`/projects/${project.projectId}`} className="flex-1">
                           <Button
                             variant="outline"
-                            className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent"
+                            className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700 bg-transparent hover:border-[#d3431a] hover:text-[#d3431a] transition-all"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             상세보기

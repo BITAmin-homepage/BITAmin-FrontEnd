@@ -18,7 +18,7 @@ export default function ActivitiesSection() {
 
     커리큘럼은 커리큘럼에 따라 조원들이 해당 범위를 직접 공부하여 
     발표를 진행하는 형식입니다.`,
-      image: "/images/gang.jpg",
+      image: "/images/session.jpg",
     },
     {
       title: "컨퍼런스",
@@ -31,7 +31,7 @@ export default function ActivitiesSection() {
       NLP, CV, 시계열, 추천시스템, 멀티모달 등 본인이 자유롭게 분야를 
       선택할 수 있으며, 정해진 분야 외에도 원하는 주제를 직접 제안해 
       팀을 꾸릴 수 있습니다.`,
-      image: "/images/gang.jpg",
+      image: "/images/conference.jpg",
     },
     {
       title: "스터디",
@@ -79,7 +79,7 @@ export default function ActivitiesSection() {
       이러한 활동을 통해 동아리원들은 단순한 기술 습득을 넘어
       실무 감각과 협업 능력을 동시에 키워 나가고 있습니다.
       `,
-      image: "/images/gang.jpg",
+      image: "/images/datathon.jpg",
     },
     {
       title: "홈커밍데이",
@@ -111,7 +111,7 @@ export default function ActivitiesSection() {
       같은 꿈을 향해 나아가는 소중한 동료를 얻을 수 있는 
       절호의 기회입니다.
       `,
-      image: "/images/gang.jpg",
+      image: "/images/network.jpg",
     },
   ]
 

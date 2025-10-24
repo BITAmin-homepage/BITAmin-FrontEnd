@@ -9,7 +9,7 @@ export function ActivitiesSection() {
     { 
       title: "정규 세션",
       description: "머신러닝과 딥러닝에 대한 발표 및 과제",
-      image: "/images/session.png", // 정규세션 사진
+      image: "/images/session.jpg", // 정규세션 사진
     },
     { 
       title: "스터디",
@@ -24,12 +24,12 @@ export function ActivitiesSection() {
     { 
       title: "데이터톤",
       description: "실무형 데이터톤 및 기업 연계 프로젝트",
-      image: "/images/gang.jpg",
+      image: "/images/datathon.jpg",
     },
     { 
       title: "컨퍼런스",
       description: "BITAmin Tech Conference 및 발표 행사",
-      image: "/images/gang.jpg",
+      image: "/images/conference.jpg",
     },
     { 
       title: "소모임",
@@ -39,7 +39,7 @@ export function ActivitiesSection() {
     { 
       title: "MT",
       description: "학기 초·말 단체 MT 및 네트워킹",
-      image: "/images/gang.jpg",
+      image: "/images/network.jpg",
     },
   ]
 

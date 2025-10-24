@@ -125,7 +125,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       }
 
       alert("프로젝트가 수정되었습니다!")
-      router.push("/projects")
+      router.push("/projects?refresh=true")
     } catch (error) {
       console.error("Error updating project:", error)
       alert("프로젝트 수정 중 오류가 발생했습니다.")

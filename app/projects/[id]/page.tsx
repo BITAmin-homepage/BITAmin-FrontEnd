@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, Users, ArrowLeft, Trophy, Tag, FileText, Calendar as CalendarIcon, Award, Download, Lock } from "lucide-react"
+import { Calendar, Users, ArrowLeft, Trophy, Tag, FileText, Calendar as CalendarIcon, Award, Download, Lock, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -32,6 +32,8 @@ export default function ProjectDetailPage() {
   const { user } = useAuth()
   const [project, setProject] = useState<ProjectDetail | null>(null)
   const [loading, setLoading] = useState(true)
+  const [slideLoading, setSlideLoading] = useState(false)
+  const [pptUrl, setPptUrl] = useState<string | null>(null)
 
   useEffect(() => {
     console.log("Params:", params)
@@ -39,6 +41,7 @@ export default function ProjectDetailPage() {
       fetchProject()
     }
   }, [params.id])
+
 
   const fetchProject = async () => {
     try {
@@ -104,6 +107,38 @@ export default function ProjectDetailPage() {
     if (project?.ppt) {
       window.open(project.ppt, '_blank')
     }
+  }
+
+  // PPT URL 가져오기
+  const fetchPptUrl = async () => {
+    if (!project?.projectId) return
+    
+    try {
+      setSlideLoading(true)
+      const response = await fetch(`/api/project/ppt/${project.projectId}`)
+      const result = await response.json()
+      
+      if (result.success && result.data.ppt) {
+        setPptUrl(result.data.ppt)
+      }
+    } catch (error) {
+      console.error("Error fetching PPT URL:", error)
+    } finally {
+      setSlideLoading(false)
+    }
+  }
+
+  // 프로젝트가 로드되면 자동으로 PPT URL 가져오기
+  useEffect(() => {
+    if (project?.projectId) {
+      fetchPptUrl()
+    }
+  }, [project])
+
+
+  // PPT 로딩 상태 관리
+  const handlePptLoad = () => {
+    setSlideLoading(false)
   }
 
   if (loading) {
@@ -215,30 +250,74 @@ export default function ProjectDetailPage() {
             </CardContent>
           </Card>
 
-          {/* PPT 다운로드 */}
+          {/* PPT 슬라이드 뷰어 */}
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">프로젝트 발표 자료</h3>
-                {user ? (
-                  <Button onClick={handleDownload} className="bg-[#d3431a] hover:bg-[#b8361a] text-white">
-                    <Download className="w-4 h-4 mr-2" />
-                    PPT 다운로드
-                  </Button>
-                ) : (
-                  <Button disabled className="bg-gray-700 text-gray-400 cursor-not-allowed">
-                    <Lock className="w-4 h-4 mr-2" />
-                    로그인 필요
-                  </Button>
-                )}
               </div>
 
-              {!user && (
-                <div className="mt-4 p-4 bg-yellow-900/20 border border-yellow-600 rounded-lg">
-                  <p className="text-yellow-400 text-sm flex items-center gap-2">
-                    <Lock className="w-4 h-4" />
-                    PPT 파일 다운로드는 로그인 후 이용 가능합니다.
-                  </p>
+              {/* PPT 뷰어 */}
+              {pptUrl && (
+                <div className="mt-6">
+                  <div className="relative bg-black rounded-lg overflow-hidden">
+                    {/* Google Docs Viewer를 사용한 PPT 표시 */}
+                    <div className="aspect-video relative overflow-hidden">
+                      {slideLoading ? (
+                        <div className="flex items-center justify-center h-full text-white">
+                          PPT 로딩 중...
+                        </div>
+                      ) : (
+                        <>
+                          <iframe
+                            src={`https://docs.google.com/gview?url=${encodeURIComponent(pptUrl)}&embedded=true`}
+                            className="w-full h-full border-0"
+                            title="PPT Viewer"
+                            onLoad={handlePptLoad}
+                            sandbox="allow-same-origin allow-scripts"
+                            allow="fullscreen"
+                          />
+                          {/* Google Docs Viewer 상단 툴바를 가리는 오버레이 */}
+                          <div className="absolute top-0 left-0 right-0 h-16 bg-black/90 pointer-events-none z-10"></div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* 하단 컨트롤 */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white text-sm">
+                            PPT 뷰어
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          {user ? (
+                            <Button
+                              onClick={() => window.open(pptUrl, '_blank')}
+                              variant="outline"
+                              size="sm"
+                              className="bg-black/50 border-white/20 text-white hover:bg-white/10"
+                            >
+                              <Download className="w-4 h-4 mr-2" />
+                              다운로드
+                            </Button>
+                          ) : (
+                            <Button
+                              disabled
+                              variant="outline"
+                              size="sm"
+                              className="bg-black/50 border-gray-600 text-gray-400 cursor-not-allowed"
+                            >
+                              <Lock className="w-4 h-4 mr-2" />
+                              로그인 필요
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </CardContent>
