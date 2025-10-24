@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { ApplyModal } from "@/components/apply-modal"
 import { Menu, X, User, LogOut } from "lucide-react"
-import { useAuth } from "@/lib/auth"
+import { useAuth, isAdmin } from "@/lib/auth"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 interface HeaderProps {
@@ -70,7 +70,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-[#141414] border border-white/10 shadow-lg rounded-lg p-1 w-auto min-w-32 mt-1 flex flex-col space-y-0" align="start">
-                    {user?.role === "ADMIN" && (
+                    {user && isAdmin(user.role) && (
                       <DropdownMenuItem
                         asChild
                         className="p-0 m-0 rounded-md focus:bg-gray-800 hover:bg-gray-800 focus:text-[#ff6b35] data-[highlighted]:text-[#ff6b35]"
@@ -150,7 +150,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                 <div className="flex flex-col space-y-0.5 px-3 py-2">
                   {isAuthenticated ? (
                     <>
-                      {user?.role === "ADMIN" && (
+                      {user && isAdmin(user.role) && (
                         <Link href="/dashboard">
                           <Button variant="ghost" className="w-full text-white hover:text-[#d3431a] justify-start">
                             대시보드

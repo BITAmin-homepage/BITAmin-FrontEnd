@@ -13,7 +13,7 @@ interface User {
   school?: string
   gender?: string
   birthDate?: string
-  role: "MEMBER" | "ADMIN"
+  role: "ROLE_MEMBER" | "ROLE_ADMIN" | "MEMBER" | "ADMIN"
   cohort: number
   status?: "PENDING" | "APPROVED" | "REJECTED"
   link1?: string
@@ -53,6 +53,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 토큰이 있으면 사용자 정보를 복원
       try {
         const user = JSON.parse(userData)
+        console.log("Restored user from localStorage:", user)
+        console.log("Restored user role:", user.role)
         setUser(user)
       } catch (error) {
         console.error("Failed to parse user data:", error)
@@ -184,4 +186,21 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider")
   }
   return context
+}
+
+// 역할 체크 헬퍼 함수
+export function isAdmin(role: string | undefined): boolean {
+  if (!role) {
+    console.log(`isAdmin check - role: undefined/null, result: false`)
+    return false
+  }
+  
+  const normalizedRole = role.toUpperCase()
+  const result = normalizedRole === "ROLE_ADMIN" || normalizedRole === "ADMIN"
+  console.log(`isAdmin check - original role: "${role}", normalized: "${normalizedRole}", result: ${result}`)
+  return result
+}
+
+export function isMember(role: string | undefined): boolean {
+  return role === "ROLE_MEMBER" || role === "MEMBER"
 }

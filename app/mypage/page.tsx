@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth } from "@/lib/auth"
+import { useAuth, isAdmin } from "@/lib/auth"
 import { API_ENDPOINTS } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -454,10 +454,10 @@ export default function MyPage() {
           <div className="text-sm text-gray-400">역할</div>
           <Badge
             className={
-              displayUser.role === "ADMIN" ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
+              isAdmin(displayUser.role) ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
             }
           >
-            {displayUser.role === "ADMIN" ? "관리자" : "멤버"}
+            {isAdmin(displayUser.role) ? "관리자" : "멤버"}
           </Badge>
         </div>
       </div>

@@ -12,7 +12,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { useAuth } from "@/lib/auth"
+import { useAuth, isAdmin } from "@/lib/auth"
 
 interface Project {
   projectId: number
@@ -177,7 +177,7 @@ export default function ProjectsPage() {
             <p className="text-xl text-gray-400 mb-8">비타민 멤버들이 진행한 우수 프로젝트를 확인하세요</p>
 
             {/* 프로젝트 업로드 버튼 (운영진만) */}
-            {user?.role === "ADMIN" && (
+            {user && isAdmin(user.role) && (
               <Button
                 onClick={() => router.push("/projects/write")}
                 className="bg-[#d3431a] hover:bg-[#b8361a] text-white mb-8"

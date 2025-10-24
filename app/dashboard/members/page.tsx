@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useAuth } from "@/lib/auth"
+import { useAuth, isAdmin } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Header } from "@/components/header"
@@ -36,6 +36,7 @@ import {
   Check,
   UserCheck,
   Clock,
+  Calendar as CalendarIcon,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -48,11 +49,13 @@ interface Member {
   major?: string
   gender: string
   birthDate: string
-  cohort: number
+  cohort?: number
   role: "MEMBER" | "ADMIN"
   status: "PENDING" | "APPROVED" | "REJECTED"
   profileImage?: string
-  github?: string
+  github?: string  // 호환성을 위해 유지
+  link1?: string   // GitHub 링크
+  link2?: string   // 기타 링크
 }
 
 export default function MembersPage() {
@@ -97,6 +100,7 @@ export default function MembersPage() {
       const result = await response.json()
 
       console.log("Approved members API response:", result)
+      console.log("First member github:", result.data?.[0]?.github)
 
       if (result.success) {
         setMembers(result.data)
@@ -270,19 +274,37 @@ export default function MembersPage() {
 
     try {
       const token = localStorage.getItem("auth_token")
-      const response = await fetch(`/api/members/${editingMember.memberId}`, {
+      
+      // UpdateMemberRequestDto 형식에 맞게 데이터 구성
+      const updateData = {
+        name: editingMember.name,
+        gender: editingMember.gender,
+        birthDate: editingMember.birthDate,
+        school: editingMember.school,
+        phone: editingMember.phone,
+        email: editingMember.email,
+        cohort: editingMember.cohort ? Number(editingMember.cohort) : null,
+        role: editingMember.role,
+        link1: editingMember.github || null,  // github를 link1로 전송
+        link2: (editingMember as any).link2 || null,
+      }
+      
+      console.log("Sending update data:", updateData)
+      
+      const response = await fetch(`/api/members/update/${editingMember.memberId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editingMember),
+        body: JSON.stringify(updateData),
       })
 
       const result = await response.json()
 
       if (result.success) {
-        setMembers(members.map((member) => (member.memberId === editingMember.memberId ? result.data : member)))
+        // 멤버 목록 새로고침
+        await fetchMembers()
         setEditingMember(null)
         setProfilePreview("")
         setIsEditDialogOpen(false)
@@ -312,19 +334,19 @@ export default function MembersPage() {
   }
 
   const filteredMembers = members.filter((member) => {
-    const matchesCohort = selectedCohort === "all" || member.cohort.toString() === selectedCohort
+    const matchesCohort = selectedCohort === "all" || member.cohort?.toString() === selectedCohort
     return matchesCohort
   })
 
   const cohorts = Array.from(
     new Set(
       members
-        .map((m) => m.cohort)
-        .filter((c): c is number => c !== null && c !== undefined)
+        .filter((m) => m && m.cohort !== null && m.cohort !== undefined)
+        .map((m) => m.cohort as number)
     )
   ).sort((a, b) => b - a)
 
-  if (!isAuthenticated || user?.role !== "ADMIN") {
+  if (!isAuthenticated || !isAdmin(user?.role)) {
     return null
   }
 
@@ -381,180 +403,6 @@ export default function MembersPage() {
                   ))}
                 </SelectContent>
               </Select>
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-[#d3431a] hover:bg-[#b8371a] text-white">
-                    <Plus className="h-4 w-4 mr-2" />
-                    멤버 추가
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>새 멤버 추가</DialogTitle>
-                    <DialogDescription>새로운 멤버의 정보를 입력하세요</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    {/* 프로필 이미지 업로드 */}
-                    <div className="space-y-2">
-                      <Label>프로필 이미지</Label>
-                      <div className="flex items-center gap-4">
-                        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200">
-                          <Image
-                            src={profilePreview || "/placeholder.svg?height=64&width=64&text=프로필"}
-                            alt="프로필 미리보기"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleProfileImageUpload(e)}
-                            className="hidden"
-                            id="profile-upload"
-                          />
-                          <label
-                            htmlFor="profile-upload"
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
-                          >
-                            <ImageIcon className="h-4 w-4 mr-2" />
-                            이미지 선택
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">이름 *</Label>
-                        <Input
-                          id="name"
-                          value={newMember.name}
-                          onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>성별 *</Label>
-                        <RadioGroup
-                          value={newMember.gender}
-                          onValueChange={(value) => setNewMember({ ...newMember, gender: value })}
-                          className="flex space-x-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="male" id="male" />
-                            <Label htmlFor="male">남성</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="female" id="female" />
-                            <Label htmlFor="female">여성</Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">이메일 *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={newMember.email}
-                        onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">전화번호 *</Label>
-                        <Input
-                          id="phone"
-                          value={newMember.phone}
-                          onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="birthDate">생년월일 *</Label>
-                        <Input
-                          id="birthDate"
-                          type="date"
-                          value={newMember.birthDate}
-                          onChange={(e) => setNewMember({ ...newMember, birthDate: e.target.value })}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="school">학교 *</Label>
-                      <Input
-                        id="school"
-                        value={newMember.school}
-                        onChange={(e) => setNewMember({ ...newMember, school: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="major">전공</Label>
-                      <Input
-                        id="major"
-                        value={newMember.major}
-                        onChange={(e) => setNewMember({ ...newMember, major: e.target.value })}
-                        placeholder="예: 컴퓨터공학과"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="github">GitHub 주소</Label>
-                      <Input
-                        id="github"
-                        value={newMember.github}
-                        onChange={(e) => setNewMember({ ...newMember, github: e.target.value })}
-                        placeholder="https://github.com/username"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="cohort">기수 *</Label>
-                        <Select onValueChange={(value) => setNewMember({ ...newMember, cohort: value })}>
-                          <SelectTrigger className="bg-[#1a1a1a] border-white/10 text-white">
-                            <SelectValue placeholder="기수 선택" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
-                            {Array.from({ length: 30 }, (_, i) => i + 1).map((cohort) => (
-                              <SelectItem key={cohort} value={cohort.toString()} className="text-white hover:bg-gray-700 focus:bg-gray-700">
-                                {cohort}기
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="role">역할 *</Label>
-                        <Select
-                          onValueChange={(value: "MEMBER" | "ADMIN") =>
-                            setNewMember({ ...newMember, role: value })
-                          }
-                        >
-                          <SelectTrigger className="bg-[#1a1a1a] border-white/10 text-white">
-                            <SelectValue placeholder="역할 선택" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
-                            <SelectItem value="MEMBER" className="text-white hover:bg-gray-700 focus:bg-gray-700">멤버</SelectItem>
-                            <SelectItem value="ADMIN" className="text-white hover:bg-gray-700 focus:bg-gray-700">관리자</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button onClick={handleAddMember} className="flex-1 bg-[#d3431a] hover:bg-[#b8371a]">
-                        추가
-                      </Button>
-                      <Button onClick={() => setIsAddDialogOpen(false)} variant="outline" className="flex-1">
-                        취소
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
             </div>
 
             {/* 통계 카드 */}
@@ -577,7 +425,7 @@ export default function MembersPage() {
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-300">운영진</p>
                       <p className="text-2xl font-bold text-white">
-                        {members.filter((m) => m.role === "ADMIN").length}
+                        {members.filter((m) => isAdmin(m.role)).length}
                       </p>
                     </div>
                   </div>
@@ -643,14 +491,14 @@ export default function MembersPage() {
                             <h3 className="font-semibold text-white">{member.name}</h3>
                             <Badge
                               className={
-                                member.role === "ADMIN" ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
+                                isAdmin(member.role) ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
                               }
                             >
-                              {member.role === "ADMIN" ? "관리자" : "멤버"}
+                              {isAdmin(member.role) ? "관리자" : "멤버"}
                             </Badge>
                             <Badge variant="outline" className="border-white/20 text-white">{member.cohort}기</Badge>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-300">
+                          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm text-gray-300">
                             <div className="flex items-center gap-2">
                               <Mail className="h-3 w-3 flex-shrink-0 text-gray-400" />
                               <span className="truncate">{member.email}</span>
@@ -666,11 +514,19 @@ export default function MembersPage() {
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
+                              <CalendarIcon className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                              <span>{member.birthDate || "미등록"}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                              <span>{member.gender === "male" ? "남성" : member.gender === "female" ? "여성" : "미등록"}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
                               <Github className="h-3 w-3 flex-shrink-0 text-gray-400" />
                               <span className="truncate">
-                                {member.github ? (
+                                {(member.link1 || member.github) && (member.link1 || member.github)?.trim() !== "" ? (
                                   <a
-                                    href={member.github}
+                                    href={(member.link1 || member.github)?.startsWith('http') ? (member.link1 || member.github)! : `https://${member.link1 || member.github}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-[#d3431a] hover:underline"
@@ -690,7 +546,18 @@ export default function MembersPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            setEditingMember(member)
+                            console.log("Editing member:", member)
+                            console.log("Member link1:", member.link1)
+                            console.log("Member link2:", member.link2)
+                            console.log("Member github:", member.github)
+                            // link1과 link2를 github 필드에도 매핑
+                            const memberToEdit = {
+                              ...member,
+                              github: member.link1 || member.github,
+                              link1: member.link1,
+                              link2: member.link2,
+                            }
+                            setEditingMember(memberToEdit)
                             setProfilePreview(member.profileImage || "")
                             setIsEditDialogOpen(true)
                           }}
@@ -750,7 +617,7 @@ export default function MembersPage() {
                               <h3 className="font-semibold text-white">{member.name}</h3>
                               <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">승인 대기</Badge>
                               <Badge variant="outline" className="border-white/20 text-white">{member.cohort}기</Badge>
-                              <Badge variant="outline" className="border-white/20 text-white">{member.role === "ADMIN" ? "관리자" : "멤버"}</Badge>
+                              <Badge variant="outline" className="border-white/20 text-white">{isAdmin(member.role) ? "관리자" : "멤버"}</Badge>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-300">
                               <div className="flex items-center gap-2">
@@ -919,20 +786,20 @@ export default function MembersPage() {
                 </div>
                 {/* 전공 입력 제거 */}
                 <div className="space-y-2">
-                  <Label htmlFor="edit-github">GitHub 주소</Label>
+                  <Label htmlFor="edit-github">GitHub 주소 (link1)</Label>
                   <Input
                     id="edit-github"
-                    value={editingMember.github || ""}
-                    onChange={(e) => setEditingMember({ ...editingMember, github: e.target.value })}
+                    value={editingMember.link1 || editingMember.github || ""}
+                    onChange={(e) => setEditingMember({ ...editingMember, link1: e.target.value, github: e.target.value })}
                     placeholder="https://github.com/username"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-link2">기타 링크</Label>
+                  <Label htmlFor="edit-link2">기타 링크 (link2)</Label>
                   <Input
                     id="edit-link2"
-                    value={(editingMember as any).link2 || ""}
-                    onChange={(e) => setEditingMember({ ...editingMember, link2: (e.target as HTMLInputElement).value } as any)}
+                    value={editingMember.link2 || ""}
+                    onChange={(e) => setEditingMember({ ...editingMember, link2: e.target.value })}
                     placeholder="블로그, LinkedIn 등"
                   />
                 </div>
@@ -940,7 +807,7 @@ export default function MembersPage() {
                   <div className="space-y-2">
                     <Label htmlFor="edit-cohort">기수 *</Label>
                     <Select
-                      value={editingMember.cohort.toString()}
+                      value={editingMember.cohort?.toString() || ""}
                       onValueChange={(value) => setEditingMember({ ...editingMember, cohort: Number.parseInt(value) })}
                     >
                       <SelectTrigger className="bg-[#1a1a1a] border-white/10 text-white">

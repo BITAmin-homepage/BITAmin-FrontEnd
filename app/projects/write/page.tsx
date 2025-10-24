@@ -72,79 +72,28 @@ export default function WriteProjectPage() {
     setLoading(true)
 
     try {
-      const token = localStorage.getItem("auth_token")
-
-      // 백엔드 API 스펙에 맞게 데이터 구성 (ProjectInfoDto 형식)
-      const projectData = {
-        title: formData.title || "",
-        category: formData.domain === "기타" ? formData.customDomain : formData.domain || "",
-        description: formData.description || "",
-        cohort: formData.cohort.map(c => `${c}기`), // ["15기", "16기"] 형식으로 변환
-        startDate: formData.startDate?.toISOString().split('T')[0] || "", // YYYY-MM-DD 형식
-        endDate: formData.endDate?.toISOString().split('T')[0] || "", // YYYY-MM-DD 형식
-        award: formData.award === "GRAND_PRIZE" ? "GRAND_PRIZE" : 
-               formData.award === "EXCELLENCE_AWARD" ? "GOLD_PRIZE" : 
-               formData.award === "MERIT_AWARD" ? "MERIT_AWARD" : 
-               formData.award === "EXCELLENCE_PRIZE" ? "EXCELLENCE_AWARD" : 
-               formData.award === "MERIT_PRIZE" ? "MERIT_AWARD" : "GRAND_PRIZE",
-        member: formData.teamMembers || "",
-        period: formData.conferenceName || "",
-      }
-
-      console.log("Project data to send:", projectData)
-      console.log("Token:", token)
-      
       // 필수 필드 검증
       if (!formData.title || !formData.description || formData.cohort.length === 0) {
-        throw new Error("필수 필드를 모두 입력해주세요.")
+        alert("필수 필드를 모두 입력해주세요.")
+        setLoading(false)
+        return
       }
 
-      const response = await fetch("/api/project/uploadInfo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(projectData),
-      })
-
-      const result = await response.json()
-      console.log("API Response:", result)
-
-      if (!result.success) {
-        throw new Error(result.error || "프로젝트 생성에 실패했습니다.")
-      }
-
-      // 백엔드 응답에서 projectId 추출
-      let projectId = result.data?.projectId
-      
-      console.log("Extracted projectId:", projectId)
-      console.log("Full result structure:", JSON.stringify(result, null, 2))
-      
-      // projectId가 없거나 null이면 에러
-      if (!projectId || projectId === null) {
-        console.error("No projectId from backend:", result)
-        throw new Error("프로젝트 ID를 받지 못했습니다. 응답: " + JSON.stringify(result))
-      }
-
-      setProjectId(projectId)
+      // Step 1에서는 프론트엔드 state에만 저장하고 Step 2로 이동
+      // 백엔드 API는 Step 2에서 파일과 함께 호출
+      console.log("Step 1 완료 - 다음 단계로 이동")
       setCurrentStep(2)
     } catch (error) {
-      console.error("Error creating project:", error)
-      alert("프로젝트 생성 중 오류가 발생했습니다.")
+      console.error("Error in step 1:", error)
+      alert("오류가 발생했습니다.")
     } finally {
       setLoading(false)
     }
   }
 
-  // Step 2: 썸네일과 프로젝트 파일 업로드
+  // Step 2: 프로젝트 생성 및 파일 업로드
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!projectId) {
-      alert("프로젝트 ID가 없습니다. 1단계를 다시 진행해주세요.")
-      return
-    }
 
     if (!thumbnailFile || !projectFile) {
       alert("썸네일과 프로젝트 파일을 모두 선택해주세요.")
@@ -156,20 +105,55 @@ export default function WriteProjectPage() {
     try {
       const token = localStorage.getItem("auth_token")
       
-      // 1. 썸네일 업로드
+      // 1. 먼저 프로젝트 정보를 생성하여 projectId 받기
+      const projectData = {
+        title: formData.title || "",
+        category: formData.domain === "기타" ? formData.customDomain : formData.domain || "",
+        description: formData.description || "",
+        cohort: formData.cohort.map(c => `${c}기`),
+        startDate: formData.startDate?.toISOString().split('T')[0] || "",
+        endDate: formData.endDate?.toISOString().split('T')[0] || "",
+        award: formData.award === "GRAND_PRIZE" ? "GRAND_PRIZE" : 
+               formData.award === "EXCELLENCE_AWARD" ? "GOLD_PRIZE" : 
+               formData.award === "MERIT_AWARD" ? "MERIT_AWARD" : 
+               formData.award === "EXCELLENCE_PRIZE" ? "EXCELLENCE_AWARD" : 
+               formData.award === "MERIT_PRIZE" ? "MERIT_AWARD" : "GRAND_PRIZE",
+        member: formData.teamMembers || "",
+        period: formData.conferenceName || "",
+      }
+
+      console.log("Creating project with data:", projectData)
+
+      const projectInfoResponse = await fetch("/api/project/uploadInfo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(projectData),
+      })
+
+      const projectInfoResult = await projectInfoResponse.json()
+      console.log("Project creation result:", projectInfoResult)
+
+      if (!projectInfoResult.success) {
+        throw new Error(projectInfoResult.error || "프로젝트 생성에 실패했습니다.")
+      }
+
+      const createdProjectId = projectInfoResult.data?.projectId
+      if (!createdProjectId) {
+        throw new Error("프로젝트 ID를 받지 못했습니다.")
+      }
+
+      console.log("Created project ID:", createdProjectId)
+      
+      // 2. 썸네일 업로드
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", `thumbnail/${formData.title}`)
-      thumbnailFormData.append("projectId", projectId.toString())
+      thumbnailFormData.append("projectId", createdProjectId.toString())
       
-      console.log("Thumbnail upload - type:", `thumbnail/${formData.title}`)
-      console.log("Thumbnail upload - projectId:", projectId)
-      console.log("Thumbnail file:", thumbnailFile.name, thumbnailFile.size)
-      
-      // projectId가 없으면 에러
-      if (!projectId) {
-        throw new Error("프로젝트 ID가 없습니다. 1단계를 다시 진행해주세요.")
-      }
+      console.log("Uploading thumbnail for project:", createdProjectId)
 
       const thumbnailResponse = await fetch(`/api/project/upload`, {
         method: "POST",
@@ -185,23 +169,14 @@ export default function WriteProjectPage() {
       if (!thumbnailResult.success) {
         throw new Error(thumbnailResult.error || "썸네일 업로드에 실패했습니다.")
       }
-      
-      console.log("Thumbnail S3 URL:", thumbnailResult.url || thumbnailResult.data?.url || thumbnailResult.data)
 
-      // 2. 프로젝트 파일 업로드
+      // 3. 프로젝트 파일(PPT) 업로드
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
       projectFormData.append("type", `ppt/${formData.title}`)
-      projectFormData.append("projectId", projectId.toString())
+      projectFormData.append("projectId", createdProjectId.toString())
       
-      console.log("Project file upload - type:", `ppt/${formData.title}`)
-      console.log("Project file upload - projectId:", projectId)
-      console.log("Project file:", projectFile.name, projectFile.size)
-      
-      // projectId가 없으면 에러
-      if (!projectId) {
-        throw new Error("프로젝트 ID가 없습니다. 1단계를 다시 진행해주세요.")
-      }
+      console.log("Uploading PPT for project:", createdProjectId)
 
       const projectResponse = await fetch(`/api/project/upload`, {
         method: "POST",
@@ -217,19 +192,16 @@ export default function WriteProjectPage() {
       if (!projectResult.success) {
         throw new Error(projectResult.error || "프로젝트 파일 업로드에 실패했습니다.")
       }
-      
-      console.log("Project file S3 URL:", projectResult.url || projectResult.data?.url || projectResult.data)
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")
-      // 프로젝트 목록 페이지로 이동하면서 강제 새로고침
-      router.push("/projects?refresh=true")
-      // 추가적인 새로고침 보장
+      // 프로젝트 목록 페이지로 이동
+      router.push("/projects")
       setTimeout(() => {
-        window.location.href = "/projects?refresh=true"
-      }, 200)
+        window.location.reload()
+      }, 100)
     } catch (error) {
-      console.error("Error uploading files:", error)
-      alert("파일 업로드 중 오류가 발생했습니다.")
+      console.error("Error uploading project:", error)
+      alert(`프로젝트 업로드 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setLoading(false)
     }
