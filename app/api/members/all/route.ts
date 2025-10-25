@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     console.log("🔄 Fetching members from backend...")
@@ -12,8 +14,7 @@ export async function GET(request: NextRequest) {
         'Pragma': 'no-cache',
         'Expires': '0',
       },
-      cache: 'no-store',
-      next: { revalidate: 0 }
+      cache: 'no-store'
     })
 
     console.log("📡 Backend response status:", response.status)

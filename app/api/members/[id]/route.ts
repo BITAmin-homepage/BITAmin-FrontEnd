@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+export const dynamic = 'force-dynamic'
+
 // 멤버 단건 조회
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -18,8 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         'Pragma': 'no-cache',
         'Expires': '0',
       },
-      cache: 'no-store',
-      next: { revalidate: 0 }
+      cache: 'no-store'
     })
 
     console.log("📡 Backend response status:", response.status)
