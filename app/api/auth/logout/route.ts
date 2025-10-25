@@ -4,7 +4,7 @@ export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization')
     
-    const response = await fetch('https://bitamin.ai.kr/api/auth/logout', {
+    const response = await fetch('https://api.bitamin.ai.kr/api/auth/logout', {
       method: 'POST',
       headers: {
         'Authorization': authHeader || '',

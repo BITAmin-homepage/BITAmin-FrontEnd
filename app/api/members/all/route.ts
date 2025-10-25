@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     console.log("🔄 Fetching members from backend...")
     const timestamp = Date.now()
-    const response = await fetch(`http://bitamin.ai.kr:8080/api/members/all?_t=${timestamp}`, {
+    const response = await fetch(`https://api.bitamin.ai.kr/api/members/all?_t=${timestamp}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

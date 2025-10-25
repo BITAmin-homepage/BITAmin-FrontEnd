@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     console.log("Normalized data:", normalizedData)
 
     // 백엔드의 올바른 API 엔드포인트로 전송
-    const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
+    const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     console.log("Backend URL:", backendUrl)
     console.log("Full URL:", `${backendUrl}/api/project/uploadInfo`)
     

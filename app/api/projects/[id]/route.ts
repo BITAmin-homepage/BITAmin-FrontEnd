@@ -5,7 +5,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   try {
     const { id } = params
 
-    const response = await fetch(`${process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"}/api/project/${id}`)
+    const response = await fetch(`${process.env.BACKEND_URL || "https://api.bitamin.ai.kr"}/api/project/${id}`)
     const result = await response.json()
 
     if (response.ok && result.success) {
@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const { id } = params
     const projectData = await request.json()
 
-    const response = await fetch(`${process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"}/api/project/${id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL || "https://api.bitamin.ai.kr"}/api/project/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const { id } = params
 
-    const response = await fetch(`${process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"}/api/project/${id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL || "https://api.bitamin.ai.kr"}/api/project/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

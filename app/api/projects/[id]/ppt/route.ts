@@ -12,7 +12,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const formData = await request.formData()
 
     // 백엔드로 FormData 전달
-    const response = await fetch(`${process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"}/api/project/${id}/ppt`, {
+    const response = await fetch(`${process.env.BACKEND_URL || "https://api.bitamin.ai.kr"}/api/project/${id}/ppt`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

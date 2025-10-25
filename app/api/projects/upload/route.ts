@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
 
     // 백엔드로 FormData 그대로 전달
-    const response = await fetch(`${process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"}/api/project/upload`, {
+    const response = await fetch(`${process.env.BACKEND_URL || "https://api.bitamin.ai.kr"}/api/project/upload`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

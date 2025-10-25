@@ -9,7 +9,7 @@ export async function GET(
     const projectId = params.id
     console.log("Fetching PPT preview for project ID:", projectId)
     
-    const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
+    const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     const apiUrl = `${backendUrl}/api/project/${projectId}/ppt/preview`
     console.log("Backend URL:", apiUrl)
     

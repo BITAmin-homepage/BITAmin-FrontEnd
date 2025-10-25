@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 백엔드로 FormData 그대로 전달
-    const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
+    const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     console.log("Backend URL:", `${backendUrl}/api/members/upload/profile`)
     
     const response = await fetch(`${backendUrl}/api/members/upload/profile`, {

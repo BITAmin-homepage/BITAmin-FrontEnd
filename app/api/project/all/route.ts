@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server"
 // 모든 프로젝트 조회
 export async function GET(request: NextRequest) {
   try {
-    const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
+    const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     const response = await fetch(`${backendUrl}/api/project/all`, {
       method: "GET",
       headers: {

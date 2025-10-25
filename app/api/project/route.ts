@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       award,
     })
 
-    const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
+    const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     const response = await fetch(`${backendUrl}/api/project?${queryParams}`)
     const result = await response.json()
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const projectData = await request.json()
     console.log("Project data to send:", projectData)
 
-    const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
+    const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     const response = await fetch(`${backendUrl}/api/project`, {
       method: "POST",
       headers: {

@@ -30,7 +30,7 @@ export async function DELETE(
       )
     }
     
-    const backendUrl = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080"
+    const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     // 백엔드 API 형식: DELETE /{projectId}?key={key}
     const apiUrl = `${backendUrl}/api/project/${projectId}?key=${encodeURIComponent(key)}`
     console.log("Backend delete URL:", apiUrl)

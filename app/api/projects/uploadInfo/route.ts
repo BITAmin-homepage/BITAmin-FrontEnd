@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     console.log("Project data to send:", projectData)
 
     // 백엔드의 새로운 API 엔드포인트로 전송
-    const backendUrl = "http://bitamin.ai.kr:8080"
+    const backendUrl = "https://api.bitamin.ai.kr"
     const response = await fetch(`${backendUrl}/api/project/uploadInfo`, {
       method: "POST",
       headers: {

@@ -1,6 +1,6 @@
 // API 설정
 export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? "https://bitamin.ai.kr" 
+  ? "https://api.bitamin.ai.kr" 
   : ""
 
 // API 엔드포인트
