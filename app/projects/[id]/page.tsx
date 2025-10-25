@@ -260,7 +260,7 @@ export default function ProjectDetailPage() {
           {/* 뒤로가기 버튼 */}
           <Button
             variant="ghost"
-            className="text-gray-400 hover:text-white mb-6"
+            className="text-gray-400 hover:text-gray-700 mb-6"
             onClick={() => router.push("/projects")}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

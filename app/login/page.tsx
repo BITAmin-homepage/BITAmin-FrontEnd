@@ -50,8 +50,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#d3431a] via-black to-orange-600 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-gray-900 border-gray-700">
+    <div className="min-h-screen relative flex items-center justify-center p-4">
+      {/* 배경 이미지 */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/home1.png"
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* 가벼운 오버레이 */}
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
+      
+      <Card className="w-full max-w-md bg-gray-900/95 backdrop-blur-md border-gray-700 relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Image src="/images/logo_2.png" alt="비타민 로고" width={60} height={60} className="h-15 w-15" />

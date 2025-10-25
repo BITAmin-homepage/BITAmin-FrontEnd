@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { User, Mail, School, Calendar, Edit, Github, Link as LinkIcon } from "lucide-react"
+import { User, Mail, School, Calendar, Edit, Github, Link as LinkIcon, Upload, X } from "lucide-react"
+import Image from "next/image"
 
 export default function MyPage() {
   const { isAuthenticated, user } = useAuth()
@@ -20,6 +21,9 @@ export default function MyPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [fetchedUser, setFetchedUser] = useState<any>(null)
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
+  const [profileImagePreview, setProfileImagePreview] = useState<string>("")
+  const [isAuthChecking, setIsAuthChecking] = useState(true) // 인증 체크 중 상태
   const [editData, setEditData] = useState({
     name: "",
     gender: "",
@@ -31,6 +35,7 @@ export default function MyPage() {
     role: "MEMBER" as "MEMBER" | "ADMIN",
     link1: "", // GitHub
     link2: "", // 자유 링크
+    profileImage: "", // 프로필 이미지 URL
   })
 
   // 링크 문자열 정규화: 빈값/"null" -> "", http 미포함 시 https:// 붙임
@@ -42,7 +47,13 @@ export default function MyPage() {
   }
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // 인증 체크 완료 표시 (약간의 지연을 두어 localStorage 복원 대기)
+    const timer = setTimeout(() => {
+      setIsAuthChecking(false)
+    }, 100)
+
+    if (!isAuthenticated && !isAuthChecking) {
+      // 인증 체크가 완료되고 인증되지 않은 경우에만 리다이렉트
       router.push("/login")
     } else if (user) {
       console.log("마이페이지 user 데이터:", user)
@@ -57,10 +68,16 @@ export default function MyPage() {
         phone: user.phone || "",
         email: user.email || "",
         cohort: user.cohort || 0,
-        role: user.role || "MEMBER",
+        role: (user.role === "ROLE_ADMIN" || user.role === "ADMIN") ? "ADMIN" : "MEMBER",
         link1: user.link1 || "",
         link2: user.link2 || "",
+        profileImage: (user as any).profileImage || "",
       })
+      
+      // 기존 프로필 이미지가 있으면 미리보기 설정
+      if ((user as any).profileImage) {
+        setProfileImagePreview((user as any).profileImage)
+      }
 
       // 최신 회원 정보 조회
       const fetchMemberInfo = async () => {
@@ -73,8 +90,21 @@ export default function MyPage() {
           })
           if (res.ok) {
             const result = await res.json()
+            console.log("회원 정보 조회 결과:", result)
             if (result?.success && result?.data) {
-              setFetchedUser(result.data)
+              console.log("프로필 이미지 URL (백엔드):", result.data.profileImage)
+              
+              // 백엔드에서 profileImage를 반환하지 않는 경우 localStorage에서 가져오기
+              const storedProfileImage = localStorage.getItem(`profile_image_${memberId}`)
+              console.log("프로필 이미지 URL (localStorage):", storedProfileImage)
+              
+              const mergedData = {
+                ...result.data,
+                profileImage: result.data.profileImage || storedProfileImage || ""
+              }
+              
+              console.log("최종 프로필 이미지 URL:", mergedData.profileImage)
+              setFetchedUser(mergedData)
             }
           }
         } catch (e) {
@@ -83,7 +113,29 @@ export default function MyPage() {
       }
       fetchMemberInfo()
     }
-  }, [isAuthenticated, user, router])
+
+    return () => clearTimeout(timer)
+  }, [isAuthenticated, user, router, isAuthChecking])
+
+  // 프로필 이미지 업로드 핸들러
+  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setProfileImageFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setProfileImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // 프로필 이미지 제거
+  const handleRemoveProfileImage = () => {
+    setProfileImageFile(null)
+    setProfileImagePreview("")
+    setEditData({ ...editData, profileImage: "" })
+  }
 
   const handleUpdateMember = async () => {
     if (!user?.id && !user?.memberId) {
@@ -98,23 +150,76 @@ export default function MyPage() {
       // memberId가 있으면 사용하고, 없으면 id 사용
       const userId = user.memberId || user.id
       
-      // BE API UpdateMemberRequestDto 형식에 맞게 데이터 구성
+      let profileImageUrl = editData.profileImage
+
+      // 1. 프로필 이미지가 새로 업로드된 경우 S3에 업로드
+      if (profileImageFile) {
+        console.log("Uploading profile image to S3...")
+        console.log("Profile image file:", profileImageFile.name, profileImageFile.size)
+        
+        try {
+          const formData = new FormData()
+          formData.append("file", profileImageFile)
+          formData.append("type", `profile/${displayUser.name || userId}`)
+          formData.append("memberId", userId.toString())
+          
+          const uploadResponse = await fetch("/api/members/profile/upload", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          })
+
+          const uploadResult = await uploadResponse.json()
+          console.log("Profile image upload result:", uploadResult)
+          console.log("Upload result data:", uploadResult.data)
+          console.log("Upload result url:", uploadResult.url)
+          
+          if (uploadResult.success) {
+            // S3 URL 추출
+            profileImageUrl = uploadResult.data || uploadResult.url
+            console.log("✅ Uploaded profile image URL:", profileImageUrl)
+            
+            if (!profileImageUrl) {
+              console.error("⚠️ 프로필 이미지 URL이 비어있습니다!")
+            } else {
+              // localStorage에 프로필 이미지 URL 저장 (백엔드가 반환하지 않는 경우 대비)
+              localStorage.setItem(`profile_image_${userId}`, profileImageUrl)
+              console.log("✅ localStorage에 프로필 이미지 저장:", profileImageUrl)
+            }
+          } else {
+            throw new Error(uploadResult.message || "프로필 이미지 업로드에 실패했습니다.")
+          }
+        } catch (uploadError) {
+          console.error("Profile image upload error:", uploadError)
+          alert(`프로필 이미지 업로드 중 오류가 발생했습니다: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`)
+          // 업로드 실패 시에도 다른 정보는 저장하도록 계속 진행
+        }
+      }
+      
+      // 2. BE API UpdateMemberRequestDto 형식에 맞게 데이터 구성
       // 모든 필드를 포함해야 NULL로 덮어쓰이지 않음
+      // displayUser에서 현재 저장된 값을 가져와서 덮어쓰이지 않도록 함
+      const currentUser = fetchedUser || user
       const updateData = {
-        name: editData.name || user.name,
-        gender: editData.gender || user.gender || "",
-        birthDate: editData.birthDate || user.birthDate || "",
-        school: editData.school || user.school || "",
-        phone: editData.phone || user.phone || "",
-        email: editData.email || user.email,
-        cohort: editData.cohort || user.cohort,
-        role: editData.role || user.role,
-        link1: editData.link1 || user.link1 || "",
-        link2: editData.link2 || user.link2 || ""
+        name: editData.name || currentUser.name,
+        gender: editData.gender || currentUser.gender || "",
+        birthDate: editData.birthDate || currentUser.birthDate || "",
+        school: editData.school || currentUser.school || "",
+        phone: editData.phone || currentUser.phone || "",
+        email: editData.email || currentUser.email,
+        cohort: editData.cohort || currentUser.cohort,
+        role: editData.role || currentUser.role,
+        // link1, link2는 기존 값 유지 (editData에 없으면 currentUser에서 가져옴)
+        link1: editData.link1 || (currentUser as any).link1 || (currentUser as any).github || "",
+        link2: editData.link2 || (currentUser as any).link2 || "",
+        profileImage: profileImageUrl || (currentUser as any).profileImage || "" // S3 URL 포함
       }
 
       console.log("수정할 데이터:", updateData)
       console.log("사용자 ID:", userId)
+      console.log("📸 프로필 이미지 URL (updateData):", updateData.profileImage)
 
       const response = await fetch(API_ENDPOINTS.MEMBERS.UPDATE(userId.toString()), {
         method: "PUT",
@@ -133,22 +238,40 @@ export default function MyPage() {
         alert("정보가 성공적으로 수정되었습니다.")
         setIsEditDialogOpen(false)
         
+        // 프로필 이미지 미리보기 초기화
+        setProfileImageFile(null)
+        setProfileImagePreview("")
+        
         // localStorage의 user_data 업데이트
+        const currentUser = fetchedUser || user
         const updatedUser = {
-          ...user,
-          name: editData.name || user.name,
-          gender: editData.gender || user.gender || "",
-          birthDate: editData.birthDate || user.birthDate || "",
-          school: editData.school || user.school || "",
-          phone: editData.phone || user.phone || "",
-          email: editData.email || user.email,
-          cohort: editData.cohort || user.cohort,
-          role: editData.role || user.role,
-          link1: editData.link1 || user.link1 || "",
-          link2: editData.link2 || user.link2 || ""
+          ...currentUser,
+          name: editData.name || currentUser.name,
+          gender: editData.gender || currentUser.gender || "",
+          birthDate: editData.birthDate || currentUser.birthDate || "",
+          school: editData.school || currentUser.school || "",
+          phone: editData.phone || currentUser.phone || "",
+          email: editData.email || currentUser.email,
+          cohort: editData.cohort || currentUser.cohort,
+          role: editData.role || currentUser.role,
+          link1: editData.link1 || (currentUser as any).link1 || (currentUser as any).github || "",
+          link2: editData.link2 || (currentUser as any).link2 || "",
+          profileImage: profileImageUrl || (currentUser as any).profileImage || ""
         }
         
         localStorage.setItem("user_data", JSON.stringify(updatedUser))
+        
+        // 프로필 이미지가 업로드된 경우 즉시 화면에 반영
+        if (profileImageUrl) {
+          console.log("프로필 이미지 즉시 반영:", profileImageUrl)
+          // fetchedUser 업데이트
+          if (fetchedUser) {
+            setFetchedUser({
+              ...fetchedUser,
+              profileImage: profileImageUrl
+            } as any)
+          }
+        }
 
         // 페이지 이동 없이 최신 정보로 갱신
         try {
@@ -157,16 +280,23 @@ export default function MyPage() {
           })
           if (refreshRes.ok) {
             const refreshed = await refreshRes.json()
+            console.log("🔄 최신 정보 갱신 결과:", refreshed)
             if (refreshed?.success && refreshed?.data) {
-              // BE 최신 값으로 반영
-              // fetchedUser가 있다면 교체, 없으면 생성
-              // 또한 수정 폼 초기값도 동기화
-              // 링크 정규화는 표시 시점에 처리하므로 원본 저장
-              // (normalizeLink는 렌더링 단계에서 사용)
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const d = refreshed.data
+              console.log("📸 백엔드에서 반환된 프로필 이미지:", d.profileImage)
+              
+              // 백엔드에서 profileImage를 반환하지 않는 경우 localStorage 또는 업로드된 URL 사용
+              const storedProfileImage = localStorage.getItem(`profile_image_${userId}`)
+              const finalProfileImage = d.profileImage || profileImageUrl || storedProfileImage || ""
+              console.log("📸 최종 프로필 이미지 (갱신):", finalProfileImage)
+              
+              const mergedData = {
+                ...d,
+                profileImage: finalProfileImage
+              }
+              
               // @ts-ignore - display 전용 상태
-              setFetchedUser(d)
+              setFetchedUser(mergedData)
               setEditData({
                 name: d.name || "",
                 gender: d.gender || "",
@@ -175,17 +305,20 @@ export default function MyPage() {
                 phone: d.phone || "",
                 email: d.email || "",
                 cohort: d.cohort || 0,
-                role: d.role || "MEMBER",
+                role: (d.role === "ROLE_ADMIN" || d.role === "ADMIN") ? "ADMIN" : "MEMBER",
                 link1: d.link1 || "",
                 link2: d.link2 || "",
+                profileImage: finalProfileImage,
               })
             } else {
+              console.log("⚠️ 백엔드 응답 실패, 로컬 값 사용")
               // 실패 시 로컬 값으로라도 즉시 반영
               // @ts-ignore
               setFetchedUser(updatedUser)
             }
           }
         } catch (e) {
+          console.error("⚠️ 네트워크 오류, 로컬 값 사용:", e)
           // 네트워크 오류 시에도 페이지 이탈 없이 로컬 값 적용
           // @ts-ignore
           setFetchedUser(updatedUser)
@@ -203,6 +336,18 @@ export default function MyPage() {
 
   const displayUser = fetchedUser || user
 
+  // 인증 체크 중일 때 로딩 표시
+  if (isAuthChecking) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d3431a] mx-auto mb-4"></div>
+          <p className="text-gray-400">로딩 중...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!isAuthenticated || !displayUser) {
     return null
   }
@@ -217,7 +362,22 @@ export default function MyPage() {
             <h1 className="text-3xl font-bold text-white mb-2">마이페이지</h1>
             <p className="text-gray-300">내 정보를 확인하고 수정하세요</p>
           </div>
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <Dialog 
+            open={isEditDialogOpen} 
+            onOpenChange={(open) => {
+              setIsEditDialogOpen(open)
+              // 다이얼로그가 열릴 때 현재 프로필 이미지를 미리보기로 설정
+              if (open && user) {
+                const currentUser = fetchedUser || user
+                const userId = (user.memberId || user.id)?.toString()
+                const storedProfileImage = userId ? localStorage.getItem(`profile_image_${userId}`) : null
+                const currentProfileImage = (currentUser as any).profileImage || storedProfileImage || ""
+                console.log("다이얼로그 열림 - 현재 프로필 이미지:", currentProfileImage)
+                console.log("다이얼로그 열림 - localStorage 프로필 이미지:", storedProfileImage)
+                setProfileImagePreview(currentProfileImage)
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button className="bg-[#d3431a] hover:bg-[#b8371a] text-white">
                 <Edit className="h-4 w-4 mr-2" />
@@ -231,7 +391,56 @@ export default function MyPage() {
                   개인 정보를 수정할 수 있습니다.
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+                {/* 프로필 이미지 업로드 */}
+                <div className="space-y-2">
+                  <Label>프로필 이미지</Label>
+                  <div className="flex flex-col items-center gap-4">
+                    {/* 이미지 미리보기 */}
+                    {profileImagePreview ? (
+                      <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-[#d3431a]">
+                        <Image
+                          src={profileImagePreview}
+                          alt="프로필 미리보기"
+                          fill
+                          className="object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemoveProfileImage}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center border-2 border-dashed border-gray-500">
+                        <Upload className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                    
+                    {/* 파일 업로드 버튼 */}
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="border-gray-500 text-gray-800 hover:bg-gray-200 hover:text-gray-900"
+                        onClick={() => document.getElementById('profile-image-input')?.click()}
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        이미지 선택
+                      </Button>
+                      <input
+                        id="profile-image-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProfileImageUpload}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">이름 *</Label>
@@ -316,8 +525,9 @@ export default function MyPage() {
                     <Select
                       value={editData.role}
                       onValueChange={(value: "MEMBER" | "ADMIN") => setEditData({ ...editData, role: value })}
+                      disabled={true}
                     >
-                      <SelectTrigger className="bg-black border-white/20 text-white">
+                      <SelectTrigger className="bg-black border-white/20 text-white opacity-60 cursor-not-allowed">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -325,6 +535,7 @@ export default function MyPage() {
                         <SelectItem value="ADMIN">관리자</SelectItem>
                       </SelectContent>
                     </Select>
+                    <p className="text-xs text-gray-500">역할은 관리자만 변경할 수 있습니다</p>
                   </div>
                 </div>
                 <div className="space-y-6">
@@ -385,134 +596,144 @@ export default function MyPage() {
               </CardTitle>
               <CardDescription className="text-gray-400">내 계정 정보를 확인할 수 있습니다</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <User className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">이름</div>
-          <div className="font-medium text-white">{displayUser.name}</div>
-        </div>
-      </div>
+            <CardContent className="p-8">
+              {/* 프로필 이미지와 정보를 좌우로 배치 */}
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* 왼쪽: 프로필 이미지 영역 */}
+                <div className="flex flex-col items-center space-y-4 lg:w-64 flex-shrink-0">
+                  <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-[#d3431a] bg-gray-700">
+                    {(displayUser as any).profileImage ? (
+                      <Image
+                        src={(displayUser as any).profileImage}
+                        alt={`${displayUser.name} 프로필`}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="w-24 h-24 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-white mb-2">{displayUser.name}</h2>
+                    <Badge
+                      className={
+                        isAdmin(displayUser.role) ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
+                      }
+                    >
+                      {isAdmin(displayUser.role) ? "관리자" : "멤버"}
+                    </Badge>
+                  </div>
+                </div>
 
-      <div className="flex items-center gap-3">
-        <Mail className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">이메일</div>
-          <div className="font-medium text-white">{displayUser.email}</div>
-        </div>
-      </div>
+                {/* 오른쪽: 정보 그리드 */}
+                <div className="flex-1">
+                  <div className="grid md:grid-cols-2 gap-x-8 gap-y-5">
+                    {/* 이메일 */}
+                    <div className="flex items-start gap-3">
+                      <Mail className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-gray-400">이메일</div>
+                        <div className="font-medium text-white break-all">{displayUser.email}</div>
+                      </div>
+                    </div>
 
-      <div className="flex items-center gap-3">
-        <School className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">학교</div>
-          <div className="font-medium text-white">{displayUser.school || "미등록"}</div>
-        </div>
-      </div>
+                    {/* 전화번호 */}
+                    <div className="flex items-start gap-3">
+                      <User className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-400">전화번호</div>
+                        <div className="font-medium text-white">{displayUser.phone || "미등록"}</div>
+                      </div>
+                    </div>
 
-      <div className="flex items-center gap-3">
-        <User className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">전화번호</div>
-          <div className="font-medium text-white">{displayUser.phone || "미등록"}</div>
-        </div>
-      </div>
-    </div>
+                    {/* 학교 */}
+                    <div className="flex items-start gap-3">
+                      <School className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-400">학교</div>
+                        <div className="font-medium text-white">{displayUser.school || "미등록"}</div>
+                      </div>
+                    </div>
 
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Calendar className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">기수</div>
-          <div className="font-medium text-white">{displayUser.cohort}기</div>
-        </div>
-      </div>
+                    {/* 기수 */}
+                    <div className="flex items-start gap-3">
+                      <Calendar className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-400">기수</div>
+                        <div className="font-medium text-white">{displayUser.cohort}기</div>
+                      </div>
+                    </div>
 
-      <div className="flex items-center gap-3">
-        <User className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">성별</div>
-          <div className="font-medium text-white">
-            {displayUser.gender === "male" ? "남성" : displayUser.gender === "female" ? "여성" : "미등록"}
-          </div>
-        </div>
-      </div>
+                    {/* 성별 */}
+                    <div className="flex items-start gap-3">
+                      <User className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-400">성별</div>
+                        <div className="font-medium text-white">
+                          {displayUser.gender === "male" ? "남성" : displayUser.gender === "female" ? "여성" : "미등록"}
+                        </div>
+                      </div>
+                    </div>
 
-      <div className="flex items-center gap-3">
-        <Calendar className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">생년월일</div>
-          <div className="font-medium text-white">{displayUser.birthDate || "미등록"}</div>
-        </div>
-      </div>
+                    {/* 생년월일 */}
+                    <div className="flex items-start gap-3">
+                      <Calendar className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-400">생년월일</div>
+                        <div className="font-medium text-white">{displayUser.birthDate || "미등록"}</div>
+                      </div>
+                    </div>
+                  </div>
 
-      <div className="flex items-center gap-3">
-        <School className="h-5 w-5 text-gray-400" />
-        <div>
-          <div className="text-sm text-gray-400">역할</div>
-          <Badge
-            className={
-              isAdmin(displayUser.role) ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
-            }
-          >
-            {isAdmin(displayUser.role) ? "관리자" : "멤버"}
-          </Badge>
-        </div>
-      </div>
-      
-      {/* 링크 섹션 - 항상 표시, NULL이면 비어있음 표시 */}
-      <div className="mt-6 pt-6 border-t border-white/10">
-        <h4 className="text-lg font-semibold text-white mb-4">링크</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* 왼쪽: GitHub */}
-          <div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Github className="h-5 w-5 text-gray-400" />
-                <div className="text-sm text-gray-400">GitHub</div>
+                  {/* 링크 섹션 */}
+                  <div className="mt-8 pt-6 border-t border-white/10">
+                    <h4 className="text-lg font-semibold text-white mb-4">링크</h4>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* GitHub */}
+                      <div className="flex items-start gap-3">
+                        <Github className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm text-gray-400 mb-1">GitHub</div>
+                          {normalizeLink(displayUser.link1) ? (
+                            <a
+                              href={normalizeLink(displayUser.link1)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-medium text-[#d3431a] hover:text-[#b8371a] transition-colors block break-all"
+                            >
+                              {normalizeLink(displayUser.link1).replace('https://', '')}
+                            </a>
+                          ) : (
+                            <div className="text-sm text-gray-500">미등록</div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 기타 링크 */}
+                      <div className="flex items-start gap-3">
+                        <LinkIcon className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm text-gray-400 mb-1">기타 링크</div>
+                          {normalizeLink(displayUser.link2) ? (
+                            <a
+                              href={normalizeLink(displayUser.link2)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-medium text-[#d3431a] hover:text-[#b8371a] transition-colors block break-all"
+                            >
+                              {normalizeLink(displayUser.link2).replace('https://', '')}
+                            </a>
+                          ) : (
+                            <div className="text-sm text-gray-500">미등록</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              {normalizeLink(displayUser.link1) ? (
-                <a
-                  href={normalizeLink(displayUser.link1)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-[#d3431a] hover:text-[#b8371a] transition-colors block break-all"
-                >
-                  {normalizeLink(displayUser.link1)}
-                </a>
-              ) : (
-                <div className="text-sm text-gray-500">비어있음</div>
-              )}
-            </div>
-          </div>
-
-          {/* 오른쪽: 기타 링크 */}
-          <div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <LinkIcon className="h-5 w-5 text-gray-400" />
-                <div className="text-sm text-gray-400">기타 링크</div>
-              </div>
-              {normalizeLink(displayUser.link2) ? (
-                <a
-                  href={normalizeLink(displayUser.link2)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-[#d3431a] hover:text-[#b8371a] transition-colors block break-all"
-                >
-                  {normalizeLink(displayUser.link2)}
-                </a>
-              ) : (
-                <div className="text-sm text-gray-500">비어있음</div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </CardContent>
           </Card>
         </div>
