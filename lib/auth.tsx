@@ -162,6 +162,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem("auth_token")
       localStorage.removeItem("user_data")
       setUser(null)
+      
+      // 메인 페이지로 리다이렉트
+      window.location.href = "/"
     }
   }
 

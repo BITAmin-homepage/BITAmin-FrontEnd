@@ -93,17 +93,17 @@ export default function MyPage() {
             console.log("회원 정보 조회 결과:", result)
             if (result?.success && result?.data) {
               console.log("프로필 이미지 URL (백엔드):", result.data.profileImage)
+              console.log("이미지 필드 (백엔드):", result.data.image)
               
-              // 백엔드에서 profileImage를 반환하지 않는 경우 localStorage에서 가져오기
-              const storedProfileImage = localStorage.getItem(`profile_image_${memberId}`)
-              console.log("프로필 이미지 URL (localStorage):", storedProfileImage)
+              // 백엔드 API 응답을 우선 사용 (image 또는 profileImage)
+              const finalProfileImage = result.data.profileImage || result.data.image || ""
               
               const mergedData = {
                 ...result.data,
-                profileImage: result.data.profileImage || storedProfileImage || ""
+                profileImage: finalProfileImage
               }
               
-              console.log("최종 프로필 이미지 URL:", mergedData.profileImage)
+              console.log("✅ 최종 프로필 이미지 URL:", mergedData.profileImage)
               setFetchedUser(mergedData)
             }
           }
@@ -284,11 +284,12 @@ export default function MyPage() {
             if (refreshed?.success && refreshed?.data) {
               const d = refreshed.data
               console.log("📸 백엔드에서 반환된 프로필 이미지:", d.profileImage)
+              console.log("📸 백엔드 이미지 필드:", d.image)
               
-              // 백엔드에서 profileImage를 반환하지 않는 경우 localStorage 또는 업로드된 URL 사용
-              const storedProfileImage = localStorage.getItem(`profile_image_${userId}`)
-              const finalProfileImage = d.profileImage || profileImageUrl || storedProfileImage || ""
-              console.log("📸 최종 프로필 이미지 (갱신):", finalProfileImage)
+              // 백엔드 API 응답을 우선 사용 (image 또는 profileImage)
+              // 업로드 직후라면 profileImageUrl도 고려
+              const finalProfileImage = d.profileImage || d.image || profileImageUrl || ""
+              console.log("✅ 최종 프로필 이미지 (갱신):", finalProfileImage)
               
               const mergedData = {
                 ...d,

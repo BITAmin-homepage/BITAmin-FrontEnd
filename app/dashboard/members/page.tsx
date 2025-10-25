@@ -53,6 +53,7 @@ interface Member {
   role: "MEMBER" | "ADMIN"
   status: "PENDING" | "APPROVED" | "REJECTED"
   profileImage?: string
+  image?: string   // 백엔드 API 응답 필드
   github?: string  // 호환성을 위해 유지
   link1?: string   // GitHub 링크
   link2?: string   // 기타 링크
@@ -69,6 +70,7 @@ export default function MembersPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingMember, setEditingMember] = useState<Member | null>(null)
   const [profilePreview, setProfilePreview] = useState<string>("")
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
   const [newMember, setNewMember] = useState({
     name: "",
     email: "",
@@ -100,10 +102,17 @@ export default function MembersPage() {
       const result = await response.json()
 
       console.log("Approved members API response:", result)
-      console.log("First member github:", result.data?.[0]?.github)
+      console.log("First member:", result.data?.[0])
+      console.log("First member image:", result.data?.[0]?.image)
 
       if (result.success) {
-        setMembers(result.data)
+        // image 필드를 profileImage로 매핑
+        const mappedMembers = result.data.map((member: Member) => ({
+          ...member,
+          profileImage: member.image || member.profileImage
+        }))
+        console.log("Mapped members:", mappedMembers[0])
+        setMembers(mappedMembers)
       } else {
         console.error("Failed to fetch members:", result.message)
         setMembers([]) // 빈 배열로 초기화
@@ -125,7 +134,12 @@ export default function MembersPage() {
       console.log("Pending members API response:", result)
 
       if (result.success) {
-        setPendingMembers(result.data)
+        // image 필드를 profileImage로 매핑
+        const mappedMembers = result.data.map((member: Member) => ({
+          ...member,
+          profileImage: member.image || member.profileImage
+        }))
+        setPendingMembers(mappedMembers)
       } else {
         console.error("Failed to fetch pending members:", result.message)
         setPendingMembers([]) // 빈 배열로 초기화
@@ -274,8 +288,42 @@ export default function MembersPage() {
 
     try {
       const token = localStorage.getItem("auth_token")
+      let profileImageUrl = editingMember.profileImage || ""
       
-      // UpdateMemberRequestDto 형식에 맞게 데이터 구성
+      // 1. 프로필 이미지가 새로 업로드된 경우 S3에 업로드
+      if (profileImageFile) {
+        console.log("Uploading profile image to S3...")
+        try {
+          const formData = new FormData()
+          formData.append("file", profileImageFile)
+          formData.append("type", `profile/${editingMember.name}`)
+          formData.append("memberId", editingMember.memberId.toString())
+          
+          const uploadResponse = await fetch("/api/members/profile/upload", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          })
+
+          const uploadResult = await uploadResponse.json()
+          console.log("Profile image upload result:", uploadResult)
+          
+          if (uploadResult.success) {
+            profileImageUrl = uploadResult.data || uploadResult.url
+            console.log("✅ Uploaded profile image URL:", profileImageUrl)
+          } else {
+            throw new Error(uploadResult.message || "프로필 이미지 업로드에 실패했습니다.")
+          }
+        } catch (uploadError) {
+          console.error("Profile image upload error:", uploadError)
+          alert(`프로필 이미지 업로드 중 오류가 발생했습니다: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`)
+          // 업로드 실패 시에도 다른 정보는 저장하도록 계속 진행
+        }
+      }
+      
+      // 2. UpdateMemberRequestDto 형식에 맞게 데이터 구성
       const updateData = {
         name: editingMember.name,
         gender: editingMember.gender,
@@ -290,6 +338,7 @@ export default function MembersPage() {
       }
       
       console.log("Sending update data:", updateData)
+      console.log("Profile image URL:", profileImageUrl)
       
       const response = await fetch(`/api/members/update/${editingMember.memberId}`, {
         method: "PUT",
@@ -307,6 +356,7 @@ export default function MembersPage() {
         await fetchMembers()
         setEditingMember(null)
         setProfilePreview("")
+        setProfileImageFile(null)
         setIsEditDialogOpen(false)
         alert("멤버 정보가 수정되었습니다!")
       } else {
@@ -321,6 +371,10 @@ export default function MembersPage() {
   const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>, isEdit = false) => {
     const file = e.target.files?.[0]
     if (file) {
+      // 파일 객체 저장
+      setProfileImageFile(file)
+      
+      // 미리보기를 위한 DataURL 생성
       const reader = new FileReader()
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string
@@ -478,13 +532,23 @@ export default function MembersPage() {
                       className="flex items-center justify-between p-4 border border-white/10 rounded-lg hover:bg-gray-800 bg-[#1a1a1a]"
                     >
                       <div className="flex items-start space-x-4 flex-1">
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-                          <Image
-                            src={member.profileImage || "/placeholder.svg?height=48&width=48&text=프로필"}
-                            alt={`${member.name} 프로필`}
-                            fill
-                            className="object-cover"
-                          />
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-white/20">
+                          {member.profileImage && member.profileImage.trim() !== "" ? (
+                            <img
+                              src={member.profileImage}
+                              alt={`${member.name} 프로필`}
+                              className="object-cover w-full h-full"
+                              onError={(e) => {
+                                console.error(`❌ ${member.name} 프로필 이미지 로드 실패:`, member.profileImage)
+                                e.currentTarget.style.display = 'none'
+                                e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gray-700"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>'
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Users className="w-6 h-6 text-gray-400" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-3">
@@ -559,6 +623,7 @@ export default function MembersPage() {
                             }
                             setEditingMember(memberToEdit)
                             setProfilePreview(member.profileImage || "")
+                            setProfileImageFile(null) // 파일 초기화
                             setIsEditDialogOpen(true)
                           }}
                         >
@@ -676,13 +741,18 @@ export default function MembersPage() {
                 <div className="space-y-2">
                   <Label>프로필 이미지</Label>
                   <div className="flex items-center gap-4">
-                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200">
-                      <Image
-                        src={editingMember.profileImage || "/placeholder.svg?height=64&width=64&text=프로필"}
-                        alt="프로필 미리보기"
-                        fill
-                        className="object-cover"
-                      />
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-700 border-2 border-[#d3431a]">
+                      {profilePreview || editingMember.profileImage ? (
+                        <img
+                          src={profilePreview || editingMember.profileImage}
+                          alt="프로필 미리보기"
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Users className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
                     </div>
                     <div>
                       <input

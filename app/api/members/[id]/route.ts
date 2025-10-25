@@ -7,20 +7,45 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const backendBase = process.env.BACKEND_URL || "http://bitamin.ai.kr:8080" || "http://52.78.66.115:8080"
     const { id } = params
 
-    const response = await fetch(`${backendBase}/api/members/${id}`, {
+    console.log(`🔄 Fetching member detail for ID: ${id}`)
+    
+    const timestamp = Date.now()
+    const response = await fetch(`${backendBase}/api/members/${id}?_t=${timestamp}`, {
       method: "GET",
       headers: {
         Authorization: tokenHeader,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       },
+      cache: 'no-store',
+      next: { revalidate: 0 }
     })
+
+    console.log("📡 Backend response status:", response.status)
 
     let data: any
     const contentType = response.headers.get("content-type")
     if (contentType && contentType.includes("application/json")) {
       data = await response.json()
+      console.log("📦 Backend member data received:")
+      console.log("  - success:", data.success)
+      console.log("  - Member data:", data.data)
+      if (data.data) {
+        console.log("  - Has image field?:", 'image' in data.data)
+        console.log("  - Image value:", data.data.image)
+        console.log("  - ProfileImage value:", data.data.profileImage)
+        
+        // image 필드를 profileImage로 매핑
+        if (data.data.image && !data.data.profileImage) {
+          data.data.profileImage = data.data.image
+          console.log("  ✅ Mapped image to profileImage:", data.data.profileImage)
+        }
+      }
     } else {
       const text = await response.text()
       data = { message: text }
+      console.log("⚠️ Non-JSON response:", text)
     }
 
     return NextResponse.json(data, {
