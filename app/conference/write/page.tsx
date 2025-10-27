@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useAuth } from "@/lib/auth"
+import { useAuth, isAdmin } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Header } from "@/components/header"
@@ -27,14 +27,13 @@ export default function WriteConferencePage() {
   const [files, setFiles] = useState<File[]>([])
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== "management") {
+    if (!isAuthenticated || !isAdmin(user?.role)) {
       router.push("/conference")
     }
   }, [isAuthenticated, user, router])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Conference post data:", { ...formData, files })
     alert("컨퍼런스 게시물이 작성되었습니다!")
     router.push("/conference")
   }
@@ -48,7 +47,7 @@ export default function WriteConferencePage() {
     setFiles(files.filter((_, i) => i !== index))
   }
 
-  if (!isAuthenticated || user?.role !== "management") {
+  if (!isAuthenticated || !isAdmin(user?.role)) {
     return null
   }
 

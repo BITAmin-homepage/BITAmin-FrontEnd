@@ -23,7 +23,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       )
     }
   } catch (error) {
-    console.error("Project detail API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }
@@ -65,7 +64,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       )
     }
   } catch (error) {
-    console.error("Update project API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }
@@ -104,7 +102,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       )
     }
   } catch (error) {
-    console.error("Delete project API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }

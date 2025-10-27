@@ -7,7 +7,6 @@ export async function DELETE(
 ) {
   try {
     const projectId = params.id
-    console.log("Deleting project with ID:", projectId)
     
     // Authorization 헤더에서 토큰 추출
     const authHeader = request.headers.get("Authorization") || request.headers.get("authorization")
@@ -33,7 +32,6 @@ export async function DELETE(
     const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     // 백엔드 API 형식: DELETE /{projectId}?key={key}
     const apiUrl = `${backendUrl}/api/project/${projectId}?key=${encodeURIComponent(key)}`
-    console.log("Backend delete URL:", apiUrl)
     
     const response = await fetch(apiUrl, {
       method: "DELETE",
@@ -42,12 +40,9 @@ export async function DELETE(
         "Content-Type": "application/json",
       },
     })
-
-    console.log("Backend delete response status:", response.status)
     
     if (response.ok) {
       const result = await response.text()
-      console.log("Backend delete response:", result)
       
       return NextResponse.json({
         success: true,
@@ -55,7 +50,6 @@ export async function DELETE(
       })
     } else {
       const errorText = await response.text()
-      console.error("Backend delete error:", errorText)
       
       return NextResponse.json(
         {
@@ -66,7 +60,6 @@ export async function DELETE(
       )
     }
   } catch (error) {
-    console.error("Project delete API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }

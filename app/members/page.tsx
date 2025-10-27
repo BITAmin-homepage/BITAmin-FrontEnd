@@ -44,27 +44,12 @@ export default function MembersPage() {
       const response = await fetch("/api/members/all")
       const result = await response.json()
       
-      console.log("=== Members API 응답 ===")
-      console.log("전체 응답:", result)
-      
       if (result.success && result.data) {
-        console.log("=== 멤버 데이터 상세 ===")
-        result.data.forEach((member: Member, index: number) => {
-          console.log(`\n멤버 ${index + 1}: ${member.name}`)
-          console.log(`  - cohort: ${member.cohort}`)
-          console.log(`  - depart: ${member.depart}`)
-          console.log(`  - image: ${member.image}`)
-          console.log(`  - link1: ${member.link1}`)
-          console.log(`  - link2: ${member.link2}`)
-        })
-        console.log("===================\n")
         setMembers(result.data)
       } else {
-        console.error("Failed to fetch members:", result.message)
         setMembers([])
       }
     } catch (error) {
-      console.error("Error fetching members:", error)
       setMembers([])
     } finally {
       setLoading(false)
@@ -153,23 +138,14 @@ export default function MembersPage() {
                           <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-700 border-2 border-white/20">
                             {member.image && member.image.trim() !== "" ? (
                               <>
-                                {console.log(`🖼️ 렌더링 시도: ${member.name} - ${member.image}`)}
                                 <img
                                   src={member.image}
                                   alt={`${member.name} 프로필`}
                                   className="object-cover w-full h-full"
-                                  onLoad={() => {
-                                    console.log(`✅ ${member.name} 이미지 로드 성공:`, member.image)
-                                  }}
-                                  onError={(e) => {
-                                    console.error(`❌ ${member.name} 이미지 로드 실패:`, member.image)
-                                    console.error('Error details:', e)
-                                  }}
                                 />
                               </>
                             ) : (
                               <>
-                                {console.log(`👤 기본 아이콘 표시: ${member.name} - image: ${member.image}`)}
                                 <div className="w-full h-full flex items-center justify-center">
                                   <User className="w-10 h-10 text-gray-400" />
                                 </div>
@@ -201,7 +177,6 @@ export default function MembersPage() {
                             <div className="flex items-center justify-center gap-3">
                               {member.link1 && member.link1.trim() !== "" && (
                                 <>
-                                  {console.log(`🔗 ${member.name} link1:`, member.link1)}
                                   <Link
                                     href={member.link1}
                                     target="_blank"
@@ -215,7 +190,6 @@ export default function MembersPage() {
                               )}
                               {member.link2 && member.link2.trim() !== "" && (
                                 <>
-                                  {console.log(`🔗 ${member.name} link2:`, member.link2)}
                                   <Link
                                     href={member.link2}
                                     target="_blank"

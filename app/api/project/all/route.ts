@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
     })
 
     const result = await response.json()
-    console.log("Backend projects response:", result)
 
     if (response.ok && result.success) {
       // 백엔드 응답에 projectId가 없으면 임시로 추가
@@ -43,7 +42,6 @@ export async function GET(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error("Projects API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }

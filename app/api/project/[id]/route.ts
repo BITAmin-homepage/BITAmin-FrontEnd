@@ -7,11 +7,9 @@ export async function GET(
 ) {
   try {
     const projectId = params.id
-    console.log("Fetching project with ID:", projectId)
     
     const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     const apiUrl = `${backendUrl}/api/project?projectId=${projectId}`
-    console.log("Backend URL:", apiUrl)
     
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -21,9 +19,7 @@ export async function GET(
       },
     })
 
-    console.log("Backend response status:", response.status)
     const result = await response.json()
-    console.log("Backend project response:", result)
 
     if (response.ok && result.success) {
       return NextResponse.json({
@@ -32,7 +28,6 @@ export async function GET(
         message: "프로젝트 정보를 성공적으로 조회했습니다."
       })
     } else {
-      console.error("Backend error:", result)
       return NextResponse.json(
         {
           success: false,
@@ -42,7 +37,6 @@ export async function GET(
       )
     }
   } catch (error) {
-    console.error("Project API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }

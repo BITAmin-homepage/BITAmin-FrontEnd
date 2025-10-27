@@ -53,16 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 토큰이 있으면 사용자 정보를 복원
       try {
         const user = JSON.parse(userData)
-        console.log("Restored user from localStorage:", user)
-        console.log("Restored user role:", user.role)
         setUser(user)
       } catch (error) {
-        console.error("Failed to parse user data:", error)
         localStorage.removeItem("auth_token")
         localStorage.removeItem("user_data")
       }
     } catch (error) {
-      console.error("Auth check failed:", error)
       localStorage.removeItem("auth_token")
       localStorage.removeItem("user_data")
     } finally {
@@ -80,15 +76,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ username, password }),
       })
 
-      console.log("로그인 응답 상태:", response.status)
-
       if (response.ok) {
         const result = await response.json()
         
         // BE API 응답 형식에 맞게 처리
         if (result.success && result.data) {
           const userData = result.data
-          console.log("BE 응답 userData:", userData)
           
           // 다양한 가능한 필드명 확인
           const token = userData.accessToken || userData.access_token || userData.token || userData.jwt
@@ -108,8 +101,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             link1: userData.link1 || "",
             link2: userData.link2 || ""
           }
-          
-          console.log("저장할 userToStore:", userToStore)
           
           localStorage.setItem("auth_token", token)
           localStorage.setItem("user_data", JSON.stringify(userToStore))
@@ -139,7 +130,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false
       }
     } catch (error) {
-      console.error("Login failed:", error)
       alert("로그인 중 오류가 발생했습니다.")
       return false
     }
@@ -157,7 +147,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
       }
     } catch (error) {
-      console.error("Logout failed:", error)
     } finally {
       localStorage.removeItem("auth_token")
       localStorage.removeItem("user_data")
@@ -194,14 +183,11 @@ export function useAuth() {
 // 역할 체크 헬퍼 함수
 export function isAdmin(role: string | undefined): boolean {
   if (!role) {
-    console.log(`isAdmin check - role: undefined/null, result: false`)
     return false
   }
   
   const normalizedRole = role.toUpperCase()
-  const result = normalizedRole === "ROLE_ADMIN" || normalizedRole === "ADMIN"
-  console.log(`isAdmin check - original role: "${role}", normalized: "${normalizedRole}", result: ${result}`)
-  return result
+  return normalizedRole === "ROLE_ADMIN" || normalizedRole === "ADMIN"
 }
 
 export function isMember(role: string | undefined): boolean {

@@ -9,8 +9,6 @@ export async function POST(request: NextRequest) {
     }
 
     const projectData = await request.json()
-    
-    console.log("Project data to send:", projectData)
 
     // 백엔드의 새로운 API 엔드포인트로 전송
     const backendUrl = "https://api.bitamin.ai.kr"
@@ -22,12 +20,8 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify(projectData),
     })
-    
-    console.log("Backend response status:", response.status)
 
     const result = await response.json()
-    console.log("Backend response:", result)
-    console.log("Response status:", response.status)
 
     if (response.ok) {
       return NextResponse.json({
@@ -45,7 +39,6 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error("Upload project info API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }

@@ -8,8 +8,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const tokenHeader = request.headers.get("Authorization") || request.headers.get("authorization") || ""
     const backendBase = process.env.BACKEND_URL || "https://api.bitamin.ai.kr" || "http://52.78.66.115:8080"
     const { id } = params
-
-    console.log(`🔄 Fetching member detail for ID: ${id}`)
     
     const timestamp = Date.now()
     const response = await fetch(`${backendBase}/api/members/${id}?_t=${timestamp}`, {
@@ -23,30 +21,19 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       cache: 'no-store'
     })
 
-    console.log("📡 Backend response status:", response.status)
-
     let data: any
     const contentType = response.headers.get("content-type")
     if (contentType && contentType.includes("application/json")) {
       data = await response.json()
-      console.log("📦 Backend member data received:")
-      console.log("  - success:", data.success)
-      console.log("  - Member data:", data.data)
       if (data.data) {
-        console.log("  - Has image field?:", 'image' in data.data)
-        console.log("  - Image value:", data.data.image)
-        console.log("  - ProfileImage value:", data.data.profileImage)
-        
         // image 필드를 profileImage로 매핑
         if (data.data.image && !data.data.profileImage) {
           data.data.profileImage = data.data.image
-          console.log("  ✅ Mapped image to profileImage:", data.data.profileImage)
         }
       }
     } else {
       const text = await response.text()
       data = { message: text }
-      console.log("⚠️ Non-JSON response:", text)
     }
 
     return NextResponse.json(data, {
@@ -58,7 +45,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       },
     })
   } catch (error) {
-    console.error("Get member API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }
@@ -100,7 +86,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       )
     }
   } catch (error) {
-    console.error("Update member API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }
@@ -139,7 +124,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       )
     }
   } catch (error) {
-    console.error("Delete member API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }

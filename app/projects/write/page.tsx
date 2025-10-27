@@ -81,10 +81,8 @@ export default function WriteProjectPage() {
 
       // Step 1에서는 프론트엔드 state에만 저장하고 Step 2로 이동
       // 백엔드 API는 Step 2에서 파일과 함께 호출
-      console.log("Step 1 완료 - 다음 단계로 이동")
       setCurrentStep(2)
     } catch (error) {
-      console.error("Error in step 1:", error)
       alert("오류가 발생했습니다.")
     } finally {
       setLoading(false)
@@ -122,8 +120,6 @@ export default function WriteProjectPage() {
         period: formData.conferenceName || "",
       }
 
-      console.log("Creating project with data:", projectData)
-
       const projectInfoResponse = await fetch("/api/project/uploadInfo", {
         method: "POST",
         headers: {
@@ -134,7 +130,6 @@ export default function WriteProjectPage() {
       })
 
       const projectInfoResult = await projectInfoResponse.json()
-      console.log("Project creation result:", projectInfoResult)
 
       if (!projectInfoResult.success) {
         throw new Error(projectInfoResult.error || "프로젝트 생성에 실패했습니다.")
@@ -144,16 +139,12 @@ export default function WriteProjectPage() {
       if (!createdProjectId) {
         throw new Error("프로젝트 ID를 받지 못했습니다.")
       }
-
-      console.log("Created project ID:", createdProjectId)
       
       // 2. 썸네일 업로드
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", `thumbnail/${formData.title}`)
       thumbnailFormData.append("projectId", createdProjectId.toString())
-      
-      console.log("Uploading thumbnail for project:", createdProjectId)
 
       const thumbnailResponse = await fetch(`/api/project/upload`, {
         method: "POST",
@@ -164,7 +155,6 @@ export default function WriteProjectPage() {
       })
 
       const thumbnailResult = await thumbnailResponse.json()
-      console.log("Thumbnail upload result:", thumbnailResult)
       
       if (!thumbnailResult.success) {
         throw new Error(thumbnailResult.error || "썸네일 업로드에 실패했습니다.")
@@ -175,8 +165,6 @@ export default function WriteProjectPage() {
       projectFormData.append("file", projectFile)
       projectFormData.append("type", `ppt/${formData.title}`)
       projectFormData.append("projectId", createdProjectId.toString())
-      
-      console.log("Uploading PPT for project:", createdProjectId)
 
       const projectResponse = await fetch(`/api/project/upload`, {
         method: "POST",
@@ -187,7 +175,6 @@ export default function WriteProjectPage() {
       })
 
       const projectResult = await projectResponse.json()
-      console.log("Project file upload result:", projectResult)
       
       if (!projectResult.success) {
         throw new Error(projectResult.error || "프로젝트 파일 업로드에 실패했습니다.")
@@ -200,7 +187,6 @@ export default function WriteProjectPage() {
         window.location.reload()
       }, 100)
     } catch (error) {
-      console.error("Error uploading project:", error)
       alert(`프로젝트 업로드 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setLoading(false)

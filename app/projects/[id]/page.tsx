@@ -38,10 +38,6 @@ export default function ProjectDetailPage() {
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    console.log("Params:", params)
-    console.log("Current user:", user)
-    console.log("User role:", user?.role)
-    console.log("Is Admin:", isAdmin(user?.role))
     if (params.id && params.id !== 'undefined') {
       fetchProject()
     }
@@ -52,26 +48,19 @@ export default function ProjectDetailPage() {
     try {
       setLoading(true)
       const projectId = params.id as string
-      console.log("Fetching project with ID:", projectId)
       
       if (!projectId || projectId === 'undefined') {
-        console.error("Invalid project ID:", projectId)
         return
       }
       
       const response = await fetch(`/api/project/${projectId}`)
-      console.log("Response status:", response.status)
       
       const result = await response.json()
-      console.log("API result:", result)
 
       if (result.success) {
         setProject(result.data)
-      } else {
-        console.error("Failed to fetch project:", result.error)
       }
     } catch (error) {
-      console.error("Error fetching project:", error)
     } finally {
       setLoading(false)
     }
@@ -127,7 +116,6 @@ export default function ProjectDetailPage() {
         setPptUrl(result.data.ppt)
       }
     } catch (error) {
-      console.error("Error fetching PPT URL:", error)
     } finally {
       setSlideLoading(false)
     }
@@ -179,7 +167,6 @@ export default function ProjectDetailPage() {
         return
       }
       
-      console.log("Deleting with S3 key:", s3Key)
       
       // localStorage에서 토큰 가져오기
       const token = localStorage.getItem('auth_token')
@@ -209,7 +196,6 @@ export default function ProjectDetailPage() {
         alert(`삭제 실패: ${result.error}`)
       }
     } catch (error) {
-      console.error("Delete error:", error)
       alert("삭제 중 오류가 발생했습니다.")
     } finally {
       setDeleting(false)
@@ -294,18 +280,11 @@ export default function ProjectDetailPage() {
               
               {/* 관리자용 삭제 버튼 */}
               {(() => {
-                console.log("Rendering delete button section")
-                console.log("User exists:", !!user)
-                console.log("User role:", user?.role)
-                console.log("isAdmin result:", isAdmin(user?.role))
                 return user && isAdmin(user.role) ? (
                   <Button
                     variant="destructive"
                     size="sm"
                     onClick={() => {
-                      console.log("Delete button clicked")
-                      console.log("User:", user)
-                      console.log("User role:", user.role)
                       setShowDeleteDialog(true)
                     }}
                     className="bg-red-600 hover:bg-red-700 text-white flex items-center"

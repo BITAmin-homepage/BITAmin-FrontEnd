@@ -63,36 +63,28 @@ export default function RegisterPage() {
       })
 
       if (response.ok) {
-        console.log("회원가입 성공, 응답 상태:", response.status);
         let resultText = "";
         try {
           const contentType = response.headers.get("content-type");
-          console.log("Content-Type:", contentType);
           if (contentType && contentType.includes("application/json")) {
             const result = await response.json();
             resultText = result.message || "회원가입이 완료되었습니다. 운영진의 승인을 기다려주세요.";
           } else {
             resultText = await response.text();
-            console.log("텍스트 응답:", resultText);
           }
         } catch (e) {
-          console.log("응답 파싱 오류:", e);
           resultText = "회원가입이 완료되었습니다. 운영진의 승인을 기다려주세요.";
         }
 
-        console.log("표시할 메시지:", resultText);
         alert(resultText);
         // 메인 화면으로 리다이렉트
-        console.log("리다이렉트 시작");
         setTimeout(() => {
-          console.log("리다이렉트 실행");
           window.location.href = "/";
         }, 100);
       } else {
         alert("회원가입에 실패했습니다.");
       }
     } catch (error) {
-      console.error("Registration error:", error)
       alert("회원가입 중 오류가 발생했습니다.")
     } finally {
       setLoading(false)

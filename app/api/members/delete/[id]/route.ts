@@ -34,7 +34,6 @@ export async function DELETE(
       }
     })
   } catch (error) {
-    console.error('Member delete error:', error)
     return NextResponse.json(
       { success: false, message: '서버 오류가 발생했습니다.' },
       { status: 500 }

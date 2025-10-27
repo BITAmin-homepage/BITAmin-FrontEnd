@@ -101,24 +101,17 @@ export default function MembersPage() {
       })
       const result = await response.json()
 
-      console.log("Approved members API response:", result)
-      console.log("First member:", result.data?.[0])
-      console.log("First member image:", result.data?.[0]?.image)
-
       if (result.success) {
         // image 필드를 profileImage로 매핑
         const mappedMembers = result.data.map((member: Member) => ({
           ...member,
           profileImage: member.image || member.profileImage
         }))
-        console.log("Mapped members:", mappedMembers[0])
         setMembers(mappedMembers)
       } else {
-        console.error("Failed to fetch members:", result.message)
         setMembers([]) // 빈 배열로 초기화
       }
     } catch (error) {
-      console.error("Error fetching members:", error)
       setMembers([]) // 에러 시 빈 배열로 초기화
     }
   }
@@ -131,8 +124,6 @@ export default function MembersPage() {
       })
       const result = await response.json()
 
-      console.log("Pending members API response:", result)
-
       if (result.success) {
         // image 필드를 profileImage로 매핑
         const mappedMembers = result.data.map((member: Member) => ({
@@ -141,11 +132,9 @@ export default function MembersPage() {
         }))
         setPendingMembers(mappedMembers)
       } else {
-        console.error("Failed to fetch pending members:", result.message)
         setPendingMembers([]) // 빈 배열로 초기화
       }
     } catch (error) {
-      console.error("Error fetching pending members:", error)
       setPendingMembers([]) // 에러 시 빈 배열로 초기화
     } finally {
       setLoading(false)
@@ -175,7 +164,6 @@ export default function MembersPage() {
         alert(result.message || "멤버 승인에 실패했습니다.")
       }
     } catch (error) {
-      console.error("Error approving member:", error)
       alert("멤버 승인 중 오류가 발생했습니다.")
     }
   }
@@ -203,7 +191,6 @@ export default function MembersPage() {
         alert(result.message || "멤버 거부에 실패했습니다.")
       }
     } catch (error) {
-      console.error("Error rejecting member:", error)
       alert("멤버 거부 중 오류가 발생했습니다.")
     }
   }
@@ -232,7 +219,6 @@ export default function MembersPage() {
         alert(result.message || "멤버 삭제에 실패했습니다.")
       }
     } catch (error) {
-      console.error("Error deleting member:", error)
       alert("멤버 삭제 중 오류가 발생했습니다.")
     }
   }
@@ -278,7 +264,6 @@ export default function MembersPage() {
         alert(result.message || "멤버 추가에 실패했습니다.")
       }
     } catch (error) {
-      console.error("Error adding member:", error)
       alert("멤버 추가 중 오류가 발생했습니다.")
     }
   }
@@ -292,7 +277,6 @@ export default function MembersPage() {
       
       // 1. 프로필 이미지가 새로 업로드된 경우 S3에 업로드
       if (profileImageFile) {
-        console.log("Uploading profile image to S3...")
         try {
           const formData = new FormData()
           formData.append("file", profileImageFile)
@@ -308,16 +292,13 @@ export default function MembersPage() {
           })
 
           const uploadResult = await uploadResponse.json()
-          console.log("Profile image upload result:", uploadResult)
           
           if (uploadResult.success) {
             profileImageUrl = uploadResult.data || uploadResult.url
-            console.log("✅ Uploaded profile image URL:", profileImageUrl)
           } else {
             throw new Error(uploadResult.message || "프로필 이미지 업로드에 실패했습니다.")
           }
         } catch (uploadError) {
-          console.error("Profile image upload error:", uploadError)
           alert(`프로필 이미지 업로드 중 오류가 발생했습니다: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`)
           // 업로드 실패 시에도 다른 정보는 저장하도록 계속 진행
         }
@@ -337,8 +318,6 @@ export default function MembersPage() {
         link2: (editingMember as any).link2 || null,
       }
       
-      console.log("Sending update data:", updateData)
-      console.log("Profile image URL:", profileImageUrl)
       
       const response = await fetch(`/api/members/update/${editingMember.memberId}`, {
         method: "PUT",
@@ -363,7 +342,6 @@ export default function MembersPage() {
         alert(result.message || "멤버 수정에 실패했습니다.")
       }
     } catch (error) {
-      console.error("Error editing member:", error)
       alert("멤버 수정 중 오류가 발생했습니다.")
     }
   }
@@ -539,7 +517,6 @@ export default function MembersPage() {
                               alt={`${member.name} 프로필`}
                               className="object-cover w-full h-full"
                               onError={(e) => {
-                                console.error(`❌ ${member.name} 프로필 이미지 로드 실패:`, member.profileImage)
                                 e.currentTarget.style.display = 'none'
                                 e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gray-700"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>'
                               }}
@@ -610,10 +587,6 @@ export default function MembersPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            console.log("Editing member:", member)
-                            console.log("Member link1:", member.link1)
-                            console.log("Member link2:", member.link2)
-                            console.log("Member github:", member.github)
                             // link1과 link2를 github 필드에도 매핑
                             const memberToEdit = {
                               ...member,

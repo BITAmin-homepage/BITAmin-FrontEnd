@@ -28,7 +28,6 @@ export async function PUT(
       },
     })
   } catch (error) {
-    console.error("Error updating member:", error)
     return NextResponse.json(
       { success: false, message: "서버 오류가 발생했습니다." },
       { status: 500 }

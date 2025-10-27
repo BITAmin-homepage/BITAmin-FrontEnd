@@ -44,7 +44,6 @@ export default function ProjectsPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     if (urlParams.get('refresh') === 'true') {
-      console.log("Refresh parameter detected, fetching projects...")
       // 강제 새로고침을 위해 약간의 지연 후 실행
       setTimeout(() => {
         fetchProjects(true) // 강제 새로고침
@@ -112,13 +111,9 @@ export default function ProjectsPage() {
 
       if (result.success) {
         // 백엔드 응답 데이터를 그대로 사용 (projectId 포함)
-        console.log("Projects loaded:", result.data)
         setProjects(result.data)
-      } else {
-        console.error("Failed to fetch projects:", result.error)
       }
     } catch (error) {
-      console.error("Error fetching projects:", error)
     } finally {
       setLoading(false)
     }
@@ -242,7 +237,6 @@ export default function ProjectsPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project, index) => {
                 const awardBadge = project.award ? getAwardBadge(project.award) : null
-                console.log("Project:", project, "ProjectId:", project.projectId)
                 
                 return (
                 <Card
@@ -258,12 +252,7 @@ export default function ProjectsPage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                         unoptimized={true}
                         onError={(e) => {
-                          console.error("Image load error:", project.thumbnail)
-                          console.error("Image URL:", project.thumbnail)
                           e.currentTarget.style.display = 'none'
-                        }}
-                        onLoad={() => {
-                          console.log("Image loaded successfully:", project.thumbnail)
                         }}
                       />
                     ) : (

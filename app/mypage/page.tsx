@@ -56,10 +56,6 @@ export default function MyPage() {
       // 인증 체크가 완료되고 인증되지 않은 경우에만 리다이렉트
       router.push("/login")
     } else if (user) {
-      console.log("마이페이지 user 데이터:", user)
-      console.log("user.link1:", user.link1)
-      console.log("user.link2:", user.link2)
-      
       setEditData({
         name: user.name || "",
         gender: user.gender || "",
@@ -90,11 +86,7 @@ export default function MyPage() {
           })
           if (res.ok) {
             const result = await res.json()
-            console.log("회원 정보 조회 결과:", result)
             if (result?.success && result?.data) {
-              console.log("프로필 이미지 URL (백엔드):", result.data.profileImage)
-              console.log("이미지 필드 (백엔드):", result.data.image)
-              
               // 백엔드 API 응답을 우선 사용 (image 또는 profileImage)
               const finalProfileImage = result.data.profileImage || result.data.image || ""
               
@@ -103,12 +95,10 @@ export default function MyPage() {
                 profileImage: finalProfileImage
               }
               
-              console.log("✅ 최종 프로필 이미지 URL:", mergedData.profileImage)
               setFetchedUser(mergedData)
             }
           }
         } catch (e) {
-          console.error("회원 정보 조회 실패", e)
         }
       }
       fetchMemberInfo()
@@ -154,9 +144,6 @@ export default function MyPage() {
 
       // 1. 프로필 이미지가 새로 업로드된 경우 S3에 업로드
       if (profileImageFile) {
-        console.log("Uploading profile image to S3...")
-        console.log("Profile image file:", profileImageFile.name, profileImageFile.size)
-        
         try {
           const formData = new FormData()
           formData.append("file", profileImageFile)
@@ -172,27 +159,19 @@ export default function MyPage() {
           })
 
           const uploadResult = await uploadResponse.json()
-          console.log("Profile image upload result:", uploadResult)
-          console.log("Upload result data:", uploadResult.data)
-          console.log("Upload result url:", uploadResult.url)
           
           if (uploadResult.success) {
             // S3 URL 추출
             profileImageUrl = uploadResult.data || uploadResult.url
-            console.log("✅ Uploaded profile image URL:", profileImageUrl)
             
-            if (!profileImageUrl) {
-              console.error("⚠️ 프로필 이미지 URL이 비어있습니다!")
-            } else {
+            if (profileImageUrl) {
               // localStorage에 프로필 이미지 URL 저장 (백엔드가 반환하지 않는 경우 대비)
               localStorage.setItem(`profile_image_${userId}`, profileImageUrl)
-              console.log("✅ localStorage에 프로필 이미지 저장:", profileImageUrl)
             }
           } else {
             throw new Error(uploadResult.message || "프로필 이미지 업로드에 실패했습니다.")
           }
         } catch (uploadError) {
-          console.error("Profile image upload error:", uploadError)
           alert(`프로필 이미지 업로드 중 오류가 발생했습니다: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`)
           // 업로드 실패 시에도 다른 정보는 저장하도록 계속 진행
         }
@@ -217,10 +196,6 @@ export default function MyPage() {
         profileImage: profileImageUrl || (currentUser as any).profileImage || "" // S3 URL 포함
       }
 
-      console.log("수정할 데이터:", updateData)
-      console.log("사용자 ID:", userId)
-      console.log("📸 프로필 이미지 URL (updateData):", updateData.profileImage)
-
       const response = await fetch(API_ENDPOINTS.MEMBERS.UPDATE(userId.toString()), {
         method: "PUT",
         headers: {
@@ -231,8 +206,6 @@ export default function MyPage() {
       })
 
       const result = await response.json()
-      console.log("수정 응답:", result)
-      console.log("응답 상태:", response.status)
 
       if (response.ok && result.success) {
         alert("정보가 성공적으로 수정되었습니다.")
@@ -263,7 +236,6 @@ export default function MyPage() {
         
         // 프로필 이미지가 업로드된 경우 즉시 화면에 반영
         if (profileImageUrl) {
-          console.log("프로필 이미지 즉시 반영:", profileImageUrl)
           // fetchedUser 업데이트
           if (fetchedUser) {
             setFetchedUser({
@@ -280,16 +252,12 @@ export default function MyPage() {
           })
           if (refreshRes.ok) {
             const refreshed = await refreshRes.json()
-            console.log("🔄 최신 정보 갱신 결과:", refreshed)
             if (refreshed?.success && refreshed?.data) {
               const d = refreshed.data
-              console.log("📸 백엔드에서 반환된 프로필 이미지:", d.profileImage)
-              console.log("📸 백엔드 이미지 필드:", d.image)
               
               // 백엔드 API 응답을 우선 사용 (image 또는 profileImage)
               // 업로드 직후라면 profileImageUrl도 고려
               const finalProfileImage = d.profileImage || d.image || profileImageUrl || ""
-              console.log("✅ 최종 프로필 이미지 (갱신):", finalProfileImage)
               
               const mergedData = {
                 ...d,
@@ -312,14 +280,12 @@ export default function MyPage() {
                 profileImage: finalProfileImage,
               })
             } else {
-              console.log("⚠️ 백엔드 응답 실패, 로컬 값 사용")
               // 실패 시 로컬 값으로라도 즉시 반영
               // @ts-ignore
               setFetchedUser(updatedUser)
             }
           }
         } catch (e) {
-          console.error("⚠️ 네트워크 오류, 로컬 값 사용:", e)
           // 네트워크 오류 시에도 페이지 이탈 없이 로컬 값 적용
           // @ts-ignore
           setFetchedUser(updatedUser)
@@ -328,7 +294,6 @@ export default function MyPage() {
         alert(result.message || "정보 수정에 실패했습니다.")
       }
     } catch (error) {
-      console.error("Error updating member:", error)
       alert("정보 수정 중 오류가 발생했습니다.")
     } finally {
       setIsLoading(false)
@@ -373,8 +338,6 @@ export default function MyPage() {
                 const userId = (user.memberId || user.id)?.toString()
                 const storedProfileImage = userId ? localStorage.getItem(`profile_image_${userId}`) : null
                 const currentProfileImage = (currentUser as any).profileImage || storedProfileImage || ""
-                console.log("다이얼로그 열림 - 현재 프로필 이미지:", currentProfileImage)
-                console.log("다이얼로그 열림 - localStorage 프로필 이미지:", storedProfileImage)
                 setProfileImagePreview(currentProfileImage)
               }
             }}

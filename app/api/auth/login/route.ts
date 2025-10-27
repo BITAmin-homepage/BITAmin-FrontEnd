@@ -85,7 +85,6 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('Login proxy error:', error)
     return NextResponse.json(
       { success: false, message: '서버 오류가 발생했습니다.' },
       { status: 500 }

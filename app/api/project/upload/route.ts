@@ -9,16 +9,9 @@ export async function POST(request: NextRequest) {
     }
 
     const formData = await request.formData()
-    
-    // FormData 내용 로깅
-    console.log("FormData contents:")
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value)
-    }
 
     // 백엔드로 FormData 그대로 전달
     const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
-    console.log("Backend URL:", backendUrl)
     
     const response = await fetch(`${backendUrl}/api/project/upload`, {
       method: "POST",
@@ -27,22 +20,16 @@ export async function POST(request: NextRequest) {
       },
       body: formData,
     })
-
-    console.log("Backend response status:", response.status)
-    console.log("Backend response headers:", Object.fromEntries(response.headers.entries()))
     
     // 백엔드에서 S3 URL을 텍스트로 반환하므로 텍스트로 처리
     const responseText = await response.text()
-    console.log("Backend response text:", responseText)
     
     let result
     try {
       // JSON으로 파싱 시도
       result = JSON.parse(responseText)
-      console.log("Backend response JSON:", result)
     } catch (jsonError) {
       // JSON이 아닌 경우 S3 URL로 처리
-      console.log("Backend returned S3 URL (not JSON):", responseText)
       result = {
         success: true,
         url: responseText,
@@ -66,16 +53,9 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error("Upload files API error:", error)
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error("Error details:", {
-      message: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
-    })
     return NextResponse.json({ 
       success: false, 
-      error: `서버 오류가 발생했습니다: ${errorMessage}` 
+      error: "서버 오류가 발생했습니다" 
     }, { status: 500 })
   }
 }

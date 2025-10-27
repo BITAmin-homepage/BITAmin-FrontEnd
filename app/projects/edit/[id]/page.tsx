@@ -79,7 +79,6 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         router.push("/projects")
       }
     } catch (error) {
-      console.error("Error fetching project:", error)
       alert("프로젝트 정보를 불러오는 중 오류가 발생했습니다.")
       router.push("/projects")
     } finally {
@@ -119,15 +118,11 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         })
 
         const uploadResult = await uploadResponse.json()
-        if (!uploadResult.success) {
-          console.error("File upload failed:", uploadResult.error)
-        }
       }
 
       alert("프로젝트가 수정되었습니다!")
       router.push("/projects?refresh=true")
     } catch (error) {
-      console.error("Error updating project:", error)
       alert("프로젝트 수정 중 오류가 발생했습니다.")
     } finally {
       setLoading(false)

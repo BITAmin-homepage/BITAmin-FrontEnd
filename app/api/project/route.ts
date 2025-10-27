@@ -40,7 +40,6 @@ export async function GET(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error("Projects API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }
@@ -54,7 +53,6 @@ export async function POST(request: NextRequest) {
     }
 
     const projectData = await request.json()
-    console.log("Project data to send:", projectData)
 
     const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     const response = await fetch(`${backendUrl}/api/project`, {
@@ -67,8 +65,6 @@ export async function POST(request: NextRequest) {
     })
 
     const result = await response.json()
-    console.log("Backend project creation response:", result)
-    console.log("Response status:", response.status)
 
     if (response.ok && result.success) {
       return NextResponse.json({
@@ -85,7 +81,6 @@ export async function POST(request: NextRequest) {
       )
     }
   } catch (error) {
-    console.error("Create project API error:", error)
     return NextResponse.json({ success: false, error: "서버 오류가 발생했습니다." }, { status: 500 })
   }
 }
