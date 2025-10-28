@@ -335,7 +335,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-4 p-4 bg-gray-800 rounded-lg">
-            <p className="text-sm text-gray-400 mb-2">📌 회원가입 안내</p>
+            <p className="text-sm text-gray-400 mb-2">회원가입 안내</p>
             <p className="text-xs text-gray-500">회원가입 후 운영진의 승인을 받아야 로그인이 가능합니다.</p>
           </div>
 
