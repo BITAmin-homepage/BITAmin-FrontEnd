@@ -22,7 +22,7 @@ interface Member {
 export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCohort, setSelectedCohort] = useState("all")
+  const [selectedCohort, setSelectedCohort] = useState("active")
 
   useEffect(() => {
     fetchMembers()
@@ -56,15 +56,29 @@ export default function MembersPage() {
     }
   }
 
+  const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
+  
+  // 활동 중인 기수 (최신 2개 기수)
+  const activeCohorts = cohorts.slice(0, 2)
+
   const filteredMembers = members.filter((member) => {
-    const matchesCohort = selectedCohort === "all" || member.cohort.toString() === selectedCohort
-    return matchesCohort
+    if (selectedCohort === "all") {
+      return true
+    } else if (selectedCohort === "active") {
+      // 활동 중인 최신 2개 기수만 표시
+      return activeCohorts.includes(member.cohort)
+    } else {
+      return member.cohort.toString() === selectedCohort
+    }
   })
 
-  const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
+  // 표시할 기수 목록 결정
+  const displayCohorts = selectedCohort === "active" ? activeCohorts : 
+                         selectedCohort === "all" ? cohorts :
+                         cohorts.filter(c => c.toString() === selectedCohort)
 
   // 기수별로 그룹화
-  const membersByCohort = cohorts.reduce(
+  const membersByCohort = displayCohorts.reduce(
     (acc, cohort) => {
       acc[cohort] = filteredMembers.filter((member) => member.cohort === cohort)
       return acc
@@ -104,6 +118,9 @@ export default function MembersPage() {
                 <SelectValue placeholder="기수 선택" />
               </SelectTrigger>
               <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                <SelectItem value="active" className="text-white hover:bg-gray-700 focus:bg-gray-700">
+                  활동 중인 기수
+                </SelectItem>
                 <SelectItem value="all" className="text-white hover:bg-gray-700 focus:bg-gray-700">전체 기수</SelectItem>
                 {cohorts.map((cohort) => (
                   <SelectItem key={cohort} value={cohort.toString()} className="text-white hover:bg-gray-700 focus:bg-gray-700">
@@ -117,7 +134,7 @@ export default function MembersPage() {
 
         {/* 기수별 멤버 목록 */}
         <div className="space-y-10">
-          {cohorts.map((cohort) => {
+          {displayCohorts.map((cohort) => {
             const cohortMembers = membersByCohort[cohort]
             if (!cohortMembers || cohortMembers.length === 0) return null
 

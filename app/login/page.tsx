@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -62,6 +63,16 @@ export default function LoginPage() {
         {/* 가벼운 오버레이 */}
         <div className="absolute inset-0 bg-black/20" />
       </div>
+
+      {/* 뒤로가기 버튼 */}
+      <Button
+        onClick={() => router.push("/")}
+        variant="ghost"
+        className="absolute top-4 left-4 z-20 text-gray-200 hover:text-white hover:bg-white/10"
+      >
+        <ArrowLeft className="h-5 w-5 mr-2" />
+        메인으로
+      </Button>
       
       <Card className="w-full max-w-md bg-gray-900/95 backdrop-blur-md border-gray-700 relative z-10">
         <CardHeader className="text-center">
