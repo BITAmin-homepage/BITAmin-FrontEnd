@@ -179,20 +179,20 @@ export default function ConferencePage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                   <div className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
+                    <User className="h-3 w-3 sm:h-4 sm:w-4" />
                     {post.author}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    게시일: {post.date}
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                    게시: {post.date}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    행사일: {post.eventDate}
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                    행사: {post.eventDate}
                   </div>
-                  <div>조회수 {post.views}</div>
+                  <div>조회 {post.views}</div>
                 </div>
               </CardHeader>
 

@@ -108,20 +108,20 @@ export function ReviewSection() {
         </button>
 
         {/* 카드 영역 */}
-        <div className="relative w-full h-[400px] flex items-center justify-center overflow-visible">
+        <div className="relative w-full h-[400px] md:h-[400px] flex items-center justify-center overflow-visible">
           {reviews.map((review, index) => {
             const distance = (index - current + reviews.length) % reviews.length
 
             // 현재 카드 주변에만 표시 (양옆 포함 3개만)
             if (distance > 2 && distance < reviews.length - 2) return null
 
-            // 거리별 위치 조정
+            // 거리별 위치 조정 (모바일과 데스크톱 반응형)
             const variants = {
               0: { scale: 1, opacity: 1, zIndex: 3, x: 0 },
-              1: { scale: 0.85, opacity: 0.5, zIndex: 2, x: 220 },
-              2: { scale: 0.75, opacity: 0.25, zIndex: 1, x: 380 },
-              [-1]: { scale: 0.85, opacity: 0.5, zIndex: 2, x: -220 },
-              [-2]: { scale: 0.75, opacity: 0.25, zIndex: 1, x: -380 },
+              1: { scale: 0.85, opacity: 0.5, zIndex: 2, x: window.innerWidth >= 768 ? 220 : 150 },
+              2: { scale: 0.75, opacity: 0.25, zIndex: 1, x: window.innerWidth >= 768 ? 380 : 250 },
+              [-1]: { scale: 0.85, opacity: 0.5, zIndex: 2, x: window.innerWidth >= 768 ? -220 : -150 },
+              [-2]: { scale: 0.75, opacity: 0.25, zIndex: 1, x: window.innerWidth >= 768 ? -380 : -250 },
             }
 
             const distanceKey = distance <= 2 ? distance : distance - reviews.length
@@ -129,20 +129,20 @@ export function ReviewSection() {
             return (
               <motion.div
                 key={review.id}
-                className="absolute bg-[#111]/60 border border-gray-600 rounded-xl shadow-2xl p-6 md:p-8 text-left backdrop-blur-md w-[320px] md:w-[400px]"
+                className="absolute bg-[#111]/60 border border-gray-600 rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 text-left backdrop-blur-md w-[280px] sm:w-[320px] md:w-[400px]"
                 animate={variants[distanceKey as keyof typeof variants]}
                 transition={{ duration: 0.6, ease: "easeInOut" }}
               >
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-3 md:mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="bg-white text-black font-bold px-2 py-1 rounded text-sm">
+                    <span className="bg-white text-black font-bold px-2 py-1 rounded text-xs sm:text-sm">
                       {review.gen}
                     </span>
-                    <span className="text-gray-300 text-sm">{review.role}</span>
+                    <span className="text-gray-300 text-xs sm:text-sm">{review.role}</span>
                   </div>
-                  <span className="text-gray-400 text-sm">{review.name}</span>
+                  <span className="text-gray-400 text-xs sm:text-sm">{review.name}</span>
                 </div>
-                <p className="text-gray-200 text-sm md:text-base leading-relaxed whitespace-pre-line">
+                <p className="text-gray-200 text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-line">
                   {review.text}
                 </p>
               </motion.div>

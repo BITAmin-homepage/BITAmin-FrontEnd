@@ -134,12 +134,12 @@ export default function RegisterPage() {
         메인으로
       </Button>
       
-      <Card className="w-full max-w-2xl bg-gray-900/95 backdrop-blur-md border-gray-700 relative z-10">
+      <Card className="w-full max-w-2xl mx-4 sm:mx-auto bg-gray-900/95 backdrop-blur-md border-gray-700 relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Image src="/images/logo_2.png" alt="비타민 로고" width={60} height={60} className="h-15 w-15" />
           </div>
-          <CardTitle className="text-2xl font-bold text-white">회원가입</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-bold text-white">회원가입</CardTitle>
           <CardDescription className="text-gray-400">비타민 동아리에 가입하여 함께 성장해요</CardDescription>
         </CardHeader>
         <CardContent>

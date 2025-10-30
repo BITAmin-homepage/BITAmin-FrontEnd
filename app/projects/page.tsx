@@ -168,8 +168,8 @@ export default function ProjectsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* 헤더 섹션 */}
           <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">프로젝트</h1>
-            <p className="text-xl text-gray-400 mb-8">비타민 멤버들이 진행한 우수 프로젝트를 확인하세요</p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">프로젝트</h1>
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8">비타민 멤버들이 진행한 우수 프로젝트를 확인하세요</p>
 
             {/* 프로젝트 업로드 버튼 (운영진만) */}
             {user && isAdmin(user.role) && (
@@ -298,15 +298,15 @@ export default function ProjectsPage() {
                       ))}
                     </div>
 
-                    {/* 기간과 참여자 이름을 한 줄에 배치 */}
-                    <div className="flex items-center gap-4 text-gray-500 text-sm mb-4">
+                    {/* 기간과 참여자 이름 */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-gray-500 text-sm mb-4">
                       <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4 text-[#d3431a]" />
-                        <span>{project.period}</span>
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-[#d3431a] flex-shrink-0" />
+                        <span className="text-xs sm:text-sm">{project.period}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-[#d3431a]" />
-                        <span className="line-clamp-1">{project.member}</span>
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-[#d3431a] flex-shrink-0" />
+                        <span className="line-clamp-1 text-xs sm:text-sm">{project.member}</span>
                       </div>
                     </div>
 

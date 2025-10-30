@@ -91,7 +91,7 @@ export default function Curriculum() {
 
         {/* 타임라인 */}
         <div className="w-full border-t border-white/20 mt-10 relative">
-          <div className="flex justify-between text-xs md:text-sm font-medium text-white/70 mt-1 relative">
+          <div className="flex justify-between text-[10px] sm:text-xs md:text-sm font-medium text-white/70 mt-1 relative">
             {curriculum.map((item, i) => (
               <div
                 key={i}
@@ -99,14 +99,14 @@ export default function Curriculum() {
                 className="relative flex flex-col items-center w-full cursor-pointer group"
               >
                 <div
-                  className={`absolute -top-[10px] w-3 h-3 rounded-full transition-all duration-300 ${
+                  className={`absolute -top-[10px] w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
                     activeIndex === i
-                      ? "bg-[#ff6b35] ring-4 ring-[#ff6b35]/20 scale-110"
+                      ? "bg-[#ff6b35] ring-2 sm:ring-4 ring-[#ff6b35]/20 scale-110"
                       : "bg-white/30 group-hover:bg-white/50"
                   }`}
                 />
                 <span
-                  className={`mt-6 transition ${
+                  className={`mt-4 sm:mt-6 transition text-center px-1 leading-tight ${
                     activeIndex === i
                       ? "text-[#ff6b35] font-semibold"
                       : "text-white/60"

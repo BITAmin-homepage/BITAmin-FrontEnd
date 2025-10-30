@@ -124,12 +124,12 @@ export default function ActivitiesSection() {
         </h2>
 
         {/* polygon 버튼 영역 */}
-        <div className="flex justify-center items-center flex-wrap gap-1 mb-16">
+        <div className="flex justify-center items-center flex-wrap gap-1 sm:gap-2 mb-16 max-w-4xl mx-auto">
           {activities.map((item, i) => (
             <button
               key={i}
               onClick={() => setActiveIndex(i)}
-              className="relative w-40 aspect-[6/3.5] flex items-center justify-center text-base font-semibold transition-all"
+              className="relative w-28 sm:w-32 md:w-36 lg:w-40 aspect-[6/3.5] flex items-center justify-center text-xs sm:text-sm md:text-base font-semibold transition-all"
               style={{
                 backgroundImage: `url(${
                   activeIndex === i

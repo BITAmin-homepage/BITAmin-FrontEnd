@@ -74,7 +74,7 @@ export default function LoginPage() {
         메인으로
       </Button>
       
-      <Card className="w-full max-w-md bg-gray-900/95 backdrop-blur-md border-gray-700 relative z-10">
+      <Card className="w-full max-w-md mx-4 sm:mx-auto bg-gray-900/95 backdrop-blur-md border-gray-700 relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Image src="/images/logo_2.png" alt="비타민 로고" width={60} height={60} className="h-15 w-15" />
