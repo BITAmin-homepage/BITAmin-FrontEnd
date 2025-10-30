@@ -115,13 +115,13 @@ export function ReviewSection() {
             // 현재 카드 주변에만 표시 (양옆 포함 3개만)
             if (distance > 2 && distance < reviews.length - 2) return null
 
-            // 거리별 위치 조정 (모바일과 데스크톱 반응형)
+            // 거리별 위치 조정
             const variants = {
               0: { scale: 1, opacity: 1, zIndex: 3, x: 0 },
-              1: { scale: 0.85, opacity: 0.5, zIndex: 2, x: window.innerWidth >= 768 ? 220 : 150 },
-              2: { scale: 0.75, opacity: 0.25, zIndex: 1, x: window.innerWidth >= 768 ? 380 : 250 },
-              [-1]: { scale: 0.85, opacity: 0.5, zIndex: 2, x: window.innerWidth >= 768 ? -220 : -150 },
-              [-2]: { scale: 0.75, opacity: 0.25, zIndex: 1, x: window.innerWidth >= 768 ? -380 : -250 },
+              1: { scale: 0.85, opacity: 0.5, zIndex: 2, x: 220 },
+              2: { scale: 0.75, opacity: 0.25, zIndex: 1, x: 380 },
+              [-1]: { scale: 0.85, opacity: 0.5, zIndex: 2, x: -220 },
+              [-2]: { scale: 0.75, opacity: 0.25, zIndex: 1, x: -380 },
             }
 
             const distanceKey = distance <= 2 ? distance : distance - reviews.length
