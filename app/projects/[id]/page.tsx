@@ -360,17 +360,17 @@ export default function ProjectDetailPage() {
                             sandbox="allow-same-origin allow-scripts"
                             allow="fullscreen"
                           />
-                          {/* Google Docs Viewer 상단 툴바를 가리는 오버레이 */}
-                          <div className="absolute top-0 left-0 right-0 h-16 bg-black/90 pointer-events-none z-10"></div>
+                          {/* Google Docs Viewer 상단 툴바를 가리는 오버레이 - 모바일에서 더 작게 */}
+                          <div className="absolute top-0 left-0 right-0 h-8 sm:h-12 md:h-16 bg-black/80 pointer-events-none z-10"></div>
                         </>
                       )}
                     </div>
 
-                    {/* 하단 컨트롤 */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
+                    {/* 하단 컨트롤 - 모바일에서 더 작게 */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/40 p-2 sm:p-3 md:p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-white text-sm">
+                          <span className="text-white text-xs sm:text-sm">
                             PPT 뷰어
                           </span>
                         </div>
@@ -381,20 +381,22 @@ export default function ProjectDetailPage() {
                               onClick={() => window.open(pptUrl, '_blank')}
                               variant="outline"
                               size="sm"
-                              className="bg-black/50 border-white/20 text-white hover:bg-white/10"
+                              className="bg-black/50 border-white/20 text-white hover:bg-white/10 text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
                             >
-                              <Download className="w-4 h-4 mr-2" />
-                              다운로드
+                              <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                              <span className="hidden sm:inline">다운로드</span>
+                              <span className="sm:hidden">다운</span>
                             </Button>
                           ) : (
                             <Button
                               disabled
                               variant="outline"
                               size="sm"
-                              className="bg-black/50 border-gray-600 text-gray-400 cursor-not-allowed"
+                              className="bg-black/50 border-gray-600 text-gray-400 cursor-not-allowed text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
                             >
-                              <Lock className="w-4 h-4 mr-2" />
-                              로그인 필요
+                              <Lock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                              <span className="hidden sm:inline">로그인 필요</span>
+                              <span className="sm:hidden">로그인</span>
                             </Button>
                           )}
                         </div>
