@@ -65,7 +65,7 @@ export default function AwardSection() {
                       {pair[0].split('|').map((part, i, arr) => (
                         <span key={i} className="inline-block">
                           {part.trim()}
-                          {i < arr.length - 1 && ' | '}
+                          {i < arr.length - 1 && <span>&nbsp;|&nbsp;</span>}
                         </span>
                       ))}
                     </p>
@@ -87,7 +87,7 @@ export default function AwardSection() {
                       {pair[1].split('|').map((part, i, arr) => (
                         <span key={i} className="inline-block">
                           {part.trim()}
-                          {i < arr.length - 1 && ' | '}
+                          {i < arr.length - 1 && <span>&nbsp;|&nbsp;</span>}
                         </span>
                       ))}
                     </p>
