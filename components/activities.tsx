@@ -13,16 +13,16 @@ export function ActivitiesSection() {
     },
     { 
       title: "스터디",
-      description: "개발자 스터디 및 알고리즘 학습",
-      image: "/images/gang.jpg",
+      description: "스터디 및 알고리즘 학습",
+      image: "/images/study.jpg",
     },
     { 
       title: "현직자 특강",
       description: "업계 전문가와의 실무 중심 세미나",
-      image: "/images/gang.jpg",
+      image: "/images/careerSeminar.jpg",
     },
     { 
-      title: "데이터톤",
+      title: "연합 데이터톤",
       description: "실무형 데이터톤 및 기업 연계 프로젝트",
       image: "/images/datathon.jpg",
     },
@@ -32,12 +32,12 @@ export function ActivitiesSection() {
       image: "/images/conference.jpg",
     },
     { 
-      title: "소모임",
-      description: "관심사별 친목 및 협업 활동",
-      image: "/images/gang.jpg",
+      title: "홈커밍데이",
+      description: "홈홈커밍",
+      image: "/images/homecoming.jpg",
     },
     { 
-      title: "MT",
+      title: "네트워킹",
       description: "학기 초·말 단체 MT 및 네트워킹",
       image: "/images/network.jpg",
     },

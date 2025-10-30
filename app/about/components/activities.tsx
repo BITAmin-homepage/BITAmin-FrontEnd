@@ -47,7 +47,7 @@ export default function ActivitiesSection() {
       팀원들과 함께 공부할 내용을 정하고, 서로의 지식을 공유하며, 
       개인의 역량 뿐만 아니라 함께 성장하는 경험을 만들어갈 수 있습니다.
       `,
-      image: "/images/gang.jpg",
+      image: "/images/study.jpg",
     },
     {
       title: "현직자 특강",
@@ -64,7 +64,7 @@ export default function ActivitiesSection() {
       동아리원들이 앞으로의 진로를 구체적으로 설계하고 
       준비할 수 있는 소중한 성장의 장이 됩니다.
       `,
-      image: "/images/gang.jpg",
+      image: "/images/careerSeminar.jpg",
     },
     {
       title: "연합 데이터톤",
@@ -95,7 +95,7 @@ export default function ActivitiesSection() {
       동시에 취업과 대학원 진학에 도움이 되는 실질적인 정보도 
       얻을 수 있습니다.
       `,
-      image: "/images/gang.jpg",
+      image: "/images/homecoming.jpg",
     },
     {
       title: "네트워킹",
