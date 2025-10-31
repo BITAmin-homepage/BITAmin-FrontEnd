@@ -30,30 +30,30 @@ export function UniversitiesSection() {
     { name: "덕성여자대학교", image: "/images/school/duksung.png" },
     { name: "동덕여자대학교", image: "/images/school/dongduk.png" },
     { name: "서울여자대학교", image: "/images/school/swu.png" },
-    { name: "한국교통대학교", image: "/images/school/tu.png" },
+    { name: "한국공학대학교", image: "/images/school/tu.png" },
   ]
 
-  // 동일한 리스트 2개를 만들어 무한 회전처럼 보이게 함
-  const scrollingUniversities = [...universities, ...universities]
+  // 리스트를 3번 복제하여 충분히 긴 스크롤 만들기 (28개 * 3 = 84개)
+  const scrollingUniversities = [...universities, ...universities, ...universities]
 
   return (
     <section className="relative z-10 mt-16 md:mt-24 py-16 md:py-20 bg-transparent overflow-hidden">
       {/* 제목 영역 */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 max-w-5xl mx-auto px-6">
         <p className="text-base md:text-lg text-gray-400 font-medium mb-1">활동 대학</p>
         <h2 className="text-2xl md:text-4xl font-bold text-[#ff5722]">
           BITAmin은 28개의 소속 학교의 학생들 함께 모여 학습합니다
         </h2>
       </div>
 
-      {/* 슬라이드 영역 — 폭을 글씨보다 좁게 */}
-      <div className="relative mx-auto w-[70vw] md:w-[60vw] lg:w-[50vw] overflow-hidden">
+      {/* 슬라이드 영역 — 제목 글씨 크기만큼만 */}
+      <div className="relative max-w-5xl mx-auto px-6 overflow-hidden">
         <motion.div
           className="flex items-center space-x-8 md:space-x-12"
-          animate={{ x: ["0%", "-50%"] }}
+          animate={{ x: ["0%", "-66.66%"] }}
           transition={{
             repeat: Infinity,
-            duration: 25, // 속도 조절 (숫자 작을수록 빠름)
+            duration: 60, // 슬라이드 속도 (숫자 작을수록 빠름)
             ease: "linear",
           }}
         >
