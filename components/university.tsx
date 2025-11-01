@@ -33,7 +33,7 @@ export function UniversitiesSection() {
     { name: "한국공학대학교", image: "/images/school/tu.png" },
   ]
 
-  // 리스트를 3번 복제하여 충분히 긴 스크롤 만들기 (28개 * 3 = 84개)
+  // 리스트를 3번 복제 (총 84개) - seamless loop를 위해
   const scrollingUniversities = [...universities, ...universities, ...universities]
 
   return (
@@ -47,14 +47,16 @@ export function UniversitiesSection() {
       </div>
 
       {/* 슬라이드 영역 — 제목 글씨 크기만큼만 */}
-      <div className="relative max-w-5xl mx-auto px-6 overflow-hidden">
+      <div className="relative w-full overflow-hidden">
         <motion.div
-          className="flex items-center space-x-8 md:space-x-12"
-          animate={{ x: ["0%", "-66.66%"] }}
+          className="flex items-center space-x-8 md:space-x-12 px-6"
+          style={{ width: "max-content" }}
+          animate={{ x: ["0%", "-33.33%"] }}
           transition={{
             repeat: Infinity,
-            duration: 60, // 슬라이드 속도 (숫자 작을수록 빠름)
+            duration: 80, // 슬라이드 속도 (숫자 작을수록 빠름)
             ease: "linear",
+            repeatType: "loop",
           }}
         >
           {scrollingUniversities.map((u, index) => (

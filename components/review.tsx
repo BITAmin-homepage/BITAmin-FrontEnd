@@ -85,10 +85,10 @@ export function ReviewSection() {
 
       {/* 제목 */}
       <div className="text-center mb-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">이전 기수 후기</h2>
-        <p className="text-gray-400 text-sm md:text-base">
+        <p className="text-sm md:text-base text-gray-400 mb-2">이전 기수 후기</p>
+        <h2 className="text-2xl md:text-3xl font-bold text-[#ff5722]">
           BITAmin의 멤버들이 직접 전하는 생생한 경험담
-        </p>
+        </h2>
       </div>
 
       {/* 슬라이더 */}

@@ -31,7 +31,7 @@ export default function AwardSection() {
       className="relative text-white py-24 overflow-hidden"
       style={{
         background:
-          "radial-gradient(circle at center, rgba(255,110,40,0.35) 0%, rgba(0,0,0,1) 70%)",
+          "radial-gradient(ellipse 200% 150% at center 25%, rgba(255,110,40,0.2) 0%, rgba(255,90,40,0.12) 25%, rgba(50,30,20,0.3) 45%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,1) 100%)",
       }}
     >
       <div className="max-w-6xl mx-auto px-6 text-center">
@@ -59,15 +59,10 @@ export default function AwardSection() {
                 className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative"
               >
                 {/* 왼쪽 */}
-                <div className="md:pr-8 md:text-right text-white/90">
+                <div className="md:pr-20 md:text-right text-white/90 flex justify-end">
                   {pair[0] && (
-                    <p className="text-base md:text-lg leading-relaxed" style={{ wordBreak: 'keep-all' }}>
-                      {pair[0].split('|').map((part, i, arr) => (
-                        <span key={i} className="inline-block">
-                          {part.trim()}
-                          {i < arr.length - 1 && <span>&nbsp;|&nbsp;</span>}
-                        </span>
-                      ))}
+                    <p className="text-base md:text-lg leading-relaxed whitespace-nowrap mr-2">
+                      {pair[0]}
                     </p>
                   )}
                 </div>
@@ -81,15 +76,10 @@ export default function AwardSection() {
                 </div>
 
                 {/* 오른쪽 */}
-                <div className="md:pl-8 md:text-left text-white/90">
+                <div className="md:pl-20 md:text-left text-white/90">
                   {pair[1] && (
-                    <p className="text-base md:text-lg leading-relaxed" style={{ wordBreak: 'keep-all' }}>
-                      {pair[1].split('|').map((part, i, arr) => (
-                        <span key={i} className="inline-block">
-                          {part.trim()}
-                          {i < arr.length - 1 && <span>&nbsp;|&nbsp;</span>}
-                        </span>
-                      ))}
+                    <p className="text-base md:text-lg leading-relaxed whitespace-nowrap ml-2">
+                      {pair[1]}
                     </p>
                   )}
                 </div>

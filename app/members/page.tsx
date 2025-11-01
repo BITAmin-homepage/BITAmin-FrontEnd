@@ -77,10 +77,31 @@ export default function MembersPage() {
                          selectedCohort === "all" ? cohorts :
                          cohorts.filter(c => c.toString() === selectedCohort)
 
-  // 기수별로 그룹화
+  // 역할 정렬 순서 정의
+  const getRoleOrder = (depart: string | null): number => {
+    if (!depart) return 4 // 역할 없음 (멤버)
+    const role = depart.toLowerCase()
+    if (role.includes('회장') || role.includes('president')) return 1
+    if (role.includes('기획') || role.includes('planning')) return 2
+    if (role.includes('교육') || role.includes('education')) return 2
+    if (role.includes('총무') || role.includes('affairs')) return 2
+    return 3 // 기타 역할
+  }
+
+  // 기수별로 그룹화 및 정렬
   const membersByCohort = displayCohorts.reduce(
     (acc, cohort) => {
-      acc[cohort] = filteredMembers.filter((member) => member.cohort === cohort)
+      const cohortMembers = filteredMembers.filter((member) => member.cohort === cohort)
+      // 역할 순서대로 정렬: 회장 > 기획/교육/총무 > 멤버
+      acc[cohort] = cohortMembers.sort((a, b) => {
+        const orderA = getRoleOrder(a.depart)
+        const orderB = getRoleOrder(b.depart)
+        if (orderA !== orderB) {
+          return orderA - orderB
+        }
+        // 같은 역할 내에서는 이름순 정렬
+        return a.name.localeCompare(b.name, 'ko')
+      })
       return acc
     },
     {} as Record<number, Member[]>,

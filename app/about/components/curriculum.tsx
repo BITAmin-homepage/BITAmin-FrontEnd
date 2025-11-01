@@ -136,9 +136,6 @@ export default function Curriculum() {
                     </div>
                   ))}
                 </div>
-                <p className="mt-4 text-xs text-white/50 text-left">
-                  신입기수의 경우 기존기수 발표 청강
-                </p>
               </div>
 
               <div>
