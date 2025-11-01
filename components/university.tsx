@@ -6,30 +6,30 @@ export function UniversitiesSection() {
     { name: "서울대학교", image: "/images/school/seoul.png" },
     { name: "연세대학교", image: "/images/school/yonsei.png" },
     { name: "고려대학교", image: "/images/school/korea.png" },
+    { name: "서강대학교", image: "/images/school/sogang.png" },
     { name: "성균관대학교", image: "/images/school/sungkyunkwan.png" },
     { name: "한양대학교", image: "/images/school/hanyang.png" },
     { name: "중앙대학교", image: "/images/school/chungang.png" },
-    { name: "경희대학교", image: "/images/school/kyunghee.png" },
+    { name: "경희대학교", image: "/images/school/kyunghee2.png" },
     { name: "한국외국어대학교", image: "/images/school/hufs.png" },
-    { name: "서강대학교", image: "/images/school/sogang.png" },
-    { name: "동국대학교", image: "/images/school/dongguk.png" },
-    { name: "홍익대학교", image: "/images/school/hongik.png" },
-    { name: "숭실대학교", image: "/images/school/soongsil.png" },
-    { name: "세종대학교", image: "/images/school/sejong.png" },
+    { name: "서울시립대학교", image: "/images/school/uos.png" },
     { name: "건국대학교", image: "/images/school/konkuk.png" },
+    { name: "동국대학교", image: "/images/school/dongguk.png" },
+    { name: "홍익대학교", image: "/images/school/hongik2.png" },
+    { name: "숭실대학교", image: "/images/school/soongsil2.png" },
+    { name: "세종대학교", image: "/images/school/sejong.png" },
     { name: "명지대학교", image: "/images/school/myongji.png" },
     { name: "광운대학교", image: "/images/school/kwangwoon.png" },
     { name: "인하대학교", image: "/images/school/inha.png" },
     { name: "아주대학교", image: "/images/school/ajou.png" },
-    { name: "가천대학교", image: "/images/school/gachon.png" },
-    { name: "서울시립대학교", image: "/images/school/uos.png" },
+    { name: "가천대학교", image: "/images/school/gachon2.png" },
     { name: "서울과학기술대학교", image: "/images/school/seoultech.png" },
     { name: "이화여자대학교", image: "/images/school/ewha.png" },
     { name: "숙명여자대학교", image: "/images/school/sookmyung.png" },
     { name: "성신여자대학교", image: "/images/school/sungshin.png" },
     { name: "덕성여자대학교", image: "/images/school/duksung.png" },
     { name: "동덕여자대학교", image: "/images/school/dongduk.png" },
-    { name: "서울여자대학교", image: "/images/school/swu.png" },
+    { name: "서울여자대학교", image: "/images/school/swu2.png" },
     { name: "한국공학대학교", image: "/images/school/tu.png" },
   ]
 
@@ -54,7 +54,7 @@ export function UniversitiesSection() {
           animate={{ x: ["0%", "-33.33%"] }}
           transition={{
             repeat: Infinity,
-            duration: 80, // 슬라이드 속도 (숫자 작을수록 빠름)
+            duration: 90, // 슬라이드 속도 (숫자 작을수록 빠름)
             ease: "linear",
             repeatType: "loop",
           }}
