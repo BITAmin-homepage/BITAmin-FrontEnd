@@ -25,21 +25,33 @@ export default function AwardSection() {
   ]
 
   const visibleAwards = showAll ? awards : awards.slice(0, 6)
-
   return (
-    <section
-      className="relative text-white py-24 overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(ellipse 200% 150% at center 25%, rgba(255,110,40,0.2) 0%, rgba(255,90,40,0.12) 25%, rgba(50,30,20,0.3) 45%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,1) 100%)",
-      }}
-    >
-      <div className="max-w-6xl mx-auto px-6 text-center">
-        <p className="text-sm text-white/70 mb-2">수상이력</p>
-        <h2 className="text-3xl md:text-4xl font-bold text-[#ff6b35] mb-16">
+    <section className="relative text-white py-24 overflow-hidden">
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at center center, rgba(255,110,40,0.25) 0%, rgba(255,90,40,0.15) 30%, rgba(80,40,30,0.4) 50%, rgba(40,20,15,0.6) 65%, rgba(0,0,0,0.85) 80%, rgba(0,0,0,1) 100%)",
+        }}
+      />
+
+      {showAll && (
+        <div
+          className="absolute left-0 right-0 top-full h-[300px] z-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 100% 80% at center top, rgba(255,110,40,0.15) 0%, rgba(255,90,40,0.1) 40%, rgba(0,0,0,0.95) 80%, rgba(0,0,0,1) 100%)",
+          }}
+        />
+      )}
+  
+      {/* 콘텐츠 영역 */}
+      <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
+        <p className="text-sm text-white/70 mb-2 tracking-wide">수상이력</p>
+        <h2 className="text-3xl md:text-4xl font-bold text-[#ff6b35] mb-16 tracking-wide">
           BITAmin과 함께 그려나가는 미래
         </h2>
-
+  
         {/* 중앙 세로 타임라인 */}
         <div className="relative flex flex-col items-center">
           {/* 세로선 */}
@@ -50,18 +62,18 @@ export default function AwardSection() {
                 "linear-gradient(to bottom, rgba(255,107,53,0.3), rgba(255,255,255,0.3), rgba(255,107,53,0.3))",
             }}
           />
-
+  
           {/* 수상 내역 */}
-          <div className="space-y-12 w-full relative">
+          <div className="space-y-12 w-full relative max-w-5xl mx-auto">
             {visibleAwards.map((pair, index) => (
               <div
                 key={index}
                 className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative"
               >
                 {/* 왼쪽 */}
-                <div className="md:pr-20 md:text-right text-white/90 flex justify-end">
+                <div className="md:pr-4 md:text-right text-white/90 flex justify-end">
                   {pair[0] && (
-                    <p className="text-base md:text-lg leading-relaxed whitespace-nowrap mr-2">
+                    <p className="text-base md:text-lg leading-relaxed whitespace-nowrap mr-6 tracking-wide">
                       {pair[0]}
                     </p>
                   )}
@@ -76,9 +88,9 @@ export default function AwardSection() {
                 </div>
 
                 {/* 오른쪽 */}
-                <div className="md:pl-20 md:text-left text-white/90">
+                <div className="md:pl-4 md:text-left text-white/90">
                   {pair[1] && (
-                    <p className="text-base md:text-lg leading-relaxed whitespace-nowrap ml-2">
+                    <p className="text-base md:text-lg leading-relaxed whitespace-nowrap ml-6 tracking-wide">
                       {pair[1]}
                     </p>
                   )}
@@ -86,11 +98,11 @@ export default function AwardSection() {
               </div>
             ))}
           </div>
-
+  
           {/* 펼쳐보기 버튼 */}
           <button
             onClick={() => setShowAll(!showAll)}
-            className="mt-20 px-6 py-2 rounded-full border border-white/40 text-white/80 hover:text-[#ff6b35] hover:border-[#ff6b35] transition-colors text-sm flex items-center gap-2"
+            className="mt-20 px-6 py-2 rounded-full border border-white/40 text-white/80 hover:text-[#ff6b35] hover:border-[#ff6b35] transition-colors text-sm flex items-center gap-2 tracking-wide"
           >
             {showAll ? "접기 ▲" : "펼쳐보기 ▼"}
           </button>

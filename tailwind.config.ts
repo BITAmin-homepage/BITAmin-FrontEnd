@@ -19,6 +19,11 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-paperlogy)", "var(--font-inter)", "system-ui", "sans-serif"],
+        inter: ["var(--font-inter)", "sans-serif"],
+        paperlogy: ["var(--font-paperlogy)", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
