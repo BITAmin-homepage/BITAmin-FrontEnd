@@ -31,7 +31,7 @@ export default function HomePage() {
           top: 0,
           width: '100%',
           height: '100vh',
-          backgroundImage: 'url(/images/sphere.jpeg)',
+          backgroundImage: 'url(/images/sphere_black.jpeg)',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center top',
           backgroundSize: 'cover',
