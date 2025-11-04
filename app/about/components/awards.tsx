@@ -55,13 +55,15 @@ export default function AwardSection() {
     ],
   }
 
-  const years = Object.keys(awardsByYear).map(Number)
+  const years = Object.keys(awardsByYear)
+    .map(Number)
+    .sort((a, b) => b - a)
 
   return (
     <section className="relative text-white py-24 overflow-hidden">
 
       {/* 선 위치 약간 아래로 조정 */}
-      <div className="absolute left-0 right-0 top-[245px] h-[2px] bg-[#ff6b35]" />
+      <div className="absolute left-0 right-0 top-[225px] h-[2px] bg-[#ff6b35]" />
 
       <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
         <p className="text-sm text-white/70 mb-2 tracking-wide">수상이력</p>
@@ -96,9 +98,14 @@ export default function AwardSection() {
 
               {/* 선택된 연도 설명 */}
               {selectedYear === year && (
-                <div className="mt-6 space-y-2 text-left animate-fadeIn">
+                <div className="mt-6 flex flex-col items-start gap-1 animate-fadeIn">
                   {awardsByYear[year].map((award, index) => (
-                    <p key={index} className="text-white/90 text-sm leading-relaxed">{award}</p>
+                    <div
+                      key={index}
+                      className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
+                    >
+                      {award}
+                    </div>
                   ))}
                 </div>
               )}
