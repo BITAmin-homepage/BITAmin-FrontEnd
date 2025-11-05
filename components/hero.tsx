@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
+import { IS_RECRUITING_ACTIVE } from "@/lib/recruit-config"
 
 interface HeroProps {
-  onOpenApplyModal: () => void
+  onOpenApplyModal?: () => void
 }
 
 export function Hero({ onOpenApplyModal }: HeroProps) {
@@ -36,13 +37,27 @@ export function Hero({ onOpenApplyModal }: HeroProps) {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              onClick={onOpenApplyModal}
-              className="bg-black/50 hover:bg-black/90 text-white font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              지원하기
-            </Button>
+            {/* 모집 중일 때는 페이지 링크, 모집 마감일 때는 모달 표시 */}
+            {IS_RECRUITING_ACTIVE ? (
+              // 모집 중: 모집 페이지로 이동
+              <Link href="/api/recruit">
+                <Button
+                  size="lg"
+                  className="bg-black/50 hover:bg-black/90 text-white font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  지원하기
+                </Button>
+              </Link>
+            ) : (
+              // 모집 마감: 모달로 안내 메시지 표시
+              <Button
+                size="lg"
+                onClick={onOpenApplyModal}
+                className="bg-black/50 hover:bg-black/90 text-white font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                지원하기
+              </Button>
+            )}
           </div>
         </div>
       </div>

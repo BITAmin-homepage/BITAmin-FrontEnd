@@ -20,7 +20,7 @@ export function UniversitiesSection() {
     { name: "세종대학교", image: "/images/school/sejong.png" },
     { name: "명지대학교", image: "/images/school/myongji.png" },
     { name: "광운대학교", image: "/images/school/kwangwoon.png" },
-    { name: "인하대학교", image: "/images/school/inha.png" },
+    { name: "인하대학교", image: "/images/school/inha2.png" },
     { name: "아주대학교", image: "/images/school/ajou.png" },
     { name: "가천대학교", image: "/images/school/gachon2.png" },
     { name: "서울과학기술대학교", image: "/images/school/seoultech.png" },

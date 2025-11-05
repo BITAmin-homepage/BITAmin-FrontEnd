@@ -8,6 +8,7 @@ import { ApplyModal } from "@/components/apply-modal"
 import { Menu, X, User, LogOut } from "lucide-react"
 import { useAuth, isAdmin } from "@/lib/auth"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { IS_RECRUITING_ACTIVE } from "@/lib/recruit-config"
 
 interface HeaderProps {
   onOpenApplyModal?: () => void
@@ -46,14 +47,23 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
               <Link href="/projects" className="text-gray-300 hover:text-[#d3431a] transition-colors">
                 Project
               </Link>
-              {!isAuthenticated && (
-                <button
-                  type="button"
-                  onClick={() => (onOpenApplyModal ? onOpenApplyModal() : setIsApplyModalOpen(true))}
-                  className="text-gray-300 hover:text-[#d3431a] transition-colors"
-                >
+              {/* 모집 중일 때는 페이지 링크, 모집 마감일 때는 모달 표시 */}
+              {IS_RECRUITING_ACTIVE ? (
+                // 모집 중: 모집 페이지로 이동
+                <Link href="/api/recruit" className="text-gray-300 hover:text-[#d3431a] transition-colors">
                   Recruiting
-                </button>
+                </Link>
+              ) : (
+                // 모집 마감: 모달로 안내 메시지 표시
+                !isAuthenticated && (
+                  <button
+                    type="button"
+                    onClick={() => (onOpenApplyModal ? onOpenApplyModal() : setIsApplyModalOpen(true))}
+                    className="text-gray-300 hover:text-[#d3431a] transition-colors"
+                  >
+                    Recruiting
+                  </button>
+                )
               )}
             </nav>
 
@@ -138,14 +148,23 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                 <Link href="/projects" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
                   프로젝트
                 </Link>
-                {!isAuthenticated && (
-                  <button
-                    type="button"
-                    onClick={() => (onOpenApplyModal ? onOpenApplyModal() : setIsApplyModalOpen(true))}
-                    className="block px-3 py-2 text-left text-gray-300 hover:text-[#d3431a] w-full"
-                  >
+                {/* 모집 중일 때는 페이지 링크, 모집 마감일 때는 모달 표시 */}
+                {IS_RECRUITING_ACTIVE ? (
+                  // 모집 중: 모집 페이지로 이동
+                  <Link href="/api/recruit" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
                     지원하기
-                  </button>
+                  </Link>
+                ) : (
+                  // 모집 마감: 모달로 안내 메시지 표시
+                  !isAuthenticated && (
+                    <button
+                      type="button"
+                      onClick={() => (onOpenApplyModal ? onOpenApplyModal() : setIsApplyModalOpen(true))}
+                      className="block px-3 py-2 text-left text-gray-300 hover:text-[#d3431a] w-full"
+                    >
+                      지원하기
+                    </button>
+                  )
                 )}
                 <div className="flex flex-col space-y-0.5 px-3 py-2">
                   {isAuthenticated ? (
@@ -187,11 +206,10 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
         </div>
       </header>
 
-      {/* Local modal fallback so it works on any page even without prop */}
-      {!onOpenApplyModal && (
+      {/* 모집 마감일 때만 모달 렌더링 */}
+      {!IS_RECRUITING_ACTIVE && !onOpenApplyModal && (
         <ApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
       )}
-
     </>
   )
 }

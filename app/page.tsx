@@ -8,6 +8,8 @@ import { ApplyModal } from "@/components/apply-modal"
 import { useState } from "react"
 import { UniversitiesSection } from "@/components/university"
 import { ReviewSection } from "@/components/review"
+import { IS_RECRUITING_ACTIVE } from "@/lib/recruit-config"
+
 export default function HomePage() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
 
@@ -50,7 +52,10 @@ export default function HomePage() {
       <ApplyProcessSection />
       <Footer />
       
-      <ApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
+      {/* 모집 마감일 때만 모달 렌더링 */}
+      {!IS_RECRUITING_ACTIVE && (
+        <ApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
+      )}
     </div>
   )
 }
