@@ -303,7 +303,6 @@ export default function RecruitPage() {
           <div className="max-w-5xl mx-auto mt-20">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">자주 묻는 질문</h2>
-              <p className="text-gray-400">BITAmin 지원과 관련하여 자주 묻는 질문들입니다</p>
             </div>
 
             <div className="space-y-4">
