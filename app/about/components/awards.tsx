@@ -60,68 +60,126 @@ export default function AwardSection() {
     .sort((a, b) => b - a)
 
   return (
-    <section className="relative text-white py-24 overflow-hidden">
-
-      {/* 선 위치 약간 아래로 조정 */}
-      <div className="absolute left-0 right-0 top-[225px] h-[2px] bg-[#ff6b35]" />
-
-      <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
-        <p className="text-sm text-white/70 mb-2 tracking-wide">수상이력</p>
-        <h2 className="text-3xl md:text-4xl font-bold text-[#ff6b35] mb-16 tracking-wide">
+    <section className="relative text-white py-12 md:py-24 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 text-center relative z-10">
+        <p className="text-xs md:text-sm text-white/70 mb-2 tracking-wide">수상이력</p>
+        <h2 className="text-2xl md:text-4xl font-bold text-[#ff6b35] mb-8 md:mb-16 tracking-wide">
           BITAmin과 함께 그려나가는 미래
         </h2>
 
-        {/* 연도 + 수상 내역 */}
-        <div className="flex justify-around max-w-5xl mx-auto relative">
+        {/* 데스크톱 버전 - 타임라인 스타일 */}
+        <div className="hidden md:block">
+          {/* 선 위치 */}
+          <div className="absolute left-0 right-0 top-[129px] h-[2px] bg-[#ff6b35]" />
 
-          {years.map((year) => (
-            <div key={year} className="flex flex-col items-center w-full">
+          {/* 연도 + 수상 내역 */}
+          <div className="flex justify-around max-w-5xl mx-auto relative">
+            {years.map((year) => (
+              <div key={year} className="flex flex-col items-center w-full">
+                <button onClick={() => setSelectedYear(year)} className="flex flex-col items-center">
+                  <div
+                    className={`w-3 h-3 rounded-full mb-1 relative -top-[8px] transition-all ${
+                      selectedYear === year
+                        ? "border-2 border-[#ff6b35] bg-transparent scale-150 shadow-[0_0_8px_#ff6b35aa]"
+                        : "bg-[#ff6b35]"
+                    }`}
+                  />
+                  <span
+                    className={`transition-all ${
+                      selectedYear === year
+                        ? "text-[#ff6b35] text-3xl font-bold"
+                        : "text-[#ff8c5c] text-lg"
+                    }`}
+                  >
+                    {year}
+                  </span>
+                </button>
 
-              <button onClick={() => setSelectedYear(year)} className="flex flex-col items-center">
-                <div
-                  className={`w-3 h-3 rounded-full mb-1 relative -top-[8px] transition-all ${
+                {/* 선택된 연도 설명 */}
+                {selectedYear === year && (
+                  <div className="mt-6 flex flex-col items-start gap-1 animate-fadeIn">
+                    {awardsByYear[year].map((award, index) => (
+                      <div
+                        key={index}
+                        className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
+                      >
+                        {award}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 모바일 버전 - 가로 스크롤 + 카드 스타일 */}
+        <div className="md:hidden">
+          {/* 연도 선택 버튼 - 가로 스크롤 */}
+          <div className="relative mb-8">
+            <div className="flex gap-3 overflow-x-auto pb-4 px-2 scrollbar-hide snap-x snap-mandatory">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`flex-shrink-0 px-6 py-3 rounded-full transition-all snap-center ${
                     selectedYear === year
-                      ? "border-2 border-[#ff6b35] bg-transparent scale-150 shadow-[0_0_8px_#ff6b35aa]"
-                      : "bg-[#ff6b35]"
-                  }`}
-                />
-                <span
-                  className={`transition-all ${
-                    selectedYear === year
-                      ? "text-[#ff6b35] text-3xl font-bold"
-                      : "text-[#ff8c5c] text-lg"
+                      ? "bg-[#ff6b35] text-white scale-80 shadow-lg"
+                      : "bg-white/10 text-white/70 hover:bg-white/20"
                   }`}
                 >
-                  {year}
-                </span>
-              </button>
-
-              {/* 선택된 연도 설명 */}
-              {selectedYear === year && (
-                <div className="mt-6 flex flex-col items-start gap-1 animate-fadeIn">
-                  {awardsByYear[year].map((award, index) => (
-                    <div
-                      key={index}
-                      className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
-                    >
-                      {award}
-                    </div>
-                  ))}
-                </div>
-              )}
+                  <span className={`font-semibold ${selectedYear === year ? "text-lg" : "text-base"}`}>
+                    {year}
+                  </span>
+                </button>
+              ))}
             </div>
-          ))}
+          </div>
 
+          {/* 수상 내역 */}
+          <div className="bg-white/5 rounded-2xl p-6 backdrop-blur-sm animate-fadeIn">
+            <div className="flex flex-col gap-3">
+              {awardsByYear[selectedYear].map((award, index) => {
+                const parts = award.split(", ")
+                const title = parts[0]
+                const prize = parts[1]
+                const organization = parts.slice(2).join(", ")
+                
+                return (
+                  <div
+                    key={index}
+                    className="bg-white/5 rounded-lg p-4 text-left hover:bg-white/10 transition-colors"
+                  >
+                    <div className="text-white font-medium text-sm mb-1">{title}</div>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <span className="text-[#ff6b35] font-semibold">{prize}</span>
+                      <span className="text-white/60">•</span>
+                      <span className="text-white/70">{organization}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Fade 애니메이션 */}
+      {/* Fade 애니메이션 + 스크롤바 숨기기 */}
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeIn { animation: fadeIn 0.35s ease-out forwards; }
+        .animate-fadeIn { 
+          animation: fadeIn 0.35s ease-out forwards; 
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
       `}</style>
     </section>
   )
