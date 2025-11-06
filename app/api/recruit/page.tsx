@@ -120,8 +120,8 @@ export default function RecruitPage() {
               <div className="relative w-64 h-64 md:w-80 md:h-80">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-[#d3431a]/40 to-orange-600/30 rounded-full blur-3xl" />
                 <div className="relative w-full h-full flex items-center justify-center">
-                  <span className="text-[180px] md:text-[220px] font-black bg-gradient-to-br from-purple-400 via-[#d3431a] to-orange-500 bg-clip-text text-transparent">
-                    B
+                  <span className="text-[180px] md:text-[150px] font-black bg-gradient-to-br from-purple-400 via-[#d3431a] to-orange-500 bg-clip-text text-transparent">
+                    Bitamin
                   </span>
                 </div>
               </div>
