@@ -125,7 +125,7 @@ export default function MembersPage() {
     <div className="min-h-screen bg-black text-white">
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         {/* 필터 */}
         <div className="mb-8">
           <div className="flex flex-wrap gap-4 justify-center">
