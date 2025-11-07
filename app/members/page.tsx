@@ -126,11 +126,6 @@ export default function MembersPage() {
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="mb-10 text-center">
-          <p className="text-sm text-white/60 mb-2">멤버소개</p>
-          <h1 className="text-2xl md:text-3xl font-bold text-[#ff6b35]">함께 미래를 그려나가는 BITAmin 멤버를 소개합니다</h1>
-        </div>
-
         {/* 필터 */}
         <div className="mb-8">
           <div className="flex flex-wrap gap-4 justify-center">

@@ -17,65 +17,71 @@ export default function Curriculum() {
         ["6주차", "Seq2Seq, Transformer 구조 학습"],
       ],
       project: [
-        ["1주차", "프로젝트 팀빌딩"],
-        ["2주차", "주제 탐색 및 기획"],
-        ["3주차", "데이터 수집/전처리"],
-        ["4주차", "모델링/평가"],
-        ["5~7주차", "프로젝트 수행"],
+        ["1~7주차", "프로젝트 수행"],
         ["8주차", "컨퍼런스"],
       ],
     },
     {
       label: "First Semester",
       regular: [
-        ["1주차", "Python 및 AI 기초 복습"],
-        ["2주차", "EDA와 데이터 시각화"],
-        ["3주차", "통계적 모델링"],
-        ["4주차", "Feature Engineering"],
-        ["5~6주차", "ML 알고리즘 심화"],
+        ["1주차", "머신러닝 개요, 전처리&EDA&시각화"],
+        ["3주차", "분류 기본 모델 및 성능 평가 학습"],
+        ["5주차", <>회귀 기본 모델 및 성능 평가 학습,<br />군집 분석 모델 및 성능 평가 학습</>],
+        ["6~8주차", "중간고사 휴회 기간"],
+        ["9주차", "Overfitting, Regularization, 앙상블 알고리즘 학습"],
+        ["11주차", "차원축소 기법 학습"],
       ],
       project: [
-        ["1주차", "프로젝트 주제 선정"],
-        ["2~3주차", "데이터 탐색 및 분석"],
-        ["4~6주차", "모델 개발 및 결과 정리"],
-        ["7주차", "최종 발표"],
+        ["1주차", "프로젝트 팀빌딩"],
+        ["2주차", "프로젝트 회의"],
+        ["4주차", "프로젝트 회의"],
+        ["6~8주차", "중간고사 휴회 기간"],
+        ["10주차", "프로젝트 회의"],
+        ["12주차", "프로젝트 회의"],
+        ["13주차", "컨퍼런스"]
       ],
     },
     {
       label: "Second Vacation Semester",
       regular: [
-        ["1주차", "딥러닝 복습 및 실전 코드 작성"],
-        ["2~3주차", "Vision/Transformer 응용"],
-        ["4~5주차", "LLM, ChatGPT API 실습"],
+        ["1주차", "딥러닝 입문, 퍼셉트론, 신경망"],
+        ["2주차", "오차역전파"],
+        ["3주차", "매개변수 갱신, 배치정규화 학습"],
+        ["4주차", "CNN 모델 구조 학습"],
+        ["5주차", "RNN, LSTM 모델 구조 학습"],
+        ["6주차", "Seq2Seq, Transformer 구조 학습"],
       ],
       project: [
-        ["1주차", "RAG 구조 이해"],
-        ["2~4주차", "LLM 기반 미니 프로젝트"],
-        ["5~6주차", "결과 정리 및 발표"],
+        ["1~7주차", "프로젝트 수행"],
+        ["8주차", "컨퍼런스"],
       ],
     },
     {
       label: "Second Semester",
       regular: [
-        ["1~2주차", "데이터 엔지니어링 기본"],
-        ["3~5주차", "MLOps 실습 (Docker, FastAPI)"],
-        ["6주차", "AWS 배포 및 모니터링"],
+        ["1주차", "논문 리뷰 및 발표1"],
+        ["3주차", "논문 리뷰 및 발표2"],
+        ["5주차", "논문 리뷰 및 발표3"],
+        ["6~8주차", "중간고사 휴회 기간"],
+        ["9주차", "논문 리뷰 및 발표4"],
+        ["10주차", "논문 리뷰 및 발표5"],
       ],
       project: [
-        ["1~2주차", "프로젝트 인프라 구축"],
-        ["3~5주차", "MLOps 프로젝트 개발"],
-        ["6주차", "결과 공유"],
+        ["1주차", "프로젝트 팀빌딩"],
+        ["2주차", "프로젝트 회의"],
+        ["4주차", "프로젝트 회의"],
+        ["6~8주차", "중간고사 휴회 기간"],
+        ["10주차", "프로젝트 회의"],
+        ["12주차", "프로젝트 회의"],
+        ["13주차", "컨퍼런스"]
       ],
     },
     {
       label: "Final Vacation Semester",
-      regular: [
-        ["1~2주차", "졸업 프로젝트 기획"],
-        ["3~4주차", "기술 문서 및 포트폴리오 정리"],
-      ],
+      regular: [],
       project: [
-        ["1~2주차", "최종 프로젝트 수행"],
-        ["3주차", "데모데이 및 평가"],
+        ["1~8주차", "최종 프로젝트 수행"],
+        ["9주차", "컨퍼런스"],
       ],
     },
   ]
@@ -123,33 +129,37 @@ export default function Curriculum() {
         <div className="max-w-6xl mx-auto mt-20">
           <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#111]/80 to-[#0a0a0a]/90 shadow-lg p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div>
-                <h3 className="text-xl font-bold mb-8 text-center">정규세션</h3>
-                <div className="overflow-hidden rounded-xl border border-white/10 divide-y divide-white/10">
-                  {curriculum[activeIndex].regular.map(([week, content], i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 transition"
-                    >
-                      <span className="text-white/60">{week}</span>
-                      <span className="text-white text-right">{content}</span>
-                    </div>
-                  ))}
+              {curriculum[activeIndex].regular.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-bold mb-8 text-center">정규세션</h3>
+                  <div className="overflow-hidden rounded-xl border border-white/10 divide-y divide-white/10">
+                    {curriculum[activeIndex].regular.map(([week, content], i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 transition"
+                      >
+                        <span className="text-white/60">{week}</span>
+                        <span className="text-white text-right">{content}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div>
-                <h3 className="text-xl font-bold mb-8 text-center">프로젝트</h3>
-                <div className="overflow-hidden rounded-xl border border-white/10 divide-y divide-white/10">
-                  {curriculum[activeIndex].project.map(([week, content], i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 transition"
-                    >
-                      <span className="text-white/60">{week}</span>
-                      <span className="text-white text-right">{content}</span>
-                    </div>
-                  ))}
+              <div className={curriculum[activeIndex].regular.length === 0 ? 'md:col-span-2' : ''}>
+                <div className={curriculum[activeIndex].regular.length === 0 ? 'max-w-md mx-auto' : ''}>
+                  <h3 className="text-xl font-bold mb-8 text-center">프로젝트</h3>
+                  <div className="overflow-hidden rounded-xl border border-white/10 divide-y divide-white/10">
+                    {curriculum[activeIndex].project.map(([week, content], i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 transition"
+                      >
+                        <span className="text-white/60">{week}</span>
+                        <span className="text-white text-right">{content}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
