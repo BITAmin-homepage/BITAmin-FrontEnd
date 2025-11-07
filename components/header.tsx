@@ -140,19 +140,19 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
             <div className="md:hidden">
               <div className="px-2 pt-2 pb-3 space-y-0.5 sm:px-3">
                 <Link href="/about" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                  동아리 소개
+                  About
                 </Link>
                 <Link href="/members" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                  멤버
+                  Members
                 </Link>
                 <Link href="/projects" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                  프로젝트
+                  Project
                 </Link>
                 {/* 모집 중일 때는 페이지 링크, 모집 마감일 때는 모달 표시 */}
                 {IS_RECRUITING_ACTIVE ? (
                   // 모집 중: 모집 페이지로 이동
                   <Link href="/api/recruit" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                    지원하기
+                    Recruiting
                   </Link>
                 ) : (
                   // 모집 마감: 모달로 안내 메시지 표시
@@ -162,7 +162,7 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                       onClick={() => (onOpenApplyModal ? onOpenApplyModal() : setIsApplyModalOpen(true))}
                       className="block px-3 py-2 text-left text-gray-300 hover:text-[#d3431a] w-full"
                     >
-                      지원하기
+                      Recruiting
                     </button>
                   )
                 )}
@@ -172,13 +172,13 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                       {user && isAdmin(user.role) && (
                         <Link href="/dashboard">
                           <Button variant="ghost" className="w-full text-white hover:text-[#d3431a] justify-start">
-                            대시보드
+                            Dashboard
                           </Button>
                         </Link>
                       )}
                       <Link href="/mypage">
                         <Button variant="ghost" className="w-full text-white hover:text-[#d3431a] justify-start">
-                          마이페이지
+                          My Page
                         </Button>
                       </Link>
                       <Button
@@ -186,16 +186,16 @@ export function Header({ onOpenApplyModal }: HeaderProps) {
                         onClick={logout}
                         className="w-full text-white hover:text-[#d3431a] justify-start"
                       >
-                        로그아웃
+                        Logout
                       </Button>
                     </>
                   ) : (
                     <>
                       <Link href="/login" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                        로그인
+                        Login
                       </Link>
                       <Link href="/register" className="block px-3 py-2 text-gray-300 hover:text-[#d3431a]">
-                        회원가입
+                        Signup
                       </Link>
                     </>
                   )}

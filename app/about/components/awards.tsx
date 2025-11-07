@@ -124,7 +124,7 @@ export default function AwardSection() {
                   onClick={() => setSelectedYear(year)}
                   className={`flex-shrink-0 px-6 py-3 rounded-full transition-all snap-center ${
                     selectedYear === year
-                      ? "bg-[#ff6b35] text-white scale-80 shadow-lg"
+                      ? "bg-[#ff6b35] text-white scale-110 shadow-lg"
                       : "bg-white/10 text-white/70 hover:bg-white/20"
                   }`}
                 >
