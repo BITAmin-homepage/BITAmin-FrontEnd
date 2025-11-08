@@ -2,12 +2,12 @@ import { BookOpen, CheckCircle, TrendingUp } from "lucide-react";
 
 export default function IntroductionSection() {
   return (
-    <section className="bg-black text-white py-20">
+    <section className="bg-black text-white py-28">
       <div className="max-w-6xl mx-auto px-4">
         {/* 제목 */}
         <div className="text-center mb-12">
-          <p className="text-gray-400 text-base mb-4 tracking-wide">BITAmin은</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#d3431a] tracking-wide">
+          <p className="text-gray-400 text-base md:text-lg mb-4 tracking-wide">BITAmin은</p>
+          <h2 className="text-2xl md:text-4xl font-bold text-[#ff6b35] tracking-wide">
             함께 배우고 도전하며 성장해나갑니다
           </h2>
         </div>

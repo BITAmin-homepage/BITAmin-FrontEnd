@@ -55,7 +55,7 @@ export function ReviewSection() {
   const prevReview = () => setCurrent((prev) => (prev - 1 + reviews.length) % reviews.length)
 
   return (
-    <section className="relative py-24 md:py-32 bg-transparent text-white overflow-hidden">
+    <section className="relative pt-40 pb-24 md:pt-52 md:pb-32 bg-transparent text-white overflow-hidden">
       {/* 주황색 빛 배경 */}
       <div
         className="absolute inset-0 top-1/2 h-[250px] opacity-50 pointer-events-none"
@@ -71,8 +71,8 @@ export function ReviewSection() {
 
       {/* 제목 */}
       <div className="text-center mb-12">
-        <p className="text-sm md:text-base text-gray-400 mb-2">이전 기수 후기</p>
-        <h2 className="text-2xl md:text-3xl font-bold text-[#ff5722]">
+        <p className="text-base md:text-lg text-gray-400 mb-2">이전 기수 후기</p>
+        <h2 className="text-2xl md:text-4xl font-bold text-[#ff5722]">
           BITAmin의 멤버들이 직접 전하는 생생한 경험담
         </h2>
       </div>

@@ -88,10 +88,10 @@ export default function Curriculum() {
 
 
   return (
-    <section className="min-h-screen bg-black text-white py-20">
+    <section className="bg-black text-white py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <p className="text-sm text-white/60 mb-3">커리큘럼</p>
-        <h2 className="text-2xl md:text-3xl font-bold text-[#ff6b35]">
+        <p className="text-base md:text-lg text-white/60 mb-3">커리큘럼</p>
+        <h2 className="text-2xl md:text-4xl font-bold text-[#ff6b35]">
           탄탄한 기초와 다양한 실무역량을 통합적으로 기를 수 있습니다
         </h2>
 

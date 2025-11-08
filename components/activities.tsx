@@ -52,7 +52,7 @@ export function ActivitiesSection() {
   }
 
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section className="relative pt-40 pb-16 md:pt-48 md:pb-24 overflow-hidden">
       {/* 좌우 네트워크 장식 */}
       <div className="pointer-events-none absolute inset-0 -z-10 flex justify-between items-center">
         <div
@@ -73,8 +73,8 @@ export function ActivitiesSection() {
 
       {/* 내용 */}
       <div className="max-w-5xl mx-auto px-4 relative z-10">
-        <p className="text-center text-sm md:text-base text-gray-400 mb-2">주요활동</p>
-        <h2 className="text-center text-2xl md:text-3xl font-semibold text-[#ff5722] mb-10">
+        <p className="text-center text-base md:text-lg text-gray-400 mb-2">주요활동</p>
+        <h2 className="text-center text-2xl md:text-4xl font-semibold text-[#ff5722] mb-10">
           BITAmin에서는 이러한 활동들을 할 수 있습니다
         </h2>
 

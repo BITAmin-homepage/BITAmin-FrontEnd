@@ -105,12 +105,12 @@ export default function RecruitPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+    <div className="min-h-screen bg-black">
       <Header />
 
       <main className="pt-48 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-40">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">
               <span className="text-[#d3431a]">BITAmin</span>
               <span className="text-white">의 여정에 함께할 당신을 기다립니다</span>
@@ -119,8 +119,8 @@ export default function RecruitPage() {
             <div className="flex justify-center mb-2">
               <div className="relative w-64 h-64 md:w-80 md:h-80">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-[#d3431a]/40 to-orange-600/30 rounded-full blur-3xl" />
-                <div className="relative w-full h-full flex items-center justify-center">
-                  <span className="text-[180px] md:text-[150px] font-black bg-gradient-to-br from-purple-400 via-[#d3431a] to-orange-500 bg-clip-text text-transparent">
+                <div className="relative w-full h-full flex items-center justify-center px-4">
+                  <span className="text-[80px] sm:text-[100px] md:text-[130px] lg:text-[150px] font-black bg-gradient-to-br from-purple-400 via-[#d3431a] to-orange-500 bg-clip-text text-transparent leading-none">
                     Bitamin
                   </span>
                 </div>
@@ -145,7 +145,7 @@ export default function RecruitPage() {
             <p className="text-gray-400 text-sm">운영진, 멤버 중복 지원 가능</p>
           </div>
 
-          <div className="mb-20">
+          <div className="mb-40">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">모집일정</h2>
               <p className="text-gray-400">BITAmin은 더 나은 기수 운영을 위해 운영진과 멤버 모집 절차의 차이가 있습니다</p>
@@ -160,7 +160,7 @@ export default function RecruitPage() {
                       <div className="w-6 h-6 rounded-full bg-purple-500" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2">{schedule.application.title}</h3>
-                    <p className="text-[#d3431a] font-semibold text-lg">{schedule.application.date}</p>
+                    <p className="text-[#ff6b35] font-semibold text-lg">{schedule.application.date}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -179,7 +179,7 @@ export default function RecruitPage() {
                       <Card className="bg-gray-800/50 border-gray-700 hover:border-[#d3431a] transition-all w-80">
                         <CardContent className="p-5 text-center">
                           <h4 className="text-white font-semibold mb-1">{item.title}</h4>
-                          <p className="text-gray-400 text-sm">{item.date}</p>
+                          <p className="text-[#ff6b35] font-semibold text-sm">{item.date}</p>
                         </CardContent>
                       </Card>
                       {index < schedule.staff.length - 1 && (
@@ -198,7 +198,7 @@ export default function RecruitPage() {
                       <Card className="bg-gray-800/50 border-gray-700 hover:border-[#d3431a] transition-all w-80">
                         <CardContent className="p-5 text-center">
                           <h4 className="text-white font-semibold mb-1">{item.title}</h4>
-                          <p className="text-gray-400 text-sm">{item.date}</p>
+                          <p className="text-[#ff6b35] font-semibold text-sm">{item.date}</p>
                         </CardContent>
                       </Card>
                       {index < schedule.member.length - 1 && (
@@ -223,8 +223,8 @@ export default function RecruitPage() {
 
               {/* OT */}
               <div className="flex justify-center">
-                <Card className="bg-gradient-to-br from-[#d3431a] to-orange-600 border-0 w-80">
-                  <CardContent className="p-6 text-center">
+                <Card className="bg-[#8B3A1F] border-[#d3431a] border-2 w-80">
+                  <CardContent className="p-3 text-center">
                     <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
                       <div className="w-6 h-6 rounded-full bg-white" />
                     </div>
@@ -237,14 +237,14 @@ export default function RecruitPage() {
             </div>
           </div>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto mb-40">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">자격요건</h2>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
               {/* 관심사 */}
-              <Card className="bg-gradient-to-br from-purple-900/30 to-gray-900 border-purple-500/30 hover:border-purple-500 transition-all">
+              <Card className="bg-gradient-to-br from-[#1a0a2e]/80 to-black border-purple-500/30 hover:border-purple-500 transition-all">
                 <CardContent className="p-8 text-center">
                   <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-4">
                     <Sparkles className="h-8 w-8 text-purple-400" />
@@ -259,7 +259,7 @@ export default function RecruitPage() {
               </Card>
 
               {/* 활동 기간 */}
-              <Card className="bg-gradient-to-br from-[#d3431a]/30 to-gray-900 border-[#d3431a]/30 hover:border-[#d3431a] transition-all">
+              <Card className="bg-gradient-to-br from-[#4a1810]/80 to-black border-[#d3431a]/30 hover:border-[#d3431a] transition-all">
                 <CardContent className="p-8 text-center">
                   <div className="w-16 h-16 rounded-full bg-[#d3431a]/20 flex items-center justify-center mx-auto mb-4">
                     <GraduationCap className="h-8 w-8 text-[#d3431a]" />
@@ -274,7 +274,7 @@ export default function RecruitPage() {
               </Card>
 
               {/* 성장 의지 */}
-              <Card className="bg-gradient-to-br from-orange-900/30 to-gray-900 border-orange-500/30 hover:border-orange-500 transition-all">
+              <Card className="bg-gradient-to-br from-[#3d1a0f]/80 to-black border-orange-500/30 hover:border-orange-500 transition-all">
                 <CardContent className="p-8 text-center">
                   <div className="w-16 h-16 rounded-full bg-orange-500/20 flex items-center justify-center mx-auto mb-4">
                     <Heart className="h-8 w-8 text-orange-400" />
@@ -300,7 +300,7 @@ export default function RecruitPage() {
           </div>
 
           {/* FAQ 섹션 */}
-          <div className="max-w-5xl mx-auto mt-20">
+          <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">자주 묻는 질문</h2>
             </div>

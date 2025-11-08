@@ -116,20 +116,20 @@ export default function ActivitiesSection() {
   ]
 
   return (
-    <section className="bg-black text-white py-20">
+    <section className="bg-black text-white py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <p className="text-sm text-white/60 mb-3">주요활동</p>
-        <h2 className="text-2xl md:text-3xl font-bold text-[#ff6b35] mb-12">
+        <p className="text-base md:text-lg text-white/60 mb-3">주요활동</p>
+        <h2 className="text-2xl md:text-4xl font-bold text-[#ff6b35] mb-12">
           BITAmin에서는 이러한 활동들을 할 수 있습니다
         </h2>
 
         {/* polygon 버튼 영역 */}
-        <div className="flex justify-center items-center gap-2 md:gap-3 lg:gap-4 mb-16 max-w-6xl mx-auto px-4">
+        <div className="flex justify-center items-center gap md:gap-3 lg:gap-1 mb-16 max-w-6xl mx-auto px-4">
           {activities.map((item, i) => (
             <button
               key={i}
               onClick={() => setActiveIndex(i)}
-              className="relative w-24 sm:w-28 md:w-32 lg:w-36 aspect-[6/3.5] flex items-center justify-center text-xs sm:text-sm md:text-base font-semibold transition-all"
+              className="relative w-28 sm:w-32 md:w-36 lg:w-40 aspect-[6/3.5] flex items-center justify-center text-xs sm:text-sm md:text-base font-semibold transition-all"
               style={{
                 backgroundImage: `url(${
                   activeIndex === i

@@ -60,54 +60,75 @@ export default function AwardSection() {
     .sort((a, b) => b - a)
 
   return (
-    <section className="relative text-white py-12 md:py-24 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-4 md:px-6 text-center relative z-10">
-        <p className="text-xs md:text-sm text-white/70 mb-2 tracking-wide">수상이력</p>
+    <section className="relative text-white py-28 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 text-center relative z-10">
+        <p className="text-base md:text-lg text-white/70 mb-2 tracking-wide">수상이력</p>
         <h2 className="text-2xl md:text-4xl font-bold text-[#ff6b35] mb-8 md:mb-16 tracking-wide">
           BITAmin과 함께 그려나가는 미래
         </h2>
 
         {/* 데스크톱 버전 - 타임라인 스타일 */}
-        <div className="hidden md:block">
-          {/* 선 위치 */}
-          <div className="absolute left-0 right-0 top-[129px] h-[2px] bg-[#ff6b35]" />
-
+        <div className="hidden md:block max-w-full overflow-visible">
           {/* 연도 + 수상 내역 */}
-          <div className="flex justify-around max-w-5xl mx-auto relative">
+          <div className="flex justify-between items-start w-full max-w-7xl mx-auto px-8 relative">
+            {/* 선 위치 */}
+            <div className="absolute left-8 right-8 top-[8px] h-[2px] bg-[#ff6b35]" />
             {years.map((year) => (
-              <div key={year} className="flex flex-col items-center w-full">
-                <button onClick={() => setSelectedYear(year)} className="flex flex-col items-center">
+              <div key={year} className="flex flex-col items-center min-w-0 flex-1 relative min-h-[300px]">
+                <button 
+                  onClick={() => setSelectedYear(year)} 
+                  onMouseEnter={() => setSelectedYear(year)}
+                  className="flex flex-col items-center whitespace-nowrap relative z-10"
+                >
                   <div
-                    className={`w-3 h-3 rounded-full mb-1 relative -top-[8px] transition-all ${
+                    className={`w-3 h-3 rounded-full mb-1 relative -top-[-3px] transition-all duration-500 ease-in-out ${
                       selectedYear === year
-                        ? "border-2 border-[#ff6b35] bg-transparent scale-150 shadow-[0_0_8px_#ff6b35aa]"
-                        : "bg-[#ff6b35]"
+                        ? "border-2 scale-150 shadow-[0_0_12px_rgba(217,70,166,0.6)]"
+                        : ""
                     }`}
+                    style={{
+                      background: selectedYear === year 
+                        ? 'transparent'
+                        : 'linear-gradient(135deg, #8B4789 0%, #D946A6 50%, #FF6B35 100%)',
+                      borderColor: selectedYear === year 
+                        ? '#D946A6'
+                        : 'transparent'
+                    }}
                   />
                   <span
-                    className={`transition-all ${
+                    className={`transition-all duration-500 ease-in-out whitespace-nowrap ${
                       selectedYear === year
-                        ? "text-[#ff6b35] text-3xl font-bold"
-                        : "text-[#ff8c5c] text-lg"
+                        ? "text-2xl md:text-3xl font-bold"
+                        : "text-base md:text-lg"
                     }`}
+                    style={{
+                      background: 'linear-gradient(135deg, #8B4789 0%, #D946A6 50%, #FF6B35 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}
                   >
                     {year}
                   </span>
                 </button>
 
                 {/* 선택된 연도 설명 */}
-                {selectedYear === year && (
-                  <div className="mt-6 flex flex-col items-start gap-1 animate-fadeIn">
-                    {awardsByYear[year].map((award, index) => (
-                      <div
-                        key={index}
-                        className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
-                      >
-                        {award}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div 
+                  className={`absolute top-20 left-1/2 -translate-x-1/2 flex flex-col items-start gap-1 transition-all duration-500 ease-in-out ${
+                    selectedYear === year 
+                      ? 'opacity-100 pointer-events-auto' 
+                      : 'opacity-0 pointer-events-none'
+                  }`}
+                >
+                  {awardsByYear[year].map((award, index) => (
+                    <div
+                      key={index}
+                      className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
+                    >
+                      {award}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -122,13 +143,13 @@ export default function AwardSection() {
                 <button
                   key={year}
                   onClick={() => setSelectedYear(year)}
-                  className={`flex-shrink-0 px-6 py-3 rounded-full transition-all snap-center ${
+                  className={`flex-shrink-0 px-6 py-3 rounded-full transition-all duration-500 ease-in-out snap-center ${
                     selectedYear === year
                       ? "bg-[#ff6b35] text-white scale-110 shadow-lg"
                       : "bg-white/10 text-white/70 hover:bg-white/20"
                   }`}
                 >
-                  <span className={`font-semibold ${selectedYear === year ? "text-lg" : "text-base"}`}>
+                  <span className={`font-semibold transition-all duration-500 ease-in-out ${selectedYear === year ? "text-lg" : "text-base"}`}>
                     {year}
                   </span>
                 </button>
@@ -137,7 +158,7 @@ export default function AwardSection() {
           </div>
 
           {/* 수상 내역 */}
-          <div className="bg-white/5 rounded-2xl p-6 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white/5 rounded-2xl p-6 backdrop-blur-sm transition-all duration-500 ease-in-out">
             <div className="flex flex-col gap-3">
               {awardsByYear[selectedYear].map((award, index) => {
                 const parts = award.split(", ")
@@ -148,7 +169,8 @@ export default function AwardSection() {
                 return (
                   <div
                     key={index}
-                    className="bg-white/5 rounded-lg p-4 text-left hover:bg-white/10 transition-colors"
+                    className="bg-white/5 rounded-lg p-4 text-left hover:bg-white/10 transition-all duration-300 ease-out opacity-0 animate-slideInUp"
+                    style={{ animationDelay: `${index * 0.08}s` }}
                   >
                     <div className="text-white font-medium text-sm mb-1">{title}</div>
                     <div className="flex flex-wrap gap-2 text-xs">
@@ -170,8 +192,21 @@ export default function AwardSection() {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(20px);
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0);
+          }
+        }
         .animate-fadeIn { 
           animation: fadeIn 0.35s ease-out forwards; 
+        }
+        .animate-slideInUp {
+          animation: slideInUp 0.6s ease-out forwards;
         }
         .scrollbar-hide::-webkit-scrollbar {
           display: none;

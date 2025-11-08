@@ -12,8 +12,8 @@ export function ApplyProcessSection() {
     <section className="relative py-20 md:py-28 bg-transparent text-white overflow-hidden">
       {/* 제목 */}
       <div className="text-center mb-16">
-        <p className="text-sm md:text-base text-gray-400 mb-2">지원절차</p>
-        <h2 className="text-2xl md:text-3xl font-bold text-[#ff5722] mb-4">
+        <p className="text-base md:text-lg text-gray-400 mb-2">지원절차</p>
+        <h2 className="text-2xl md:text-4xl font-bold text-[#ff5722] mb-4">
           함께 성장할 동료를 기다립니다
         </h2>
         <p className="text-gray-300 text-sm md:text-base">
