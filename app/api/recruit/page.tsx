@@ -5,12 +5,14 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { GraduationCap, Heart, Sparkles, ChevronDown } from "lucide-react"
+import { GraduationCap, Heart, Sparkles, ChevronDown, Instagram, MessageCircle } from "lucide-react"
 
 const RECRUITMENT_CONFIG = {
   staffFormUrl: "https://forms.google.com/staff-application", // 운영진 지원 폼 URL (실제 URL로 변경 필요)
   memberFormUrl: "https://forms.google.com/member-application", // 멤버 지원 폼 URL (실제 URL로 변경 필요)
   cohort: 17,
+  instagramUrl: "https://www.instagram.com/bitamin_official",
+  naverCafeUrl: "https://cafe.naver.com/bitamin123",
 }
 
 interface FAQItem {
@@ -100,7 +102,7 @@ export default function RecruitPage() {
     ot: {
       title: "OT",
       date: "7.9(수)",
-      note: "OT 불참 시 입격 취소",
+      note: "OT 불참 시 합격 취소",
     },
   }
 
@@ -142,7 +144,7 @@ export default function RecruitPage() {
                 멤버 지원하기
               </Button>
             </div>
-            <p className="text-gray-400 text-sm">운영진, 멤버 중복 지원 가능</p>
+            <p className="text-gray-400 text-xl">운영진, 멤버 중복 지원 가능</p>
           </div>
 
           <div className="mb-40">
@@ -178,8 +180,8 @@ export default function RecruitPage() {
                     <div key={index} className="flex justify-center">
                       <Card className="bg-gray-800/50 border-gray-700 hover:border-[#d3431a] transition-all w-80">
                         <CardContent className="p-5 text-center">
-                          <h4 className="text-white font-semibold mb-1">{item.title}</h4>
-                          <p className="text-[#ff6b35] font-semibold text-sm">{item.date}</p>
+                          <h4 className="text-white font-semibold mb-1 text-xl">{item.title}</h4>
+                          <p className="text-[#ff6b35] font-semibold text-lg">{item.date}</p>
                         </CardContent>
                       </Card>
                       {index < schedule.staff.length - 1 && (
@@ -197,8 +199,8 @@ export default function RecruitPage() {
                     <div key={index} className="flex justify-center">
                       <Card className="bg-gray-800/50 border-gray-700 hover:border-[#d3431a] transition-all w-80">
                         <CardContent className="p-5 text-center">
-                          <h4 className="text-white font-semibold mb-1">{item.title}</h4>
-                          <p className="text-[#ff6b35] font-semibold text-sm">{item.date}</p>
+                          <h4 className="text-white font-semibold mb-1 text-xl">{item.title}</h4>
+                          <p className="text-[#ff6b35] font-semibold text-lg">{item.date}</p>
                         </CardContent>
                       </Card>
                       {index < schedule.member.length - 1 && (
@@ -217,7 +219,7 @@ export default function RecruitPage() {
                   <div className="absolute left-1/4 top-0 w-0.5 h-12 bg-gray-700" />
                   <div className="absolute right-1/4 top-0 w-0.5 h-12 bg-gray-700" />
                   <div className="absolute left-1/4 top-12 right-1/4 h-0.5 bg-gray-700" />
-                  <div className="absolute left-1/2 -translate-x-1/2 top-12 w-0.5 h-12 bg-gray-700" />
+                  <div className="absolute left-1/2 -translate-x-1/2 top-12 w-0.5 h-14 bg-gray-700" />
                 </div>
               </div>
 
@@ -297,6 +299,53 @@ export default function RecruitPage() {
                 </p>
               </CardContent>
             </Card>
+          </div>
+
+          {/* 관련 링크 섹션 */}
+          <div className="max-w-4xl mx-auto mb-40">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-white mb-4">관련 링크</h2>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              {/* 인스타그램 */}
+              <a
+                href={RECRUITMENT_CONFIG.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block w-64"
+              >
+                <Card className="bg-gradient-to-br from-purple-950 to-black border-purple-700/40 hover:border-purple-500 hover:scale-105 transition-all duration-300 cursor-pointer">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                      <Instagram className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg font-semibold text-white">Instagram</h3>
+                    </div>
+                  </CardContent>
+                </Card>
+              </a>
+
+              {/* 네이버 카페 */}
+              <a
+                href={RECRUITMENT_CONFIG.naverCafeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block w-64"
+              >
+                <Card className="bg-gradient-to-br from-green-950 to-black border-green-700/40 hover:border-green-500 hover:scale-105 transition-all duration-300 cursor-pointer">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                      <MessageCircle className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-lg font-semibold text-white">네이버 카페</h3>
+                    </div>
+                  </CardContent>
+                </Card>
+              </a>
+            </div>
           </div>
 
           {/* FAQ 섹션 */}

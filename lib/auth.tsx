@@ -119,11 +119,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           // JSON 파싱 실패 시 상태 코드별 기본 메시지
           if (response.status === 403) {
-            errorMessage = "아직 승인되지 않은 유저입니다. 운영진의 승인을 기다려주세요."
+            errorMessage = "관리자의 승인이 대기 중입니다."
           } else if (response.status === 404) {
             errorMessage = "사용자를 찾을 수 없습니다."
           } else if (response.status === 500) {
-            errorMessage = "아직 승인대기 중인 유저입니다."
+            errorMessage = "관리자의 승인이 대기 중입니다."
           }
         }
         alert(errorMessage)
