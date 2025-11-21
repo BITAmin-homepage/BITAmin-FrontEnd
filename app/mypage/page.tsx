@@ -32,8 +32,8 @@ export default function MyPage() {
     phone: "",
     email: "",
     cohort: 0,
-    role: "멤버" as "회장" | "기획부" | "총무부" | "교육부" | "멤버",
-    depart: "", // 부서
+    role: "MEMBER" as "MEMBER" | "ADMIN",
+    depart: "멤버" as "회장" | "기획부" | "총무부" | "교육부" | "멤버", // 부서
     link1: "", // GitHub
     link2: "", // 자유 링크
     profileImage: "", // 프로필 이미지 URL
@@ -65,8 +65,8 @@ export default function MyPage() {
         phone: user.phone || "",
         email: user.email || "",
         cohort: user.cohort || 0,
-        role: (user as any).role || "멤버",
-        depart: (user as any).depart || "",
+        role: (user.role === "ROLE_ADMIN" || user.role === "ADMIN") ? "ADMIN" : "MEMBER",
+        depart: (user as any).depart || "멤버",
         link1: user.link1 || "",
         link2: user.link2 || "",
         profileImage: (user as any).profileImage || "",
@@ -139,6 +139,13 @@ export default function MyPage() {
     try {
       const token = localStorage.getItem("auth_token")
       
+      // Authorization 토큰 검증
+      if (!token) {
+        alert("인증 토큰이 없습니다. 다시 로그인해주세요.")
+        router.push("/login")
+        return
+      }
+      
       // memberId가 있으면 사용하고, 없으면 id 사용
       const userId = user.memberId || user.id
       
@@ -191,8 +198,8 @@ export default function MyPage() {
         phone: editData.phone || currentUser.phone || "",
         email: editData.email || currentUser.email,
         cohort: editData.cohort || currentUser.cohort,
-        role: editData.role || currentUser.role,
-        depart: editData.depart || (currentUser as any).depart || "",
+        role: editData.role, // MEMBER 또는 ADMIN만 전송
+        depart: editData.depart || "멤버",
         // link1, link2는 기존 값 유지 (editData에 없으면 currentUser에서 가져옴)
         link1: editData.link1 || (currentUser as any).link1 || (currentUser as any).github || "",
         link2: editData.link2 || (currentUser as any).link2 || "",
@@ -229,8 +236,8 @@ export default function MyPage() {
           phone: editData.phone || currentUser.phone || "",
           email: editData.email || currentUser.email,
           cohort: editData.cohort || currentUser.cohort,
-          role: editData.role || currentUser.role,
-          depart: editData.depart || (currentUser as any).depart || "",
+          role: editData.role, // MEMBER 또는 ADMIN
+          depart: editData.depart || "멤버",
           link1: editData.link1 || (currentUser as any).link1 || (currentUser as any).github || "",
           link2: editData.link2 || (currentUser as any).link2 || "",
           profileImage: profileImageUrl || (currentUser as any).profileImage || ""
@@ -278,8 +285,8 @@ export default function MyPage() {
                 phone: d.phone || "",
                 email: d.email || "",
                 cohort: d.cohort || 0,
-                role: d.role || "멤버",
-                depart: d.depart || "",
+                role: (d.role === "ROLE_ADMIN" || d.role === "ADMIN") ? "ADMIN" : "MEMBER",
+                depart: d.depart || "멤버",
                 link1: d.link1 || "",
                 link2: d.link2 || "",
                 profileImage: finalProfileImage,
@@ -490,10 +497,10 @@ export default function MyPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="role">역할 *</Label>
+                    <Label htmlFor="depart">역할 *</Label>
                     <Select
-                      value={editData.role}
-                      onValueChange={(value: "회장" | "기획부" | "총무부" | "교육부" | "멤버") => setEditData({ ...editData, role: value })}
+                      value={editData.depart}
+                      onValueChange={(value: "회장" | "기획부" | "총무부" | "교육부" | "멤버") => setEditData({ ...editData, depart: value })}
                     >
                       <SelectTrigger className="bg-black border-white/20 text-white">
                         <SelectValue />
@@ -589,10 +596,10 @@ export default function MyPage() {
                     <h2 className="text-2xl font-bold text-white mb-2">{displayUser.name}</h2>
                     <Badge
                       className={
-                        (displayUser as any).role === "회장" ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
+                        (displayUser as any).depart === "회장" ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
                       }
                     >
-                      {(displayUser as any).role || "멤버"}
+                      {(displayUser as any).depart || "멤버"}
                     </Badge>
                   </div>
                 </div>
@@ -636,21 +643,12 @@ export default function MyPage() {
                       </div>
                     </div>
 
-                    {/* 역할 */}
-                    <div className="flex items-start gap-3">
-                      <User className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <div className="text-sm text-gray-400">역할</div>
-                        <div className="font-medium text-white">{(displayUser as any).role || "멤버"}</div>
-                      </div>
-                    </div>
-
                     {/* 부서 */}
                     <div className="flex items-start gap-3">
                       <User className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <div className="text-sm text-gray-400">부서</div>
-                        <div className="font-medium text-white">{(displayUser as any).depart || "미등록"}</div>
+                        <div className="font-medium text-white">{(displayUser as any).depart || "멤버"}</div>
                       </div>
                     </div>
 
