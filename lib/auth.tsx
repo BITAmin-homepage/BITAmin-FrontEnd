@@ -113,17 +113,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         // 에러 응답 처리
         let errorMessage = "로그인에 실패했습니다."
+    
         try {
           const result = await response.json()
-          errorMessage = result.message || errorMessage
+          
+          // 403 또는 500 상태 코드이고, 메시지에 "승인" 관련 키워드가 있으면 해당 메시지 사용
+          if ((response.status === 403 || response.status === 500) && result.message) {
+            // 백엔드 메시지에 "승인" 키워드가 있으면 그대로 사용
+            if (result.message.includes("승인") || result.message.includes("대기")) {
+              errorMessage = "운영진 승인을 대기 중입니다."
+            } else {
+              errorMessage = result.message
+            }
+          } else if (response.status === 404) {
+            errorMessage = "사용자를 찾을 수 없습니다."
+          } else {
+            errorMessage = result.message || errorMessage
+          }
         } catch (e) {
           // JSON 파싱 실패 시 상태 코드별 기본 메시지
           if (response.status === 403) {
-            errorMessage = "관리자의 승인을 대기 중입니다."
+            errorMessage = "운영진 승인을 대기 중입니다."
           } else if (response.status === 404) {
             errorMessage = "사용자를 찾을 수 없습니다."
           } else if (response.status === 500) {
-            errorMessage = "관리자의 승인을 대기 중입니다."
+            errorMessage = "운영진 승인을 대기 중입니다."
           }
         }
         alert(errorMessage)
