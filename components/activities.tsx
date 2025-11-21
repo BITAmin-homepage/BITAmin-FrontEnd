@@ -19,7 +19,7 @@ export function ActivitiesSection() {
     { 
       title: "현직자 특강",
       description: "BITAmin은 데이터·AI 분야에 먼저 취업하신 BITAmin 출신 선배님들을 모셔 \n현직자 초청 강연을 개최합니다. 취업이나 대학원을 준비하고 있는 동아리원들은 \n선배님들의 실제 경험담을 들으며 진로 준비를 구체화할 수 있습니다.",
-      image: "/images/careerSeminar.jpg",
+      image: "/images/careerSeminar_v2.jpg",
     },
     { 
       title: "연합 데이터톤",
@@ -34,7 +34,7 @@ export function ActivitiesSection() {
     { 
       title: "홈커밍데이",
       description: "BITAmin은 매년 홈커밍데이를 개최하여 선배님들과의 유대감을 다지고 \n취업과 대학원 진학에 도움이 되는 실질적인 정보를 얻을 수 있습니다.",
-      image: "/images/homecoming.jpg",
+      image: "/images/homecoming_v2.jpg",
     },
     { 
       title: "네트워킹",

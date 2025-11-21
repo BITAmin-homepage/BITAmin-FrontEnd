@@ -143,9 +143,13 @@ export default function Curriculum() {
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
+                  {activeIndex === 0 &&(
+                    <p className="text-white/50 text-base text-left mt-4 ml-6">
+                      기존기수 발표 청강
+                    </p>
+                  )}
+                  </div>
+                )}
               <div className={curriculum[activeIndex].regular.length === 0 ? 'md:col-span-2' : ''}>
                 <div className={curriculum[activeIndex].regular.length === 0 ? 'max-w-md mx-auto' : ''}>
                   <h3 className="text-xl font-bold mb-8 text-center">프로젝트</h3>

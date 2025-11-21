@@ -45,7 +45,7 @@ export default function IntroductionSection() {
         <div className="relative max-w-5xl mx-auto">
           {/* 화살표 백그라운드 */}
           <div className="flex justify-center px-2 sm:px-4">
-            <img src="/images/arrow.png" alt="화살표" className="w-full" />
+            <img src="/images/arrow_v2.png" alt="화살표" className="w-full" />
           </div>
 
           {/* 아이콘 카드 3개 - absolute로 화살표 위에 배치 */}

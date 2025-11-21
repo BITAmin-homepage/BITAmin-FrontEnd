@@ -109,11 +109,11 @@ export default function MembersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-black">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-center items-center h-64">
-            <div className="text-lg text-gray-600">멤버 정보를 불러오는 중...</div>
+            <div className="text-lg text-gray-400">멤버 정보를 불러오는 중...</div>
           </div>
         </div>
         <Footer />

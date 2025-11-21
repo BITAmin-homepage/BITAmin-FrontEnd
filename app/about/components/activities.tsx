@@ -64,7 +64,7 @@ export default function ActivitiesSection() {
       동아리원들이 앞으로의 진로를 구체적으로 설계하고 
       준비할 수 있는 소중한 성장의 장이 됩니다.
       `,
-      image: "/images/careerSeminar.jpg",
+      image: "/images/careerSeminar_v2.jpg",
     },
     {
       title: "연합 데이터톤",
@@ -95,7 +95,7 @@ export default function ActivitiesSection() {
       동시에 취업과 대학원 진학에 도움이 되는 실질적인 정보도 
       얻을 수 있습니다.
       `,
-      image: "/images/homecoming.jpg",
+      image: "/images/homecoming_v2.jpg",
     },
     {
       title: "네트워킹",
