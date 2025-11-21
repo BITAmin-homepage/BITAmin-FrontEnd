@@ -299,14 +299,14 @@ export default function ProjectsPage() {
                     </div>
 
                     {/* 기간과 참여자 이름 */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-gray-500 text-sm mb-4">
+                    <div className="flex flex-col gap-2 text-gray-500 text-sm mb-4">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-[#d3431a] flex-shrink-0" />
                         <span className="text-xs sm:text-sm">{project.period}</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-[#d3431a] flex-shrink-0" />
-                        <span className="line-clamp-1 text-xs sm:text-sm">{project.member}</span>
+                      <div className="flex items-start gap-1">
+                        <Users className="w-3 h-3 sm:w-4 sm:h-4 text-[#d3431a] flex-shrink-0 mt-0.5" />
+                        <span className="text-xs sm:text-sm break-words">{project.member}</span>
                       </div>
                     </div>
 

@@ -32,7 +32,8 @@ export default function MyPage() {
     phone: "",
     email: "",
     cohort: 0,
-    role: "MEMBER" as "MEMBER" | "ADMIN",
+    role: "멤버" as "회장" | "기획부" | "총무부" | "교육부" | "멤버",
+    depart: "", // 부서
     link1: "", // GitHub
     link2: "", // 자유 링크
     profileImage: "", // 프로필 이미지 URL
@@ -64,7 +65,8 @@ export default function MyPage() {
         phone: user.phone || "",
         email: user.email || "",
         cohort: user.cohort || 0,
-        role: (user.role === "ROLE_ADMIN" || user.role === "ADMIN") ? "ADMIN" : "MEMBER",
+        role: (user as any).role || "멤버",
+        depart: (user as any).depart || "",
         link1: user.link1 || "",
         link2: user.link2 || "",
         profileImage: (user as any).profileImage || "",
@@ -190,6 +192,7 @@ export default function MyPage() {
         email: editData.email || currentUser.email,
         cohort: editData.cohort || currentUser.cohort,
         role: editData.role || currentUser.role,
+        depart: editData.depart || (currentUser as any).depart || "",
         // link1, link2는 기존 값 유지 (editData에 없으면 currentUser에서 가져옴)
         link1: editData.link1 || (currentUser as any).link1 || (currentUser as any).github || "",
         link2: editData.link2 || (currentUser as any).link2 || "",
@@ -227,6 +230,7 @@ export default function MyPage() {
           email: editData.email || currentUser.email,
           cohort: editData.cohort || currentUser.cohort,
           role: editData.role || currentUser.role,
+          depart: editData.depart || (currentUser as any).depart || "",
           link1: editData.link1 || (currentUser as any).link1 || (currentUser as any).github || "",
           link2: editData.link2 || (currentUser as any).link2 || "",
           profileImage: profileImageUrl || (currentUser as any).profileImage || ""
@@ -274,7 +278,8 @@ export default function MyPage() {
                 phone: d.phone || "",
                 email: d.email || "",
                 cohort: d.cohort || 0,
-                role: (d.role === "ROLE_ADMIN" || d.role === "ADMIN") ? "ADMIN" : "MEMBER",
+                role: d.role || "멤버",
+                depart: d.depart || "",
                 link1: d.link1 || "",
                 link2: d.link2 || "",
                 profileImage: finalProfileImage,
@@ -488,18 +493,19 @@ export default function MyPage() {
                     <Label htmlFor="role">역할 *</Label>
                     <Select
                       value={editData.role}
-                      onValueChange={(value: "MEMBER" | "ADMIN") => setEditData({ ...editData, role: value })}
-                      disabled={true}
+                      onValueChange={(value: "회장" | "기획부" | "총무부" | "교육부" | "멤버") => setEditData({ ...editData, role: value })}
                     >
-                      <SelectTrigger className="bg-black border-white/20 text-white opacity-60 cursor-not-allowed">
+                      <SelectTrigger className="bg-black border-white/20 text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="MEMBER">멤버</SelectItem>
-                        <SelectItem value="ADMIN">관리자</SelectItem>
+                        <SelectItem value="회장">회장</SelectItem>
+                        <SelectItem value="기획부">기획부</SelectItem>
+                        <SelectItem value="총무부">총무부</SelectItem>
+                        <SelectItem value="교육부">교육부</SelectItem>
+                        <SelectItem value="멤버">멤버</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-gray-500">역할은 관리자만 변경할 수 있습니다</p>
                   </div>
                 </div>
                 <div className="space-y-6">
@@ -583,10 +589,10 @@ export default function MyPage() {
                     <h2 className="text-2xl font-bold text-white mb-2">{displayUser.name}</h2>
                     <Badge
                       className={
-                        isAdmin(displayUser.role) ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
+                        (displayUser as any).role === "회장" ? "bg-[#d3431a] text-white" : "bg-white/10 text-white"
                       }
                     >
-                      {isAdmin(displayUser.role) ? "관리자" : "멤버"}
+                      {(displayUser as any).role || "멤버"}
                     </Badge>
                   </div>
                 </div>
@@ -627,6 +633,24 @@ export default function MyPage() {
                       <div className="flex-1">
                         <div className="text-sm text-gray-400">기수</div>
                         <div className="font-medium text-white">{displayUser.cohort}기</div>
+                      </div>
+                    </div>
+
+                    {/* 역할 */}
+                    <div className="flex items-start gap-3">
+                      <User className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-400">역할</div>
+                        <div className="font-medium text-white">{(displayUser as any).role || "멤버"}</div>
+                      </div>
+                    </div>
+
+                    {/* 부서 */}
+                    <div className="flex items-start gap-3">
+                      <User className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-400">부서</div>
+                        <div className="font-medium text-white">{(displayUser as any).depart || "미등록"}</div>
                       </div>
                     </div>
 

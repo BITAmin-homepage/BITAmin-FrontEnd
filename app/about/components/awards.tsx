@@ -119,14 +119,21 @@ export default function AwardSection() {
                       : 'opacity-0 pointer-events-none'
                   }`}
                 >
-                  {awardsByYear[year].map((award, index) => (
-                    <div
-                      key={index}
-                      className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
-                    >
-                      {award}
-                    </div>
-                  ))}
+                  {awardsByYear[year].map((award, index) => {
+                    const parts = award.split(", ")
+                    const title = parts[0]
+                    const prize = parts[1]
+                    const organization = parts.slice(2).join(", ")
+                    
+                    return (
+                      <div
+                        key={index}
+                        className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
+                      >
+                        {title}, <span className="text-yellow-200 font-bold">{prize}</span>, {organization}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             ))}
@@ -173,7 +180,7 @@ export default function AwardSection() {
                   >
                     <div className="text-white font-medium text-sm mb-1">{title}</div>
                     <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="text-[#ff6b35] font-semibold">{prize}</span>
+                      <span className="text-yellow-200 font-bold">{prize}</span>
                       <span className="text-white/60">•</span>
                       <span className="text-white/70">{organization}</span>
                     </div>
