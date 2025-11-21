@@ -245,16 +245,9 @@ export default function MyPage() {
         
         localStorage.setItem("user_data", JSON.stringify(updatedUser))
         
-        // 프로필 이미지가 업로드된 경우 즉시 화면에 반영
-        if (profileImageUrl) {
-          // fetchedUser 업데이트
-          if (fetchedUser) {
-            setFetchedUser({
-              ...fetchedUser,
-              profileImage: profileImageUrl
-            } as any)
-          }
-        }
+        // 수정 완료 후 즉시 화면에 반영
+        // @ts-ignore
+        setFetchedUser(updatedUser)
 
         // 페이지 이동 없이 최신 정보로 갱신
         try {
@@ -272,7 +265,8 @@ export default function MyPage() {
               
               const mergedData = {
                 ...d,
-                profileImage: finalProfileImage
+                profileImage: finalProfileImage,
+                depart: d.depart || editData.depart || "멤버" // depart 포함
               }
               
               // @ts-ignore - display 전용 상태
@@ -291,16 +285,10 @@ export default function MyPage() {
                 link2: d.link2 || "",
                 profileImage: finalProfileImage,
               })
-            } else {
-              // 실패 시 로컬 값으로라도 즉시 반영
-              // @ts-ignore
-              setFetchedUser(updatedUser)
             }
           }
         } catch (e) {
-          // 네트워크 오류 시에도 페이지 이탈 없이 로컬 값 적용
-          // @ts-ignore
-          setFetchedUser(updatedUser)
+          // 네트워크 오류 시에도 이미 updatedUser로 반영됨
         }
       } else {
         alert(result.message || "정보 수정에 실패했습니다.")
@@ -643,12 +631,14 @@ export default function MyPage() {
                       </div>
                     </div>
 
-                    {/* 부서 */}
+                    {/* 부서/역할 */}
                     <div className="flex items-start gap-3">
                       <User className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
                         <div className="text-sm text-gray-400">부서</div>
-                        <div className="font-medium text-white">{(displayUser as any).depart || "멤버"}</div>
+                        <div className="font-medium text-white">
+                          {(displayUser as any).depart || "멤버"}
+                        </div>
                       </div>
                     </div>
 
@@ -658,7 +648,7 @@ export default function MyPage() {
                       <div className="flex-1">
                         <div className="text-sm text-gray-400">성별</div>
                         <div className="font-medium text-white">
-                          {displayUser.gender === "male" ? "남성" : displayUser.gender === "female" ? "여성" : "미등록"}
+                          {displayUser.gender === "male" || displayUser.gender === "M" ? "남성" : displayUser.gender === "female" || displayUser.gender === "F" ? "여성" : "미등록"}
                         </div>
                       </div>
                     </div>
