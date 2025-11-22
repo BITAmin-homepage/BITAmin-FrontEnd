@@ -26,20 +26,19 @@ export default function HomePage() {
         }}
       />
 
-      {/* 상단 구체 이미지 오버레이 - 반응형 크기 */}
-      <div
-        className="absolute left-0 right-0 mx-auto z-0"
+      {/* 상단 비디오 오버레이 - 반응형 크기 */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute left-0 right-0 mx-auto z-0 w-full h-screen object-cover pointer-events-none"
         style={{
           top: 0,
-          width: '100%',
-          height: '100vh',
-          backgroundImage: 'url(/images/sphere_black.jpeg)',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center top',
-          backgroundSize: 'cover',
-          pointerEvents: 'none',
         }}
-      />
+      >
+        <source src="/images/typeA-reverse.mp4" type="video/mp4" />
+      </video>
       <Header onOpenApplyModal={() => setIsApplyModalOpen(true)} />
       <Hero onOpenApplyModal={() => setIsApplyModalOpen(true)} />
 

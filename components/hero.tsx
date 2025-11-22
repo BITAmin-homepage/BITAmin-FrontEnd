@@ -9,7 +9,7 @@ interface HeroProps {
 
 export function Hero({ onOpenApplyModal }: HeroProps) {
   return (
-    <section className="relative text-white py-20 pt-60 md:pt-72 overflow-hidden">
+    <section className="relative text-white py-20 pt-44 md:pt-56 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-32 h-32 bg-orange-500 rounded-full blur-3xl opacity-20"></div>
@@ -17,7 +17,7 @@ export function Hero({ onOpenApplyModal }: HeroProps) {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-orange-600 rounded-full blur-3xl opacity-15"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-12">
         <div className="text-center">
 
           <div className="mb-6 flex justify-center">

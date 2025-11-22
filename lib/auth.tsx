@@ -113,7 +113,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         // 에러 응답 처리
         let errorMessage = "로그인에 실패했습니다."
-    
         try {
           const result = await response.json()
           
