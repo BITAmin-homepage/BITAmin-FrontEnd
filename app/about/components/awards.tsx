@@ -7,6 +7,19 @@ type AwardsByYear = Record<number, string[]>
 export default function AwardSection() {
   const [selectedYear, setSelectedYear] = useState<number>(2025)
 
+  // 수상 등급에 따른 색상 반환 함수
+  const getPrizeColor = (prize: string): string => {
+    if (prize.includes("대상")) {
+      return "#d3431a" // 진한 주황색
+    } else if (prize.includes("1위") || prize.includes("최우수상") || prize.includes("금상")) {
+      return "#ff6b35" // 덜 진한 주황색
+    } else if (prize.includes("우수상") || prize.includes("2위")) {
+      return "#ff9966" // 더 연한 주황색
+    } else {
+      return "#fef08a" // 노란색 (장려상, 입선, 3위 등)
+    }
+  }
+
   const awardsByYear: AwardsByYear = {
     2025: [
       "SW 경진대회, 대상, 정보통신기획평가원",
@@ -140,7 +153,7 @@ export default function AwardSection() {
                         key={index}
                         className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
                       >
-                        {title}, <span className="text-yellow-200 font-bold">{prize}</span>, {organization}
+                        {title}, <span className="font-bold" style={{ color: getPrizeColor(prize) }}>{prize}</span>, {organization}
                       </div>
                     )
                   })}
@@ -190,7 +203,7 @@ export default function AwardSection() {
                   >
                     <div className="text-white font-medium text-sm mb-1">{title}</div>
                     <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="text-yellow-200 font-bold">{prize}</span>
+                      <span className="font-bold" style={{ color: getPrizeColor(prize) }}>{prize}</span>
                       <span className="text-white/60">•</span>
                       <span className="text-white/70">{organization}</span>
                     </div>
