@@ -30,6 +30,7 @@ export default function RegisterPage() {
     confirmPassword: "",
   })
   const [loading, setLoading] = useState(false)
+  const [agreeToTerms, setAgreeToTerms] = useState(false)
 
   const router = useRouter()
 
@@ -325,10 +326,24 @@ export default function RegisterPage() {
               />
             </div>
 
+            {/* 개인정보 수집·이용 동의 */}
+            <div className="flex items-start space-x-2 p-4 bg-gray-800/50 rounded-lg">
+              <input
+                type="checkbox"
+                id="agreeToTerms"
+                checked={agreeToTerms}
+                onChange={(e) => setAgreeToTerms(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-gray-600 text-[#d3431a] focus:ring-[#d3431a] focus:ring-offset-gray-900"
+              />
+              <label htmlFor="agreeToTerms" className="text-sm text-gray-300 cursor-pointer">
+                회원가입을 위해 필요한 개인정보 수집·이용에 동의합니다.
+              </label>
+            </div>
+
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-[#d3431a] to-[#ff6b35] hover:from-[#b8371a] hover:to-[#e55a2b] text-white font-semibold py-3"
+              disabled={loading || !agreeToTerms}
+              className="w-full bg-gradient-to-r from-[#d3431a] to-[#ff6b35] hover:from-[#b8371a] hover:to-[#e55a2b] text-white font-semibold py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "가입 중..." : "회원가입"}
             </Button>

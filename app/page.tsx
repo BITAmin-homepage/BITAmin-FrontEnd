@@ -37,7 +37,7 @@ export default function HomePage() {
           top: 0,
         }}
       >
-        <source src="/images/typeA-reverse.mp4" type="video/mp4" />
+        <source src="/images/typeA-reverse-cut.mp4" type="video/mp4" />
       </video>
       <Header onOpenApplyModal={() => setIsApplyModalOpen(true)} />
       <Hero onOpenApplyModal={() => setIsApplyModalOpen(true)} />
