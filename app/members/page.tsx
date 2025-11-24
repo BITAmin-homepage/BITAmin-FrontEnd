@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
@@ -26,17 +26,6 @@ export default function MembersPage() {
 
   useEffect(() => {
     fetchMembers()
-    
-    // 페이지 포커스 시 데이터 새로고침 (마이페이지에서 돌아올 때)
-    const handleFocus = () => {
-      fetchMembers()
-    }
-    
-    window.addEventListener('focus', handleFocus)
-    
-    return () => {
-      window.removeEventListener('focus', handleFocus)
-    }
   }, [])
 
   const fetchMembers = async () => {
@@ -56,28 +45,7 @@ export default function MembersPage() {
     }
   }
 
-  const cohorts = Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a)
-  
-  // 활동 중인 기수 (최신 2개 기수)
-  const activeCohorts = cohorts.slice(0, 2)
-
-  const filteredMembers = members.filter((member) => {
-    if (selectedCohort === "all") {
-      return true
-    } else if (selectedCohort === "active") {
-      // 활동 중인 최신 2개 기수만 표시
-      return activeCohorts.includes(member.cohort)
-    } else {
-      return member.cohort.toString() === selectedCohort
-    }
-  })
-
-  // 표시할 기수 목록 결정
-  const displayCohorts = selectedCohort === "active" ? activeCohorts : 
-                         selectedCohort === "all" ? cohorts :
-                         cohorts.filter(c => c.toString() === selectedCohort)
-
-  // 역할 정렬 순서 정의
+  // 역할 정렬 순서 정의 함수를 useMemo 밖으로
   const getRoleOrder = (depart: string | null): number => {
     if (!depart) return 4 // 역할 없음 (멤버)
     const role = depart.toLowerCase()
@@ -88,24 +56,52 @@ export default function MembersPage() {
     return 3 // 기타 역할
   }
 
-  // 기수별로 그룹화 및 정렬
-  const membersByCohort = displayCohorts.reduce(
-    (acc, cohort) => {
-      const cohortMembers = filteredMembers.filter((member) => member.cohort === cohort)
-      // 역할 순서대로 정렬: 회장 > 기획/교육/총무 > 멤버
-      acc[cohort] = cohortMembers.sort((a, b) => {
-        const orderA = getRoleOrder(a.depart)
-        const orderB = getRoleOrder(b.depart)
-        if (orderA !== orderB) {
-          return orderA - orderB
-        }
-        // 같은 역할 내에서는 이름순 정렬
-        return a.name.localeCompare(b.name, 'ko')
-      })
-      return acc
-    },
-    {} as Record<number, Member[]>,
+  // useMemo로 모든 연산 최적화
+  const cohorts = useMemo(() => 
+    Array.from(new Set(members.map((m) => m.cohort))).sort((a, b) => b - a),
+    [members]
   )
+  
+  // 활동 중인 기수 (최신 2개 기수)
+  const activeCohorts = useMemo(() => cohorts.slice(0, 2), [cohorts])
+
+  const filteredMembers = useMemo(() => {
+    if (selectedCohort === "all") {
+      return members
+    } else if (selectedCohort === "active") {
+      return members.filter((member) => activeCohorts.includes(member.cohort))
+    } else {
+      return members.filter((member) => member.cohort.toString() === selectedCohort)
+    }
+  }, [members, selectedCohort, activeCohorts])
+
+  // 표시할 기수 목록 결정
+  const displayCohorts = useMemo(() => {
+    if (selectedCohort === "active") return activeCohorts
+    if (selectedCohort === "all") return cohorts
+    return cohorts.filter(c => c.toString() === selectedCohort)
+  }, [selectedCohort, activeCohorts, cohorts])
+
+  // 기수별로 그룹화 및 정렬 (최적화: 한 번만 정렬)
+  const membersByCohort = useMemo(() => {
+    return displayCohorts.reduce(
+      (acc, cohort) => {
+        const cohortMembers = filteredMembers.filter((member) => member.cohort === cohort)
+        // 역할 순서대로 정렬: 회장 > 기획/교육/총무 > 멤버
+        acc[cohort] = cohortMembers.sort((a, b) => {
+          const orderA = getRoleOrder(a.depart)
+          const orderB = getRoleOrder(b.depart)
+          if (orderA !== orderB) {
+            return orderA - orderB
+          }
+          // 같은 역할 내에서는 이름순 정렬
+          return a.name.localeCompare(b.name, 'ko')
+        })
+        return acc
+      },
+      {} as Record<number, Member[]>,
+    )
+  }, [displayCohorts, filteredMembers])
 
   if (loading) {
     return (
@@ -170,19 +166,17 @@ export default function MembersPage() {
                         <div className="flex flex-col items-center text-center space-y-4">
                           <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-700 border-2 border-white/20">
                             {member.image && member.image.trim() !== "" ? (
-                              <>
-                                <img
-                                  src={member.image}
-                                  alt={`${member.name} 프로필`}
-                                  className="object-cover w-full h-full"
-                                />
-                              </>
+                              <img
+                                src={member.image}
+                                alt={`${member.name} 프로필`}
+                                className="object-cover w-full h-full"
+                                loading="lazy"
+                                decoding="async"
+                              />
                             ) : (
-                              <>
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <User className="w-10 h-10 text-gray-400" />
-                                </div>
-                              </>
+                              <div className="w-full h-full flex items-center justify-center">
+                                <User className="w-10 h-10 text-gray-400" />
+                              </div>
                             )}
                           </div>
 
