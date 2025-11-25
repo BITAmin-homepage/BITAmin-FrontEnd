@@ -141,6 +141,8 @@ export default function WriteProjectPage() {
       }
       
       // 2. 썸네일 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
+      console.log(`[썸네일 업로드] 파일명: ${thumbnailFile.name}, 크기: ${(thumbnailFile.size / (1024 * 1024)).toFixed(2)}MB`)
+      
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", "thumbnail")
@@ -155,22 +157,30 @@ export default function WriteProjectPage() {
         body: thumbnailFormData,
       })
 
-      // 응답 처리: JSON 또는 text 형식 모두 지원
-      let thumbnailResult
-      const thumbnailContentType = thumbnailResponse.headers.get("content-type")
-      if (thumbnailContentType?.includes("application/json")) {
-        thumbnailResult = await thumbnailResponse.json()
-        if (!thumbnailResponse.ok) {
-          throw new Error(thumbnailResult.message || "썸네일 업로드에 실패했습니다.")
-        }
-      } else {
-        thumbnailResult = await thumbnailResponse.text()
-        if (!thumbnailResponse.ok) {
-          throw new Error(thumbnailResult || "썸네일 업로드에 실패했습니다.")
+      console.log(`[썸네일 업로드 응답] Status: ${thumbnailResponse.status}, Content-Type: ${thumbnailResponse.headers.get("content-type")}`)
+
+      // 성공/실패에 따라 다르게 처리
+      if (!thumbnailResponse.ok) {
+        // 실패 시: JSON으로 에러 메시지 파싱
+        const contentType = thumbnailResponse.headers.get("content-type")
+        if (contentType?.includes("application/json")) {
+          const errorData = await thumbnailResponse.json()
+          console.log("[썸네일 업로드 에러 JSON]", errorData)
+          throw new Error(errorData.message || errorData.error || "썸네일 업로드에 실패했습니다.")
+        } else {
+          const errorText = await thumbnailResponse.text()
+          console.log("[썸네일 업로드 에러 TEXT]", errorText)
+          throw new Error(errorText || "썸네일 업로드에 실패했습니다.")
         }
       }
+      
+      // 성공 시: text로 URL 받기
+      const thumbnailResult = await thumbnailResponse.text()
+      console.log("[썸네일 업로드 성공 URL]", thumbnailResult)
 
       // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
+      console.log(`[프로젝트 파일 업로드] 파일명: ${projectFile.name}, 크기: ${(projectFile.size / (1024 * 1024)).toFixed(2)}MB`)
+      
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
       projectFormData.append("type", "ppt")
@@ -184,20 +194,26 @@ export default function WriteProjectPage() {
         body: projectFormData,
       })
 
-      // 응답 처리: JSON 또는 text 형식 모두 지원
-      let projectResult
-      const contentType = projectResponse.headers.get("content-type")
-      if (contentType?.includes("application/json")) {
-        projectResult = await projectResponse.json()
-        if (!projectResponse.ok) {
-          throw new Error(projectResult.message || "프로젝트 파일 업로드에 실패했습니다.")
-        }
-      } else {
-        projectResult = await projectResponse.text()
-        if (!projectResponse.ok) {
-          throw new Error(projectResult || "프로젝트 파일 업로드에 실패했습니다.")
+      console.log(`[프로젝트 파일 업로드 응답] Status: ${projectResponse.status}, Content-Type: ${projectResponse.headers.get("content-type")}`)
+
+      // 성공/실패에 따라 다르게 처리
+      if (!projectResponse.ok) {
+        // 실패 시: JSON으로 에러 메시지 파싱
+        const contentType = projectResponse.headers.get("content-type")
+        if (contentType?.includes("application/json")) {
+          const errorData = await projectResponse.json()
+          console.log("[프로젝트 파일 업로드 에러 JSON]", errorData)
+          throw new Error(errorData.message || errorData.error || "프로젝트 파일 업로드에 실패했습니다.")
+        } else {
+          const errorText = await projectResponse.text()
+          console.log("[프로젝트 파일 업로드 에러 TEXT]", errorText)
+          throw new Error(errorText || "프로젝트 파일 업로드에 실패했습니다.")
         }
       }
+      
+      // 성공 시: text로 URL 받기
+      const projectResult = await projectResponse.text()
+      console.log("[프로젝트 파일 업로드 성공 URL]", projectResult)
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")
       // 프로젝트 목록 페이지로 이동

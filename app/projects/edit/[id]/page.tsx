@@ -113,6 +113,8 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         
         // 썸네일 업로드
         if (thumbnailFile) {
+          console.log(`[썸네일 업로드] 파일명: ${thumbnailFile.name}, 크기: ${(thumbnailFile.size / (1024 * 1024)).toFixed(2)}MB`)
+          
           const thumbnailFormData = new FormData()
           thumbnailFormData.append("file", thumbnailFile)
           thumbnailFormData.append("type", "thumbnail")
@@ -126,21 +128,31 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             body: thumbnailFormData,
           })
 
+          console.log(`[썸네일 업로드 응답] Status: ${thumbnailResponse.status}`)
+
           if (!thumbnailResponse.ok) {
             const contentType = thumbnailResponse.headers.get("content-type")
             let errorMessage
             if (contentType?.includes("application/json")) {
               const errorData = await thumbnailResponse.json()
-              errorMessage = errorData.message || "썸네일 업로드에 실패했습니다."
+              console.log("[썸네일 업로드 에러 JSON]", errorData)
+              errorMessage = errorData.message || errorData.error || "썸네일 업로드에 실패했습니다."
             } else {
               errorMessage = await thumbnailResponse.text() || "썸네일 업로드에 실패했습니다."
+              console.log("[썸네일 업로드 에러 TEXT]", errorMessage)
             }
             throw new Error(errorMessage)
           }
+          
+          // 성공 시: text로 URL 받기
+          const thumbnailUrl = await thumbnailResponse.text()
+          console.log("[썸네일 업로드 성공 URL]", thumbnailUrl)
         }
 
         // PPT 파일 업로드
         if (pptFile) {
+          console.log(`[PPT 파일 업로드] 파일명: ${pptFile.name}, 크기: ${(pptFile.size / (1024 * 1024)).toFixed(2)}MB`)
+          
           const pptFormData = new FormData()
           pptFormData.append("file", pptFile)
           pptFormData.append("type", "ppt")
@@ -154,17 +166,25 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             body: pptFormData,
           })
 
+          console.log(`[PPT 파일 업로드 응답] Status: ${pptResponse.status}`)
+
           if (!pptResponse.ok) {
             const contentType = pptResponse.headers.get("content-type")
             let errorMessage
             if (contentType?.includes("application/json")) {
               const errorData = await pptResponse.json()
-              errorMessage = errorData.message || "PPT 파일 업로드에 실패했습니다."
+              console.log("[PPT 파일 업로드 에러 JSON]", errorData)
+              errorMessage = errorData.message || errorData.error || "PPT 파일 업로드에 실패했습니다."
             } else {
               errorMessage = await pptResponse.text() || "PPT 파일 업로드에 실패했습니다."
+              console.log("[PPT 파일 업로드 에러 TEXT]", errorMessage)
             }
             throw new Error(errorMessage)
           }
+          
+          // 성공 시: text로 URL 받기
+          const pptUrl = await pptResponse.text()
+          console.log("[PPT 파일 업로드 성공 URL]", pptUrl)
         }
       }
 
