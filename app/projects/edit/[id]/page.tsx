@@ -106,21 +106,51 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         throw new Error(result.error || "Failed to update project")
       }
 
-      // 2. 파일 업로드 (있는 경우)
+      // 2. 파일 업로드 (있는 경우) - 직접 백엔드 호출 (Vercel 페이로드 제한 우회)
       if (thumbnailFile || pptFile) {
-        const formDataFiles = new FormData()
-        if (thumbnailFile) formDataFiles.append("thumbnail", thumbnailFile)
-        if (pptFile) formDataFiles.append("ppt", pptFile)
-
-        const uploadResponse = await fetch(`/api/projects/${params.id}/upload`, {
-          method: "POST",
-          body: formDataFiles,
-        })
-
-        const uploadResult = await uploadResponse.text()   // S3 URL 문자열 반환
+        const token = localStorage.getItem("access_token")
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
         
-        if (!uploadResponse.ok) {
-          throw new Error(uploadResult || "파일 업로드에 실패했습니다.")
+        // 썸네일 업로드
+        if (thumbnailFile) {
+          const thumbnailFormData = new FormData()
+          thumbnailFormData.append("file", thumbnailFile)
+          thumbnailFormData.append("type", `thumbnail/${formData.title}`)
+          thumbnailFormData.append("projectId", params.id)
+
+          const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: thumbnailFormData,
+          })
+
+          if (!thumbnailResponse.ok) {
+            const error = await thumbnailResponse.text()
+            throw new Error(error || "썸네일 업로드에 실패했습니다.")
+          }
+        }
+
+        // PPT 파일 업로드
+        if (pptFile) {
+          const pptFormData = new FormData()
+          pptFormData.append("file", pptFile)
+          pptFormData.append("type", `ppt/${formData.title}`)
+          pptFormData.append("projectId", params.id)
+
+          const pptResponse = await fetch(`${backendUrl}/api/project/upload`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: pptFormData,
+          })
+
+          if (!pptResponse.ok) {
+            const error = await pptResponse.text()
+            throw new Error(error || "PPT 파일 업로드에 실패했습니다.")
+          }
         }
       }
 
@@ -395,7 +425,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      S3 파일 업로드 중...
+                      파일 업로드 중...
                     </>
                   ) : (
                     "프로젝트 수정"

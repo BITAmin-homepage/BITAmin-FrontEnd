@@ -140,13 +140,14 @@ export default function WriteProjectPage() {
         throw new Error("프로젝트 ID를 받지 못했습니다.")
       }
       
-      // 2. 썸네일 업로드
+      // 2. 썸네일 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", `thumbnail/${formData.title}`)
       thumbnailFormData.append("projectId", createdProjectId.toString())
 
-      const thumbnailResponse = await fetch(`/api/project/upload`, {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
+      const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -160,13 +161,13 @@ export default function WriteProjectPage() {
         throw new Error(thumbnailResult || "썸네일 업로드에 실패했습니다.")
       }
 
-      // 3. 프로젝트 파일(PPT) 업로드
+      // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
       projectFormData.append("type", `ppt/${formData.title}`)
       projectFormData.append("projectId", createdProjectId.toString())
 
-      const projectResponse = await fetch(`/api/project/upload`, {
+      const projectResponse = await fetch(`${backendUrl}/api/project/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -619,7 +620,7 @@ export default function WriteProjectPage() {
                     {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        S3 파일 업로드 중...
+                        파일 업로드 중...
                       </>
                     ) : (
                       <>

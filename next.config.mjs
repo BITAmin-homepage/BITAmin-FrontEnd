@@ -23,6 +23,12 @@ const nextConfig = {
       },
     ],
   },
+  // API 라우트 body parser 설정 (필요시 사용)
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '100mb',
+    },
+  },
 }
 
 export default nextConfig
