@@ -152,6 +152,7 @@ export default function WriteProjectPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: thumbnailFormData,
       })
 
@@ -174,7 +175,7 @@ export default function WriteProjectPage() {
       // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
-      projectFormData.append("type", "ppt")
+      projectFormData.append("type", "project")
       projectFormData.append("projectId", createdProjectId.toString())
 
       const projectResponse = await fetch(`${backendUrl}/api/project/upload`, {
@@ -182,6 +183,7 @@ export default function WriteProjectPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: projectFormData,
       })
 

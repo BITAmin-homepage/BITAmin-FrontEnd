@@ -123,6 +123,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: "include",
             body: thumbnailFormData,
           })
 
@@ -146,7 +147,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         if (pptFile) {
           const pptFormData = new FormData()
           pptFormData.append("file", pptFile)
-          pptFormData.append("type", "ppt")
+          pptFormData.append("type", "project")
           pptFormData.append("projectId", params.id)
 
           const pptResponse = await fetch(`${backendUrl}/api/project/upload`, {
@@ -154,6 +155,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: "include",
             body: pptFormData,
           })
 
