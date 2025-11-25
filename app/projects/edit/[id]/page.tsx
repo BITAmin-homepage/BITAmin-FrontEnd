@@ -42,7 +42,6 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     teamMembers: "",
     projectPeriod: "",
   })
-  
   const [pptFile, setPptFile] = useState<File | null>(null)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("")
