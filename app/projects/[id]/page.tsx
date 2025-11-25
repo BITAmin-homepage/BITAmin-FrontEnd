@@ -353,14 +353,31 @@ export default function ProjectDetailPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="relative">
-                        <iframe
-                          src={pptUrl}
-                          className="w-full h-[600px] md:h-[700px] lg:h-[800px] border-0"
-                          title="파일 뷰어"
-                          onLoad={handlePptLoad}
-                          allow="fullscreen"
-                        />
+                      <div>
+                        {/* iframe 영역 */}
+                        <div className="relative rounded-lg overflow-hidden">
+                          <iframe
+                            src={pptUrl}
+                            className="w-full h-[600px] md:h-[700px] lg:h-[800px] border-0"
+                            title="파일 뷰어"
+                            onLoad={handlePptLoad}
+                            allow="fullscreen"
+                          />
+                          
+                          {/* PDF 뷰어 상단 툴바를 완전히 가리는 오버레이 - 불투명 검은색 */}
+                          <div 
+                            className="absolute top-0 left-0 right-0 h-14 sm:h-16 md:h-20 bg-black pointer-events-auto cursor-default z-30"
+                            onClick={(e) => e.preventDefault()}
+                            onMouseDown={(e) => e.preventDefault()}
+                          ></div>
+                          
+                          {/* PDF 뷰어 우측 상단 버튼들을 완전히 가리는 오버레이 - 불투명 검은색 */}
+                          <div 
+                            className="absolute top-0 right-0 w-40 sm:w-48 md:w-56 h-14 sm:h-16 md:h-20 bg-black pointer-events-auto cursor-default z-40"
+                            onClick={(e) => e.preventDefault()}
+                            onMouseDown={(e) => e.preventDefault()}
+                          ></div>
+                        </div>
                         
                         {/* 하단 컨트롤 */}
                         <div className="mt-4 flex items-center justify-between">
