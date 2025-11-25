@@ -340,68 +340,58 @@ export default function ProjectDetailPage() {
                 <h3 className="text-lg font-semibold text-white">프로젝트 발표 자료</h3>
               </div>
 
-              {/* PPT 뷰어 */}
+              {/* PPT/PDF 뷰어 - 백엔드에서 용량에 따라 PPT 또는 PDF URL 반환 */}
               {pptUrl && (
                 <div className="mt-6">
-                  <div className="relative bg-black rounded-lg overflow-hidden">
-                    {/* Google Docs Viewer를 사용한 PPT 표시 */}
-                    <div className="aspect-video relative overflow-hidden">
-                      {slideLoading ? (
-                        <div className="flex items-center justify-center h-full text-white">
-                          PPT 로딩 중...
+                  <div className="bg-black rounded-lg overflow-hidden">
+                    {/* 파일 뷰어 (PPT 또는 PDF) */}
+                    {slideLoading ? (
+                      <div className="flex items-center justify-center h-[600px] text-white">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-8 h-8 border-4 border-[#d3431a] border-t-transparent rounded-full animate-spin"></div>
+                          <p>파일 로딩 중...</p>
                         </div>
-                      ) : (
-                        <>
-                          <iframe
-                            src={`https://docs.google.com/gview?url=${encodeURIComponent(pptUrl)}&embedded=true`}
-                            className="w-full h-full border-0"
-                            title="PPT Viewer"
-                            onLoad={handlePptLoad}
-                            sandbox="allow-same-origin allow-scripts"
-                            allow="fullscreen"
-                          />
-                          {/* Google Docs Viewer 상단 툴바를 가리는 오버레이 - 모바일에서 더 작게 */}
-                          <div className="absolute top-0 left-0 right-0 h-8 sm:h-12 md:h-16 bg-black/80 pointer-events-none z-10"></div>
-                        </>
-                      )}
-                    </div>
-
-                    {/* 하단 컨트롤 - 모바일에서 더 작게 */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/40 p-2 sm:p-3 md:p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-white text-xs sm:text-sm">
-                            PPT 뷰어
-                          </span>
-                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <iframe
+                          src={pptUrl}
+                          className="w-full h-[600px] md:h-[700px] lg:h-[800px] border-0"
+                          title="파일 뷰어"
+                          onLoad={handlePptLoad}
+                          allow="fullscreen"
+                        />
                         
-                        <div className="flex items-center gap-2">
+                        {/* 하단 컨트롤 */}
+                        <div className="mt-4 flex items-center justify-between">
+                          <span className="text-white text-sm">
+                            {pptUrl.includes('.pdf') ? 'PDF 뷰어' : 'PPT 뷰어'}
+                          </span>
+                          
                           {user ? (
                             <Button
                               onClick={() => window.open(pptUrl, '_blank')}
                               variant="outline"
                               size="sm"
-                              className="bg-black/50 border-white/20 text-white hover:bg-white/10 text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
+                              className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
                             >
-                              <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                              <span className="hidden sm:inline">다운로드</span>
-                              <span className="sm:hidden">다운</span>
+                              <Download className="w-4 h-4 mr-2" />
+                              다운로드
                             </Button>
                           ) : (
                             <Button
                               disabled
                               variant="outline"
                               size="sm"
-                              className="bg-black/50 border-gray-600 text-gray-400 cursor-not-allowed text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
+                              className="bg-gray-800 border-gray-700 text-gray-500 cursor-not-allowed"
                             >
-                              <Lock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                              <span className="hidden sm:inline">로그인 필요</span>
-                              <span className="sm:hidden">로그인</span>
+                              <Lock className="w-4 h-4 mr-2" />
+                              로그인 필요
                             </Button>
                           )}
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               )}
