@@ -154,10 +154,10 @@ export default function WriteProjectPage() {
         body: thumbnailFormData,
       })
 
-      const thumbnailResult = await thumbnailResponse.json()
+      const thumbnailResult = await thumbnailResponse.text()   // S3 URL 문자열 반환
       
-      if (!thumbnailResult.success) {
-        throw new Error(thumbnailResult.error || "썸네일 업로드에 실패했습니다.")
+      if (!thumbnailResponse.ok) {
+        throw new Error(thumbnailResult || "썸네일 업로드에 실패했습니다.")
       }
 
       // 3. 프로젝트 파일(PPT) 업로드
@@ -174,10 +174,10 @@ export default function WriteProjectPage() {
         body: projectFormData,
       })
 
-      const projectResult = await projectResponse.json()
+      const projectResult = await projectResponse.text()   // S3 URL 문자열 반환
       
-      if (!projectResult.success) {
-        throw new Error(projectResult.error || "프로젝트 파일 업로드에 실패했습니다.")
+      if (!projectResponse.ok) {
+        throw new Error(projectResult || "프로젝트 파일 업로드에 실패했습니다.")
       }
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")

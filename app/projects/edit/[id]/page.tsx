@@ -117,7 +117,11 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           body: formDataFiles,
         })
 
-        const uploadResult = await uploadResponse.json()
+        const uploadResult = await uploadResponse.text()   // S3 URL 문자열 반환
+        
+        if (!uploadResponse.ok) {
+          throw new Error(uploadResult || "파일 업로드에 실패했습니다.")
+        }
       }
 
       alert("프로젝트가 수정되었습니다!")

@@ -20,18 +20,18 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       body: formData,
     })
 
-    const result = await response.json()
+    const result = await response.text()   // S3 URL 문자열 반환
 
-    if (response.ok && result.success) {
+    if (response.ok) {
       return NextResponse.json({
         success: true,
-        data: result.data,
+        data: result,  // S3 URL 문자열
       })
     } else {
       return NextResponse.json(
         {
           success: false,
-          error: result.message || "Failed to upload files",
+          error: result || "Failed to upload files",
         },
         { status: response.status },
       )
