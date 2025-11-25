@@ -48,7 +48,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
   const [currentProject, setCurrentProject] = useState<Project | null>(null)
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== "management") {
+    if (!isAuthenticated || (user?.role !== "ADMIN" && user?.role !== "ROLE_ADMIN")) {
       router.push("/projects")
     } else {
       fetchProject()
@@ -164,7 +164,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     }
   }
 
-  if (!isAuthenticated || user?.role !== "management") {
+  if (!isAuthenticated || (user?.role !== "ADMIN" && user?.role !== "ROLE_ADMIN")) {
     return null
   }
 
