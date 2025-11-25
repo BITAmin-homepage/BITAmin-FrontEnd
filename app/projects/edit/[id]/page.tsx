@@ -127,8 +127,15 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           })
 
           if (!thumbnailResponse.ok) {
-            const error = await thumbnailResponse.text()
-            throw new Error(error || "썸네일 업로드에 실패했습니다.")
+            const contentType = thumbnailResponse.headers.get("content-type")
+            let errorMessage
+            if (contentType?.includes("application/json")) {
+              const errorData = await thumbnailResponse.json()
+              errorMessage = errorData.message || "썸네일 업로드에 실패했습니다."
+            } else {
+              errorMessage = await thumbnailResponse.text() || "썸네일 업로드에 실패했습니다."
+            }
+            throw new Error(errorMessage)
           }
         }
 
@@ -148,8 +155,15 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           })
 
           if (!pptResponse.ok) {
-            const error = await pptResponse.text()
-            throw new Error(error || "PPT 파일 업로드에 실패했습니다.")
+            const contentType = pptResponse.headers.get("content-type")
+            let errorMessage
+            if (contentType?.includes("application/json")) {
+              const errorData = await pptResponse.json()
+              errorMessage = errorData.message || "PPT 파일 업로드에 실패했습니다."
+            } else {
+              errorMessage = await pptResponse.text() || "PPT 파일 업로드에 실패했습니다."
+            }
+            throw new Error(errorMessage)
           }
         }
       }

@@ -155,10 +155,19 @@ export default function WriteProjectPage() {
         body: thumbnailFormData,
       })
 
-      const thumbnailResult = await thumbnailResponse.text()   // S3 URL 문자열 반환
-      
-      if (!thumbnailResponse.ok) {
-        throw new Error(thumbnailResult || "썸네일 업로드에 실패했습니다.")
+      // 응답 처리: JSON 또는 text 형식 모두 지원
+      let thumbnailResult
+      const thumbnailContentType = thumbnailResponse.headers.get("content-type")
+      if (thumbnailContentType?.includes("application/json")) {
+        thumbnailResult = await thumbnailResponse.json()
+        if (!thumbnailResponse.ok) {
+          throw new Error(thumbnailResult.message || "썸네일 업로드에 실패했습니다.")
+        }
+      } else {
+        thumbnailResult = await thumbnailResponse.text()
+        if (!thumbnailResponse.ok) {
+          throw new Error(thumbnailResult || "썸네일 업로드에 실패했습니다.")
+        }
       }
 
       // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
@@ -175,10 +184,19 @@ export default function WriteProjectPage() {
         body: projectFormData,
       })
 
-      const projectResult = await projectResponse.text()   // S3 URL 문자열 반환
-      
-      if (!projectResponse.ok) {
-        throw new Error(projectResult || "프로젝트 파일 업로드에 실패했습니다.")
+      // 응답 처리: JSON 또는 text 형식 모두 지원
+      let projectResult
+      const contentType = projectResponse.headers.get("content-type")
+      if (contentType?.includes("application/json")) {
+        projectResult = await projectResponse.json()
+        if (!projectResponse.ok) {
+          throw new Error(projectResult.message || "프로젝트 파일 업로드에 실패했습니다.")
+        }
+      } else {
+        projectResult = await projectResponse.text()
+        if (!projectResponse.ok) {
+          throw new Error(projectResult || "프로젝트 파일 업로드에 실패했습니다.")
+        }
       }
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")

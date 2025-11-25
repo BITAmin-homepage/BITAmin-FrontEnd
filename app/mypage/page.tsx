@@ -159,8 +159,15 @@ export default function MyPage() {
           
           alert("프로필 이미지가 삭제되었습니다.")
         } else {
-          const errorText = await response.text()
-          throw new Error(errorText || "프로필 이미지 삭제에 실패했습니다.")
+          const contentType = response.headers.get("content-type")
+          let errorMessage
+          if (contentType?.includes("application/json")) {
+            const errorData = await response.json()
+            errorMessage = errorData.message || "프로필 이미지 삭제에 실패했습니다."
+          } else {
+            errorMessage = await response.text() || "프로필 이미지 삭제에 실패했습니다."
+          }
+          throw new Error(errorMessage)
         }
       } catch (error) {
         alert(`프로필 이미지 삭제 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
@@ -212,16 +219,29 @@ export default function MyPage() {
           })
 
           if (uploadResponse.ok) {
-            // S3 URL을 text로 직접 받음
-            profileImageUrl = await uploadResponse.text()
+            // 응답 처리: JSON 또는 text 형식 모두 지원
+            const contentType = uploadResponse.headers.get("content-type")
+            if (contentType?.includes("application/json")) {
+              const result = await uploadResponse.json()
+              profileImageUrl = result.data || result.url || result
+            } else {
+              profileImageUrl = await uploadResponse.text()
+            }
             
             if (profileImageUrl) {
               // localStorage에 프로필 이미지 URL 저장
               localStorage.setItem(`profile_image_${userId}`, profileImageUrl)
             }
           } else {
-            const errorText = await uploadResponse.text()
-            throw new Error(errorText || "프로필 이미지 업로드에 실패했습니다.")
+            const contentType = uploadResponse.headers.get("content-type")
+            let errorMessage
+            if (contentType?.includes("application/json")) {
+              const errorData = await uploadResponse.json()
+              errorMessage = errorData.message || "프로필 이미지 업로드에 실패했습니다."
+            } else {
+              errorMessage = await uploadResponse.text() || "프로필 이미지 업로드에 실패했습니다."
+            }
+            throw new Error(errorMessage)
           }
         } catch (uploadError) {
           alert(`프로필 이미지 업로드 중 오류가 발생했습니다: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`)
@@ -611,12 +631,23 @@ export default function MyPage() {
                 <div className="flex flex-col items-center space-y-4 lg:w-64 flex-shrink-0">
                   <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-[#d3431a] bg-gray-700">
                     {(displayUser as any).profileImage ? (
-                      <Image
-                        src={(displayUser as any).profileImage}
-                        alt={`${displayUser.name} 프로필`}
-                        fill
-                        className="object-cover"
-                      />
+                      <>
+                        <Image
+                          src={(displayUser as any).profileImage}
+                          alt={`${displayUser.name} 프로필`}
+                          fill
+                          className="object-cover"
+                        />
+                        {/* 프로필 이미지 삭제 버튼 */}
+                        <button
+                          type="button"
+                          onClick={handleRemoveProfileImage}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg"
+                          title="프로필 이미지 삭제"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <User className="w-24 h-24 text-gray-400" />
