@@ -203,6 +203,17 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     <div className="min-h-screen bg-gray-50">
       <Header />
 
+      {/* 파일 업로드 중 오버레이 */}
+      {loading && (thumbnailFile || pptFile) && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-8 flex flex-col items-center gap-4 shadow-2xl border border-gray-200">
+            <Loader2 className="w-16 h-16 text-[#d3431a] animate-spin" />
+            <p className="text-xl font-semibold text-gray-900">파일 업로드 중...</p>
+            <p className="text-sm text-gray-600">잠시만 기다려주세요</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">프로젝트 수정</h1>
