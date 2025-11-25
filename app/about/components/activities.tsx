@@ -129,7 +129,7 @@ export default function ActivitiesSection() {
             <button
               key={i}
               onClick={() => setActiveIndex(i)}
-              className="relative w-28 sm:w-32 md:w-36 lg:w-40 aspect-[6/3.5] flex items-center justify-center text-xs sm:text-sm md:text-base font-semibold transition-all"
+              className="relative w-40 sm:w-40 md:w-40 lg:w-44 aspect-[6/3.5] flex items-center justify-center text-[8px] sm:text-sm md:text-base font-semibold transition-all"
               style={{
                 backgroundImage: `url(${
                   activeIndex === i
