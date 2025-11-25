@@ -169,7 +169,11 @@ export default function ProjectsPage() {
           {/* 헤더 섹션 */}
           <div className="mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">프로젝트</h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8">비타민 멤버들이 진행한 우수 프로젝트를 확인하세요</p>
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-2">비타민 멤버들이 진행한 우수 프로젝트를 확인하세요</p>
+            <p className="text-sm md:hidden text-gray-500 mb-8">
+              * 프로젝트 상세 내용은 PC 환경에서 확인하실 수 있습니다.
+            </p>
+            <div className="hidden md:block mb-8"></div>
 
             {/* 프로젝트 업로드 버튼 (운영진만) */}
             {user && isAdmin(user.role) && (

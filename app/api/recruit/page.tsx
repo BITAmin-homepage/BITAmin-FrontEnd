@@ -130,7 +130,7 @@ export default function RecruitPage() {
           <div className="text-center mb-40">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">
               <span className="text-[#d3431a]">BITAmin</span>
-              <span className="text-white">의 여정에 함께할 당신을 기다립니다</span>
+              <span className="text-white">의 여정에 함께할<br className="md:hidden" /> 당신을 기다립니다</span>
             </h1>
 
             <div className="flex justify-center mb-8">
@@ -167,7 +167,7 @@ export default function RecruitPage() {
           <div className="mb-40">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">모집일정</h2>
-              <p className="text-gray-400">BITAmin은 더 나은 기수 운영을 위해 운영진과 멤버 모집 절차의 차이가 있습니다</p>
+              <p className="text-gray-400">BITAmin은 더 나은 기수 운영을 위해<br className="md:hidden" /> 운영진과 멤버 모집 절차의 차이가 있습니다</p>
             </div>
 
             <div className="max-w-5xl mx-auto">
@@ -312,7 +312,7 @@ export default function RecruitPage() {
             <Card className="mt-8 bg-gray-800/30 border-gray-700">
               <CardContent className="p-6">
                 <p className="text-gray-300 text-center leading-relaxed">
-                  BITAmin은 전공과 학년에 관계없이 데이터 분석과 AI에 대한 열정이 있는 모든 분들을 환영합니다
+                  BITAmin은 전공과 학년에 관계없이<br className="md:hidden" /> 데이터 분석과 AI에 대한 열정이 있는<br className="md:hidden" /> 모든 분들을 환영합니다
                 </p>
               </CardContent>
             </Card>

@@ -25,13 +25,13 @@ export default function Curriculum() {
       label: "First Semester",
       regular: [
         ["1주차", <>머신러닝 개요,<br className="md:hidden" /> 전처리&EDA&시각화</>],
-        ["3주차", "분류 기본 모델 및 성능 평가 학습"],
+        ["3주차", <>분류 기본 모델 및<br className="md:hidden" /> 성능 평가 학습</>],
         ["5주차", <>
           <span className="hidden md:inline">회귀 기본 모델 및 성능 평가 학습,<br />군집 분석 모델 및 성능 평가 학습</span>
           <span className="md:hidden">분류 기본 모델 및<br />성능 평가 학습</span>
         </>],
         ["6~8주차", "중간고사 휴회 기간"],
-        ["9주차", <>Overfitting,<br className="md:hidden" /> Regularization, 앙상블 알고리즘 학습</>],
+        ["9주차", <>Overfitting,<br className="md:hidden" /><br className="md:hidden" />Regularization,<br className="md:hidden" /> 앙상블 알고리즘 학습</>],
         ["11주차", "차원축소 기법 학습"],
       ],
       project: [
@@ -62,12 +62,12 @@ export default function Curriculum() {
     {
       label: "Second Semester",
       regular: [
-        ["1주차", "논문 리뷰 및 발표1"],
-        ["3주차", "논문 리뷰 및 발표2"],
-        ["5주차", "논문 리뷰 및 발표3"],
+        ["1주차", "nlp 관련 논문 리뷰 및 발표"],
+        ["3주차", "시계열 관련 논문 리뷰 및 발표"],
+        ["5주차", "computer vision 관련 논문 리뷰 및 발표"],
         ["6~8주차", "중간고사 휴회 기간"],
-        ["9주차", "논문 리뷰 및 발표4"],
-        ["10주차", "논문 리뷰 및 발표5"],
+        ["9주차", "생성모델 관련 논문 리뷰 및 발표"],
+        ["10주차", "추천시스템 관련 논문 리뷰 및 발표"],
       ],
       project: [
         ["1주차", "프로젝트 팀빌딩"],
@@ -146,9 +146,14 @@ export default function Curriculum() {
                       </div>
                     ))}
                   </div>
-                  {activeIndex === 0 &&(
+                  {activeIndex === 0 && (
                     <p className="text-white/50 text-base text-left mt-4 ml-6">
                       기존기수 발표 청강
+                    </p>
+                  )}
+                  {activeIndex === 3 && (
+                    <p className="text-white/50 text-base text-left mt-4 ml-6">
+                      논문 리뷰 분야는 수요에 따라 달라질 수 있습니다.
                     </p>
                   )}
                   </div>
