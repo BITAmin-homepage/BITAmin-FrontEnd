@@ -49,7 +49,7 @@ export default function IntroductionSection() {
           </div>
 
           {/* 아이콘 카드 3개 - absolute로 화살표 위에 배치 */}
-          <div className="absolute inset-0 flex justify-between items-center px-20 sm:px-24 md:px-28 lg:px-32">
+          <div className="absolute inset-0 flex justify-between items-center px-8 sm:px-16 md:px-28 lg:px-32">
             
             {/* Learning */}
             <div className="flex flex-col items-center">

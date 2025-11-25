@@ -143,7 +143,7 @@ export default function ActivitiesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <p className="text-base md:text-lg text-white/60 mb-3">주요활동</p>
         <h2 className="text-2xl md:text-4xl font-bold text-[#ff6b35] mb-12">
-          BITAmin에서는 이러한 활동들을<br /> 할 수 있습니다
+          BITAmin에서는 이러한 활동들을<br className="md:hidden" /> 할 수 있습니다
         </h2>
 
         {/* polygon 버튼 영역 */}

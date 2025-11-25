@@ -75,7 +75,7 @@ export function ActivitiesSection() {
       <div className="max-w-5xl mx-auto px-4 relative z-10">
         <p className="text-center text-base md:text-lg text-gray-400 mb-2">주요활동</p>
         <h2 className="text-center text-2xl md:text-4xl font-semibold text-[#ff5722] mb-10">
-          BITAmin에서는 이러한 활동들을 할 수 있습니다
+          BITAmin에서는 이러한 활동들을<br className="md:hidden" /> 할 수 있습니다
         </h2>
 
         {/* 2-3-2 구조 */}
