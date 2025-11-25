@@ -26,9 +26,12 @@ export default function Curriculum() {
       regular: [
         ["1주차", <>머신러닝 개요,<br className="md:hidden" /> 전처리&EDA&시각화</>],
         ["3주차", "분류 기본 모델 및 성능 평가 학습"],
-        ["5주차", <>회귀 기본 모델 및<br className="md:hidden" /> 성능 평가 학습,<br /> 군집 분석 모델 및 성능 평가 학습</>],
+        ["5주차", <>
+          <span className="hidden md:inline">회귀 기본 모델 및 성능 평가 학습,<br />군집 분석 모델 및 성능 평가 학습</span>
+          <span className="md:hidden">분류 기본 모델 및<br />성능 평가 학습</span>
+        </>],
         ["6~8주차", "중간고사 휴회 기간"],
-        ["9주차", <>Overfitting,<br className="md:hidden" /> Regularization,<br className="md:hidden" /> 앙상블 알고리즘 학습</>],
+        ["9주차", <>Overfitting,<br className="md:hidden" /> Regularization, 앙상블 알고리즘 학습</>],
         ["11주차", "차원축소 기법 학습"],
       ],
       project: [
