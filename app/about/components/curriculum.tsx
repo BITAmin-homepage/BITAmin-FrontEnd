@@ -64,10 +64,10 @@ export default function Curriculum() {
       regular: [
         ["1주차", "nlp 관련 논문 리뷰 및 발표"],
         ["3주차", "시계열 관련 논문 리뷰 및 발표"],
-        ["5주차", "computer vision 관련 논문 리뷰 및 발표"],
+        ["5주차", <>computer vision 관련<br className="md:hidden" /> 논문 리뷰 및 발표</>],
         ["6~8주차", "중간고사 휴회 기간"],
-        ["9주차", "생성모델 관련 논문 리뷰 및 발표"],
-        ["10주차", "추천시스템 관련 논문 리뷰 및 발표"],
+        ["9주차", <>생성모델 관련<br className="md:hidden" /> 논문 리뷰 및 발표</>],
+        ["10주차", <>추천시스템 관련<br className="md:hidden" /> 논문 리뷰 및 발표</>],
       ],
       project: [
         ["1주차", "프로젝트 팀빌딩"],
@@ -153,7 +153,7 @@ export default function Curriculum() {
                   )}
                   {activeIndex === 3 && (
                     <p className="text-white/50 text-base text-left mt-4 ml-6">
-                      논문 리뷰 분야는 수요에 따라 달라질 수 있습니다.
+                      논문 리뷰 분야는 수요에 따라<br className="md:hidden" /> 달라질 수 있습니다.
                     </p>
                   )}
                   </div>
