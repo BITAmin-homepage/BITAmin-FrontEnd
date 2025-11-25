@@ -136,12 +136,6 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
   const handlePptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // 파일 크기 체크 (50MB 제한)
-      if (file.size > 50 * 1024 * 1024) {
-        alert("PPT 파일은 50MB 이하만 업로드 가능합니다.")
-        e.target.value = ""
-        return
-      }
       setPptFile(file)
     }
   }
@@ -149,12 +143,6 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
   const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // 파일 크기 체크 (10MB 제한)
-      if (file.size > 10 * 1024 * 1024) {
-        alert("썸네일 파일은 10MB 이하만 업로드 가능합니다.")
-        e.target.value = ""
-        return
-      }
       setThumbnailFile(file)
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -407,7 +395,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      업로드 대기 중...
+                      S3 파일 업로드 중...
                     </>
                   ) : (
                     "프로젝트 수정"
