@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Upload, X, FileText, ImageIcon, Trophy, Medal, Star, ChevronRight, ChevronLeft, Check, Calendar as CalendarIcon } from "lucide-react"
+import { Upload, X, FileText, ImageIcon, Trophy, Medal, Star, ChevronRight, ChevronLeft, Check, Calendar as CalendarIcon, Loader2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
@@ -196,6 +196,12 @@ export default function WriteProjectPage() {
   const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // 파일 크기 체크 (10MB 제한)
+      if (file.size > 10 * 1024 * 1024) {
+        alert("썸네일 파일은 10MB 이하만 업로드 가능합니다.")
+        e.target.value = ""
+        return
+      }
       setThumbnailFile(file)
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -208,6 +214,12 @@ export default function WriteProjectPage() {
   const handleProjectFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // 파일 크기 체크 (50MB 제한)
+      if (file.size > 50 * 1024 * 1024) {
+        alert("PPT 파일은 50MB 이하만 업로드 가능합니다.")
+        e.target.value = ""
+        return
+      }
       setProjectFile(file)
     }
   }
@@ -480,8 +492,17 @@ export default function WriteProjectPage() {
                     취소
                   </Button>
                   <Button type="submit" className="bg-[#d3431a] hover:bg-[#b8371a] text-white" disabled={loading}>
-                    {loading ? "저장 중..." : "다음 단계"}
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        저장 중...
+                      </>
+                    ) : (
+                      <>
+                        다음 단계
+                        <ChevronRight className="w-4 h-4 ml-2" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </form>
@@ -607,8 +628,17 @@ export default function WriteProjectPage() {
                     className="bg-[#d3431a] hover:bg-[#b8371a] text-white"
                     disabled={loading || !thumbnailFile || !projectFile}
                   >
-                    {loading ? "업로드 중..." : "업로드 완료"}
-                    <Check className="w-4 h-4 ml-2" />
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        업로드 대기 중...
+                      </>
+                    ) : (
+                      <>
+                        업로드 완료
+                        <Check className="w-4 h-4 ml-2" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </form>

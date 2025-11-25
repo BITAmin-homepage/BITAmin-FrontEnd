@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+// Vercel serverless function timeout 설정
+export const maxDuration = 60 // 60초
+
 // 프로젝트 파일 업로드 (썸네일, PPT)
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
