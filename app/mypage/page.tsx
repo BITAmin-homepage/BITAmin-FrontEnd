@@ -123,10 +123,54 @@ export default function MyPage() {
   }
 
   // 프로필 이미지 제거
-  const handleRemoveProfileImage = () => {
-    setProfileImageFile(null)
-    setProfileImagePreview("")
-    setEditData({ ...editData, profileImage: "" })
+  const handleRemoveProfileImage = async () => {
+    if (!user) return
+    
+    const userId = user.memberId || user.id
+    
+    // 기존에 업로드된 프로필이 있는 경우 백엔드 API 호출하여 S3에서 삭제
+    if (editData.profileImage || profileImagePreview) {
+      const confirmDelete = confirm("프로필 이미지를 삭제하시겠습니까?")
+      if (!confirmDelete) return
+      
+      try {
+        const token = localStorage.getItem("access_token")
+        if (!token) {
+          alert("로그인이 필요합니다.")
+          return
+        }
+        
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
+        const response = await fetch(`${backendUrl}/api/members/profile?memberId=${userId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        
+        if (response.ok) {
+          // 로컬 상태 초기화
+          setProfileImageFile(null)
+          setProfileImagePreview("")
+          setEditData({ ...editData, profileImage: "" })
+          
+          // localStorage에서도 제거
+          localStorage.removeItem(`profile_image_${userId}`)
+          
+          alert("프로필 이미지가 삭제되었습니다.")
+        } else {
+          const errorText = await response.text()
+          throw new Error(errorText || "프로필 이미지 삭제에 실패했습니다.")
+        }
+      } catch (error) {
+        alert(`프로필 이미지 삭제 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
+      }
+    } else {
+      // 새로 선택한 이미지만 있는 경우 로컬 상태만 초기화
+      setProfileImageFile(null)
+      setProfileImagePreview("")
+      setEditData({ ...editData, profileImage: "" })
+    }
   }
 
   const handleUpdateMember = async () => {
@@ -156,10 +200,10 @@ export default function MyPage() {
         try {
           const formData = new FormData()
           formData.append("file", profileImageFile)
-          formData.append("type", `profile/${displayUser.name || userId}`)
           formData.append("memberId", userId.toString())
           
-          const uploadResponse = await fetch("/api/members/profile/upload", {
+          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
+          const uploadResponse = await fetch(`${backendUrl}/api/members/upload/profile`, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -167,18 +211,17 @@ export default function MyPage() {
             body: formData,
           })
 
-          const uploadResult = await uploadResponse.json()
-          
-          if (uploadResult.success) {
-            // S3 URL 추출
-            profileImageUrl = uploadResult.data || uploadResult.url
+          if (uploadResponse.ok) {
+            // S3 URL을 text로 직접 받음
+            profileImageUrl = await uploadResponse.text()
             
             if (profileImageUrl) {
-              // localStorage에 프로필 이미지 URL 저장 (백엔드가 반환하지 않는 경우 대비)
+              // localStorage에 프로필 이미지 URL 저장
               localStorage.setItem(`profile_image_${userId}`, profileImageUrl)
             }
           } else {
-            throw new Error(uploadResult.message || "프로필 이미지 업로드에 실패했습니다.")
+            const errorText = await uploadResponse.text()
+            throw new Error(errorText || "프로필 이미지 업로드에 실패했습니다.")
           }
         } catch (uploadError) {
           alert(`프로필 이미지 업로드 중 오류가 발생했습니다: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`)

@@ -178,22 +178,20 @@ export default function ProjectDetailPage() {
         return
       }
       
-      const response = await fetch(`/api/project/${project.projectId}/delete`, {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
+      const response = await fetch(`${backendUrl}/api/project?projectTitle=${encodeURIComponent(project.title)}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ key: s3Key })
+        }
       })
       
-      const result = await response.json()
-      
-      if (result.success) {
+      if (response.ok) {
         alert("프로젝트가 성공적으로 삭제되었습니다.")
         router.push('/projects')
       } else {
-        alert(`삭제 실패: ${result.error}`)
+        const errorText = await response.text()
+        alert(`삭제 실패: ${errorText || "알 수 없는 오류가 발생했습니다."}`)
       }
     } catch (error) {
       alert("삭제 중 오류가 발생했습니다.")
