@@ -14,7 +14,7 @@ export default function Curriculum() {
         ["3주차", "매개변수 갱신, 배치정규화 학습"],
         ["4주차", "CNN 모델 구조 학습"],
         ["5주차", "RNN, LSTM 모델 구조 학습"],
-        ["6주차", "Seq2Seq, Transformer 구조 학습"],
+        ["6주차", <>Seq2Seq,<br className="md:hidden" /> Transformer 구조 학습</>],
       ],
       project: [
         ["1~7주차", "프로젝트 수행"],
@@ -24,11 +24,11 @@ export default function Curriculum() {
     {
       label: "First Semester",
       regular: [
-        ["1주차", "머신러닝 개요, 전처리&EDA&시각화"],
+        ["1주차", <>머신러닝 개요,<br className="md:hidden" /> 전처리&EDA&시각화</>],
         ["3주차", "분류 기본 모델 및 성능 평가 학습"],
-        ["5주차", <>회귀 기본 모델 및 성능 평가 학습,<br />군집 분석 모델 및 성능 평가 학습</>],
+        ["5주차", <>회귀 기본 모델 및 성능 평가 학습,<br className="md:hidden" /> 군집 분석 모델 및 성능 평가 학습</>],
         ["6~8주차", "중간고사 휴회 기간"],
-        ["9주차", "Overfitting, Regularization, 앙상블 알고리즘 학습"],
+        ["9주차", <>Overfitting,<br className="md:hidden" /> Regularization,<br className="md:hidden" /> 앙상블 알고리즘 학습</>],
         ["11주차", "차원축소 기법 학습"],
       ],
       project: [
@@ -49,7 +49,7 @@ export default function Curriculum() {
         ["3주차", "매개변수 갱신, 배치정규화 학습"],
         ["4주차", "CNN 모델 구조 학습"],
         ["5주차", "RNN, LSTM 모델 구조 학습"],
-        ["6주차", "Seq2Seq, Transformer 구조 학습"],
+        ["6주차", <>Seq2Seq,<br className="md:hidden" /> Transformer 구조 학습</>],
       ],
       project: [
         ["1~7주차", "프로젝트 수행"],
@@ -138,7 +138,7 @@ export default function Curriculum() {
                         key={i}
                         className="flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 transition"
                       >
-                        <span className="text-white/60">{week}</span>
+                        <span className="text-white/60 whitespace-nowrap">{week}</span>
                         <span className="text-white text-right">{content}</span>
                       </div>
                     ))}
@@ -159,7 +159,7 @@ export default function Curriculum() {
                         key={i}
                         className="flex items-center justify-between px-6 py-4 bg-white/5 hover:bg-white/10 transition"
                       >
-                        <span className="text-white/60">{week}</span>
+                        <span className="text-white/60 whitespace-nowrap">{week}</span>
                         <span className="text-white text-right">{content}</span>
                       </div>
                     ))}

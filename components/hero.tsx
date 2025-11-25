@@ -31,9 +31,9 @@ export function Hero({ onOpenApplyModal }: HeroProps) {
           </div>
 
           <p className="text-xl mb-8 text-white max-w-3xl mx-auto leading-relaxed">
-            우리는 데이터로 세상을 읽고, AI로 내일을 상상합니다.
+            우리는 데이터로 세상을 읽고,<br className="md:hidden" /> AI로 내일을 상상합니다.
             <br />
-            BITAmin은 빅데이터와 AI를 통해 더 나은 미래를 만드는 열정적인 학생들이 모인 동아리입니다.
+            BITAmin은 빅데이터와 AI를 통해<br className="md:hidden" /> 더 나은 미래를 만드는 열정적인 학생들이<br className="md:hidden" /> 모인 동아리입니다.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
