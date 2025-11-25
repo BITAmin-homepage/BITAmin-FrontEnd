@@ -1,14 +1,8 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import localFont from "next/font/local"
 import "./globals.css"
 import { AuthProvider } from "@/lib/auth"
-
-const inter = Inter({ 
-  subsets: ["latin"],
-  variable: "--font-inter",
-})
 
 const paperlogy = localFont({
   src: [
@@ -85,7 +79,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={`${inter.variable} ${paperlogy.variable}`}>
+      <body className={`${paperlogy.variable} font-sans`}>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
