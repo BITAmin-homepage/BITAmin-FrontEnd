@@ -631,23 +631,12 @@ export default function MyPage() {
                 <div className="flex flex-col items-center space-y-4 lg:w-64 flex-shrink-0">
                   <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-[#d3431a] bg-gray-700">
                     {(displayUser as any).profileImage ? (
-                      <>
-                        <Image
-                          src={(displayUser as any).profileImage}
-                          alt={`${displayUser.name} 프로필`}
-                          fill
-                          className="object-cover"
-                        />
-                        {/* 프로필 이미지 삭제 버튼 */}
-                        <button
-                          type="button"
-                          onClick={handleRemoveProfileImage}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg"
-                          title="프로필 이미지 삭제"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </>
+                      <Image
+                        src={(displayUser as any).profileImage}
+                        alt={`${displayUser.name} 프로필`}
+                        fill
+                        className="object-cover"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <User className="w-24 h-24 text-gray-400" />
