@@ -94,7 +94,6 @@ export default function RecruitPage() {
       { title: "운영진 서류 결과 발표", date: "12.24(화)" },
       { title: "운영진 면접", date: "12.26(목) ~ 12.27(금)" },
       { title: "운영진 합격자 발표", date: "12.27(금)" },
-      { title: "운영진 OT", date: "12.29(일)" },
     ],
     member: [
       { title: "멤버 서류 결과 발표", date: "12.31(화)" },
