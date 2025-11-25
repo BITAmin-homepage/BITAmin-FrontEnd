@@ -8,6 +8,7 @@ export default function ActivitiesSection() {
   const activities = [
     {
       title: "정규 세션",
+      titleText: "정규 세션",
       desc: `BITAmin은 총 1년간 각 정규 세션을 통해 커리큘럼이 진행됩니다.
 
     정규세션은 시험기간을 제외하고 매주 1회씩 진행되며 
@@ -22,6 +23,7 @@ export default function ActivitiesSection() {
     },
     {
       title: "컨퍼런스",
+      titleText: "컨퍼런스",
       desc: `BITAmin기간 동안 총 5번의 프로젝트를 진행합니다.
       
       학기 시작 전, 관심 있는 분야를 선택해 4~6인이 팀을 구성하고 
@@ -35,6 +37,7 @@ export default function ActivitiesSection() {
     },
     {
       title: "스터디",
+      titleText: "스터디",
       desc: `
       BITAmin에는 관심 분야가 같은 학생들이 모여 
       자율적으로 스터디를 진행합니다. 스터디 참여는 필수가 아니며, 
@@ -50,7 +53,8 @@ export default function ActivitiesSection() {
       image: "/images/study.jpg",
     },
     {
-      title: "현직자 특강",
+      title: <>현직자<br />특강</>,
+      titleText: "현직자 특강",
       desc: `
       BITAmin은 데이터·AI 분야 취업이나 대학원 진학을 희망하는 
       동아리원들을 위해 정기적으로 현직자 초청 강연을 개최합니다. 
@@ -67,7 +71,8 @@ export default function ActivitiesSection() {
       image: "/images/careerSeminar_v2.jpg",
     },
     {
-      title: "연합 데이터톤",
+      title: <>연합<br />데이터톤</>,
+      titleText: "연합 데이터톤",
       desc: `
       BITAmin은 동아리 내부에서의 학습과 성장 뿐 아니라 
       외부 커뮤니티 및 기업과의 협업에도 다양한 활동을 이어가고 있습니다. 
@@ -82,7 +87,8 @@ export default function ActivitiesSection() {
       image: "/images/datathon.jpg",
     },
     {
-      title: "홈커밍데이",
+      title: <>홈커밍<br />데이</>,
+      titleText: "홈커밍데이",
       desc: `
       BITAmin은 매년 한 차례 홈커밍데이를 개최하여 선배님들과 
       네트워킹할 수 있는 시간을 마련합니다. 
@@ -99,6 +105,7 @@ export default function ActivitiesSection() {
     },
     {
       title: "네트워킹",
+      titleText: "네트워킹",
       desc: `
       BITAmin은 학업적인 성장뿐만 아니라 기수 간 친목을 
       위한 다양한 네트워킹 활동도 함께 진행합니다. 
@@ -120,7 +127,7 @@ export default function ActivitiesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <p className="text-base md:text-lg text-white/60 mb-3">주요활동</p>
         <h2 className="text-2xl md:text-4xl font-bold text-[#ff6b35] mb-12">
-          BITAmin에서는 이러한 활동들을 할 수 있습니다
+          BITAmin에서는 이러한 활동들을<br /> 할 수 있습니다
         </h2>
 
         {/* polygon 버튼 영역 */}
@@ -152,7 +159,7 @@ export default function ActivitiesSection() {
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10 border border-white/10 rounded-2xl bg-[#111]/80 p-6 md:p-10 shadow-md transition-all duration-300">
           {/* 왼쪽 텍스트 */}
           <div className="flex-1 text-left whitespace-pre-line">
-            <h3 className="text-xl font-bold mb-4">{activities[activeIndex].title}</h3>
+            <h3 className="text-xl font-bold mb-4">{activities[activeIndex].titleText}</h3>
             <p className="text-white/70 leading-relaxed text-sm md:text-base">
               {activities[activeIndex].desc}
             </p>
@@ -162,7 +169,7 @@ export default function ActivitiesSection() {
           <div className="flex-1">
             <img
               src={activities[activeIndex].image}
-              alt={activities[activeIndex].title}
+              alt={activities[activeIndex].titleText}
               className="rounded-xl border border-white/10 shadow-lg object-cover w-full h-auto max-h-[340px]"
             />
           </div>

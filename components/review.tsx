@@ -73,7 +73,7 @@ export function ReviewSection() {
       <div className="text-center mb-12">
         <p className="text-base md:text-lg text-gray-400 mb-2">이전 기수 후기</p>
         <h2 className="text-2xl md:text-4xl font-bold text-[#ff5722]">
-          BITAmin의 멤버들이 직접 전하는 생생한 경험담
+          BITAmin의 멤버들이 직접 전하는<br /> 생생한 경험담
         </h2>
       </div>
 

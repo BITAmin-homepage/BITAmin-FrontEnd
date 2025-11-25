@@ -358,24 +358,21 @@ export default function ProjectDetailPage() {
                         <div className="relative rounded-lg overflow-hidden">
                           <iframe
                             src={pptUrl}
-                            className="w-full h-[600px] md:h-[700px] lg:h-[800px] border-0"
+                            className="w-full h-[500px] sm:h-[600px] md:h-[700px] lg:h-[800px] border-0"
                             title="파일 뷰어"
                             onLoad={handlePptLoad}
                             allow="fullscreen"
+                            style={{ touchAction: 'pan-y' }}
                           />
                           
-                          {/* PDF 뷰어 상단 툴바를 완전히 가리는 오버레이 - 불투명 검은색 */}
+                          {/* PDF 뷰어 상단 툴바를 가리는 오버레이 - 모바일에서는 더 작게 */}
                           <div 
-                            className="absolute top-0 left-0 right-0 h-14 sm:h-16 md:h-20 bg-black pointer-events-auto cursor-default z-30"
-                            onClick={(e) => e.preventDefault()}
-                            onMouseDown={(e) => e.preventDefault()}
+                            className="absolute top-0 left-0 right-0 h-10 sm:h-12 md:h-14 bg-black pointer-events-none cursor-default z-30"
                           ></div>
                           
-                          {/* PDF 뷰어 우측 상단 버튼들을 완전히 가리는 오버레이 - 불투명 검은색 */}
+                          {/* PDF 뷰어 우측 상단 버튼들을 가리는 오버레이 - 모바일에서는 더 작게 */}
                           <div 
-                            className="absolute top-0 right-0 w-40 sm:w-48 md:w-56 h-14 sm:h-16 md:h-20 bg-black pointer-events-auto cursor-default z-40"
-                            onClick={(e) => e.preventDefault()}
-                            onMouseDown={(e) => e.preventDefault()}
+                            className="absolute top-0 right-0 w-32 sm:w-40 md:w-48 h-10 sm:h-12 md:h-14 bg-black pointer-events-none cursor-default z-40"
                           ></div>
                         </div>
                         
