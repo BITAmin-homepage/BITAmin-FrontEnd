@@ -113,6 +113,12 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         
         // 썸네일 업로드
         if (thumbnailFile) {
+          console.log("썸네일 업로드 요청:", {
+            fileName: thumbnailFile.name,
+            type: "thumbnail",
+            projectId: params.id
+          })
+          
           const thumbnailFormData = new FormData()
           thumbnailFormData.append("file", thumbnailFile)
           thumbnailFormData.append("type", "thumbnail")
@@ -145,9 +151,20 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
 
         // PPT 파일 업로드
         if (pptFile) {
+          const pptFileSizeMB = pptFile.size / (1024 * 1024)
+          const pptFileType = pptFileSizeMB <= 10 ? "ppt" : "pdf"
+          
+          console.log("프로젝트 파일 업로드 요청:", {
+            fileName: pptFile.name,
+            fileSize: `${pptFileSizeMB.toFixed(2)}MB`,
+            type: pptFileType,
+            projectId: params.id,
+            note: pptFileSizeMB > 10 ? "PDF로 변환될 예정" : "원본 PPT 업로드"
+          })
+          
           const pptFormData = new FormData()
           pptFormData.append("file", pptFile)
-          pptFormData.append("type", "project")
+          pptFormData.append("type", pptFileType)
           pptFormData.append("projectId", params.id)
 
           const pptResponse = await fetch(`${backendUrl}/api/project/upload`, {

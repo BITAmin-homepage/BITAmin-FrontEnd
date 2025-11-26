@@ -140,11 +140,19 @@ export default function WriteProjectPage() {
         throw new Error("프로젝트 ID를 받지 못했습니다.")
       }
       
+      console.log("생성된 프로젝트 ID:", createdProjectId)
+      
       // 2. 썸네일 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", "thumbnail")
       thumbnailFormData.append("projectId", createdProjectId.toString())
+      
+      console.log("썸네일 업로드 요청:", {
+        fileName: thumbnailFile.name,
+        type: "thumbnail",
+        projectId: createdProjectId
+      })
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
       const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
@@ -173,10 +181,21 @@ export default function WriteProjectPage() {
       console.log("썸네일 업로드 성공:", thumbnailUrl)
 
       // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
+      const projectFileSizeMB = projectFile.size / (1024 * 1024)
+      const projectFileType = projectFileSizeMB <= 10 ? "ppt" : "pdf"
+      
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
-      projectFormData.append("type", "project")
+      projectFormData.append("type", projectFileType)
       projectFormData.append("projectId", createdProjectId.toString())
+      
+      console.log("프로젝트 파일 업로드 요청:", {
+        fileName: projectFile.name,
+        fileSize: `${projectFileSizeMB.toFixed(2)}MB`,
+        type: projectFileType,
+        projectId: createdProjectId,
+        note: projectFileSizeMB > 10 ? "PDF로 변환될 예정" : "원본 PPT 업로드"
+      })
 
       const projectResponse = await fetch(`${backendUrl}/api/project/upload`, {
         method: "POST",
