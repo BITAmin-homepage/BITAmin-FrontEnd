@@ -113,16 +113,10 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         
         // 썸네일 업로드
         if (thumbnailFile) {
-          console.log("썸네일 업로드 요청:", {
-            fileName: thumbnailFile.name,
-            type: "thumbnail",
-            projectId: params.id
-          })
-          
           const thumbnailFormData = new FormData()
           thumbnailFormData.append("file", thumbnailFile)
           thumbnailFormData.append("type", "thumbnail")
-          thumbnailFormData.append("projectId", params.id)
+          thumbnailFormData.append("projectId", String(params.id))
 
           const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
             method: "POST",
@@ -145,8 +139,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           }
           
           // 성공 시: text로 URL 받기
-          const thumbnailUrl = await thumbnailResponse.text()
-          console.log("썸네일 업로드 성공:", thumbnailUrl)
+          await thumbnailResponse.text()
         }
 
         // PPT 파일 업로드
@@ -154,18 +147,10 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           const pptFileSizeMB = pptFile.size / (1024 * 1024)
           const pptFileType = pptFileSizeMB <= 10 ? "ppt" : "pdf"
           
-          console.log("프로젝트 파일 업로드 요청:", {
-            fileName: pptFile.name,
-            fileSize: `${pptFileSizeMB.toFixed(2)}MB`,
-            type: pptFileType,
-            projectId: params.id,
-            note: pptFileSizeMB > 10 ? "PDF로 변환될 예정" : "원본 PPT 업로드"
-          })
-          
           const pptFormData = new FormData()
           pptFormData.append("file", pptFile)
           pptFormData.append("type", pptFileType)
-          pptFormData.append("projectId", params.id)
+          pptFormData.append("projectId", String(params.id))
 
           const pptResponse = await fetch(`${backendUrl}/api/project/upload`, {
             method: "POST",
@@ -188,8 +173,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           }
           
           // 성공 시: text로 URL 받기
-          const projectUrl = await pptResponse.text()
-          console.log("프로젝트 파일 업로드 성공:", projectUrl)
+          await pptResponse.text()
         }
       }
 

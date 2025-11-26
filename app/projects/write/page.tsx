@@ -140,19 +140,11 @@ export default function WriteProjectPage() {
         throw new Error("프로젝트 ID를 받지 못했습니다.")
       }
       
-      console.log("생성된 프로젝트 ID:", createdProjectId)
-      
       // 2. 썸네일 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", "thumbnail")
-      thumbnailFormData.append("projectId", createdProjectId.toString())
-      
-      console.log("썸네일 업로드 요청:", {
-        fileName: thumbnailFile.name,
-        type: "thumbnail",
-        projectId: createdProjectId
-      })
+      thumbnailFormData.append("projectId", String(createdProjectId))
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
       const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
@@ -177,8 +169,7 @@ export default function WriteProjectPage() {
       }
       
       // 성공 시: text로 URL 받기
-      const thumbnailUrl = await thumbnailResponse.text()
-      console.log("썸네일 업로드 성공:", thumbnailUrl)
+      await thumbnailResponse.text()
 
       // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
       const projectFileSizeMB = projectFile.size / (1024 * 1024)
@@ -187,15 +178,7 @@ export default function WriteProjectPage() {
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
       projectFormData.append("type", projectFileType)
-      projectFormData.append("projectId", createdProjectId.toString())
-      
-      console.log("프로젝트 파일 업로드 요청:", {
-        fileName: projectFile.name,
-        fileSize: `${projectFileSizeMB.toFixed(2)}MB`,
-        type: projectFileType,
-        projectId: createdProjectId,
-        note: projectFileSizeMB > 10 ? "PDF로 변환될 예정" : "원본 PPT 업로드"
-      })
+      projectFormData.append("projectId", String(createdProjectId))
 
       const projectResponse = await fetch(`${backendUrl}/api/project/upload`, {
         method: "POST",
@@ -219,8 +202,7 @@ export default function WriteProjectPage() {
       }
       
       // 성공 시: text로 URL 받기
-      const projectUrl = await projectResponse.text()
-      console.log("프로젝트 파일 업로드 성공:", projectUrl)
+      await projectResponse.text()
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")
       // 프로젝트 목록 페이지로 이동
