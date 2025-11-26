@@ -64,7 +64,12 @@ const paperlogy = localFont({
 export const metadata: Metadata = {
   title: "비타민 - 대학생 연합 빅데이터 동아리",
   description: "대학생 연합 빅데이터 동아리 비타민 공식 홈페이지",
-  generator: 'v0.app'
+  generator: 'v0.app',
+  icons: {
+    icon: '/images/bitamin-favicon.png',
+    shortcut: '/images/bitamin-favicon.png',
+    apple: '/images/bitamin-favicon.png',
+  },
 }
 
 export const viewport = {
