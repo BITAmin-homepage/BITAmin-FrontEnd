@@ -116,6 +116,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           const thumbnailFormData = new FormData()
           thumbnailFormData.append("file", thumbnailFile)
           thumbnailFormData.append("type", "thumbnail")
+          thumbnailFormData.append("projectId", params.id)
 
           const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
             method: "POST",
@@ -147,6 +148,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
           const pptFormData = new FormData()
           pptFormData.append("file", pptFile)
           pptFormData.append("type", "project")
+          pptFormData.append("projectId", params.id)
 
           const pptResponse = await fetch(`${backendUrl}/api/project/upload`, {
             method: "POST",

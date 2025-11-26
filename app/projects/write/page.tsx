@@ -144,6 +144,7 @@ export default function WriteProjectPage() {
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", "thumbnail")
+      thumbnailFormData.append("projectId", createdProjectId.toString())
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
       const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
@@ -175,6 +176,7 @@ export default function WriteProjectPage() {
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
       projectFormData.append("type", "project")
+      projectFormData.append("projectId", createdProjectId.toString())
 
       const projectResponse = await fetch(`${backendUrl}/api/project/upload`, {
         method: "POST",
