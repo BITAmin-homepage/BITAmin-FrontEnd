@@ -144,7 +144,6 @@ export default function WriteProjectPage() {
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", "thumbnail")
-      thumbnailFormData.append("projectId", createdProjectId.toString())
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
       const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
@@ -169,13 +168,13 @@ export default function WriteProjectPage() {
       }
       
       // 성공 시: text로 URL 받기
-      await thumbnailResponse.text()
+      const thumbnailUrl = await thumbnailResponse.text()
+      console.log("썸네일 업로드 성공:", thumbnailUrl)
 
       // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
       projectFormData.append("type", "project")
-      projectFormData.append("projectId", createdProjectId.toString())
 
       const projectResponse = await fetch(`${backendUrl}/api/project/upload`, {
         method: "POST",
@@ -199,7 +198,8 @@ export default function WriteProjectPage() {
       }
       
       // 성공 시: text로 URL 받기
-      await projectResponse.text()
+      const projectUrl = await projectResponse.text()
+      console.log("프로젝트 파일 업로드 성공:", projectUrl)
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")
       // 프로젝트 목록 페이지로 이동
