@@ -123,7 +123,6 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            credentials: "include",
             body: thumbnailFormData,
           })
 
@@ -155,7 +154,6 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            credentials: "include",
             body: pptFormData,
           })
 

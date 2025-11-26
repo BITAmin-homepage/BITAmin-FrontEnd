@@ -152,7 +152,6 @@ export default function WriteProjectPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
         body: thumbnailFormData,
       })
 
@@ -183,7 +182,6 @@ export default function WriteProjectPage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
         body: projectFormData,
       })
 

@@ -215,7 +215,6 @@ export default function MyPage() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            credentials: "include",
             body: formData,
           })
 

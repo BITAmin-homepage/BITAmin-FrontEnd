@@ -52,7 +52,7 @@ export function ActivitiesSection() {
   }
 
   return (
-    <section className="relative pt-40 pb-16 md:pt-48 md:pb-24 overflow-hidden">
+    <section className="relative pt-80 pb-16 md:pt-96 md:pb-24 overflow-hidden">
       {/* 좌우 네트워크 장식 */}
       <div className="pointer-events-none absolute inset-0 -z-10 flex justify-between items-center">
         <div
