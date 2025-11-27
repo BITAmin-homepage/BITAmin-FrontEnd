@@ -88,21 +88,21 @@ export default function RecruitPage() {
   const schedule = {
     application: {
       title: "서류 모집",
-      date: "12.1(일) ~ 12.22(일)",
+      date: "12.1(월) ~ 12.22(월)",
     },
     staff: [
-      { title: "운영진 서류 결과 발표", date: "12.24(화)" },
-      { title: "운영진 면접", date: "12.26(목) ~ 12.27(금)" },
-      { title: "운영진 합격자 발표", date: "12.27(금)" },
+      { title: "운영진 서류 결과 발표", date: "12.24(수)" },
+      { title: "운영진 면접", date: "12.26(금) ~ 12.27(일)" },
+      { title: "운영진 합격자 발표", date: "12.27(일)" },
     ],
     member: [
-      { title: "멤버 서류 결과 발표", date: "12.31(화)" },
-      { title: "멤버 면접", date: "1.2(목) ~ 1.4(토)" },
-      { title: "멤버 합격자 발표", date: "1.5(일)" },
+      { title: "멤버 서류 결과 발표", date: "12.31(수)" },
+      { title: "멤버 면접", date: "1.2(금) ~ 1.4(일)" },
+      { title: "멤버 합격자 발표", date: "1.5(월)" },
     ],
     ot: {
       title: "OT",
-      date: "1.12(일)",
+      date: "1.12(월)",
       note: "OT 불참 시 합격 취소",
     },
   }
