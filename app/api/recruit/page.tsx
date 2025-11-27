@@ -93,7 +93,7 @@ export default function RecruitPage() {
     staff: [
       { title: "운영진 서류 결과 발표", date: "12.24(수)" },
       { title: "운영진 면접", date: "12.26(금) ~ 12.27(일)" },
-      { title: "운영진 합격자 발표", date: "12.27(일)" },
+      { title: "운영진 합격자 발표", date: "12.27(토)" },
     ],
     member: [
       { title: "멤버 서류 결과 발표", date: "12.31(수)" },
