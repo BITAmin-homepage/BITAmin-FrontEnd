@@ -102,7 +102,7 @@ export default function RecruitPage() {
     ],
     ot: {
       title: "OT",
-      date: "1.12(월)",
+      date: "1.7(수)",
       note: "OT 불참 시 합격 취소",
     },
   }
