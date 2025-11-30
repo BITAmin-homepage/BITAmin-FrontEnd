@@ -109,35 +109,12 @@ export default function ProjectDetailPage() {
     }
   }
 
-  // PPT URL 가져오기
-  const fetchPptUrl = async () => {
-    if (!project?.projectId) return
-    
-    try {
-      setSlideLoading(true)
-      console.log("📌 [fetchPptUrl] projectId:", project.projectId)
-      const response = await fetch(`/api/project/ppt/${project.projectId}`)
-      const result = await response.json()
-      
-      console.log("📌 [fetchPptUrl] Response:", result)
-      
-      if (result.success && result.data.ppt) {
-        console.log("📌 [fetchPptUrl] PPT URL:", result.data.ppt)
-        setPptUrl(result.data.ppt)
-      } else {
-        console.error("❌ [fetchPptUrl] No PPT URL or failed:", result)
-      }
-    } catch (error) {
-      console.error("❌ [fetchPptUrl] Error:", error)
-    } finally {
-      setSlideLoading(false)
-    }
-  }
-
-  // 프로젝트가 로드되면 자동으로 PPT URL 가져오기
+  // 프로젝트가 로드되면 자동으로 PPT URL 설정
   useEffect(() => {
-    if (project?.projectId) {
-      fetchPptUrl()
+    if (project?.ppt) {
+      console.log("📌 [setPptUrl] Using PPT from project data:", project.ppt)
+      setPptUrl(project.ppt)
+      setSlideLoading(false)
     }
   }, [project])
 
