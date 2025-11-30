@@ -30,7 +30,7 @@ export default function MembersPage() {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch("/api/members?status=APPROVED")
+      const response = await fetch("/api/members/all")
       const result = await response.json()
       
       if (result.success && result.data) {
