@@ -113,7 +113,11 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     if (project?.ppt) {
       console.log("📌 [setPptUrl] Using PPT from project data:", project.ppt)
-      setPptUrl(project.ppt)
+      // PDF URL에 파라미터 추가: 사이드바 숨기기, 툴바 최소화
+      const pdfUrl = project.ppt.includes('.pdf') 
+        ? `${project.ppt}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
+        : project.ppt
+      setPptUrl(pdfUrl)
       setSlideLoading(false)
     }
   }, [project])
