@@ -11,12 +11,8 @@ export async function GET(
   try {
     const projectId = params.id
     
-    console.log("📌 [API Route] projectId:", projectId)
-    
     const backendUrl = process.env.BACKEND_URL || "https://api.bitamin.ai.kr"
     const apiUrl = `${backendUrl}/api/project?projectId=${projectId}`
-    
-    console.log("📌 [API Route] Calling backend:", apiUrl)
     
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -30,8 +26,6 @@ export async function GET(
     })
 
     const result = await response.json()
-    
-    console.log("📌 [API Route] Backend response:", result)
 
     if (response.ok && result.success) {
       return NextResponse.json({

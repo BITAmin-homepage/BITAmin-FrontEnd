@@ -53,20 +53,14 @@ export default function ProjectDetailPage() {
         return
       }
       
-      console.log("📌 [fetchProject] projectId:", projectId)
       const response = await fetch(`/api/project/${projectId}`)
       
       const result = await response.json()
-      console.log("📌 [fetchProject] Response:", result)
 
       if (result.success) {
-        console.log("📌 [fetchProject] Project Data:", result.data)
         setProject(result.data)
-      } else {
-        console.error("❌ [fetchProject] Failed:", result.error)
       }
     } catch (error) {
-      console.error("❌ [fetchProject] Error:", error)
     } finally {
       setLoading(false)
     }
@@ -112,7 +106,6 @@ export default function ProjectDetailPage() {
   // 프로젝트가 로드되면 자동으로 PPT URL 설정
   useEffect(() => {
     if (project?.ppt) {
-      console.log("📌 [setPptUrl] Using PPT from project data:", project.ppt)
       // PDF URL에 파라미터 추가: 사이드바 숨기기, 툴바 최소화
       const pdfUrl = project.ppt.includes('.pdf') 
         ? `${project.ppt}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
