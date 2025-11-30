@@ -53,14 +53,20 @@ export default function ProjectDetailPage() {
         return
       }
       
+      console.log("📌 [fetchProject] projectId:", projectId)
       const response = await fetch(`/api/project/${projectId}`)
       
       const result = await response.json()
+      console.log("📌 [fetchProject] Response:", result)
 
       if (result.success) {
+        console.log("📌 [fetchProject] Project Data:", result.data)
         setProject(result.data)
+      } else {
+        console.error("❌ [fetchProject] Failed:", result.error)
       }
     } catch (error) {
+      console.error("❌ [fetchProject] Error:", error)
     } finally {
       setLoading(false)
     }
@@ -109,13 +115,20 @@ export default function ProjectDetailPage() {
     
     try {
       setSlideLoading(true)
+      console.log("📌 [fetchPptUrl] projectId:", project.projectId)
       const response = await fetch(`/api/project/ppt/${project.projectId}`)
       const result = await response.json()
       
+      console.log("📌 [fetchPptUrl] Response:", result)
+      
       if (result.success && result.data.ppt) {
+        console.log("📌 [fetchPptUrl] PPT URL:", result.data.ppt)
         setPptUrl(result.data.ppt)
+      } else {
+        console.error("❌ [fetchPptUrl] No PPT URL or failed:", result)
       }
     } catch (error) {
+      console.error("❌ [fetchPptUrl] Error:", error)
     } finally {
       setSlideLoading(false)
     }
