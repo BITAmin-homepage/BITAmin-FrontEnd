@@ -182,18 +182,17 @@ export default function MembersPage() {
 
                           <div className="space-y-3">
                             <div className="flex flex-col items-center justify-center gap-1">
-                              {member.depart && (
+                              {member.depart && member.depart.trim() !== "" && member.depart.trim() !== "멤버" ? (
                                 <Badge 
                                   variant="secondary" 
                                   className="bg-[#ff6b35] text-white text-xs px-2 py-1 rounded-full"
                                 >
                                   {member.depart}
                                 </Badge>
-                              )}
-                              {!member.depart && (
+                              ) : (
                                 <Badge 
                                   variant="secondary" 
-                                  className="bg-white/10 text-white text-xs px-2 py-1 rounded-full"
+                                  className="bg-gray-500 text-white text-xs px-2 py-1 rounded-full"
                                 >
                                   멤버
                                 </Badge>
@@ -208,11 +207,7 @@ export default function MembersPage() {
                                     href={member.link1}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`inline-flex items-center gap-1 text-sm transition-colors ${
-                                      member.depart 
-                                        ? "text-[#ff6b35] hover:text-[#ff875c]" 
-                                        : "text-gray-400 hover:text-gray-300"
-                                    }`}
+                                    className="inline-flex items-center gap-1 text-sm text-[#ff6b35] hover:text-[#ff875c] transition-colors"
                                   >
                                     <Github className="h-4 w-4" />
                                     GitHub
@@ -225,11 +220,7 @@ export default function MembersPage() {
                                     href={member.link2}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`inline-flex items-center gap-1 text-sm transition-colors ${
-                                      member.depart 
-                                        ? "text-[#ff6b35] hover:text-[#ff875c]" 
-                                        : "text-gray-400 hover:text-gray-300"
-                                    }`}
+                                    className="inline-flex items-center gap-1 text-sm text-[#ff6b35] hover:text-[#ff875c] transition-colors"
                                   >
                                     <User className="h-4 w-4" />
                                     Link
