@@ -208,7 +208,11 @@ export default function MembersPage() {
                                     href={member.link1}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 text-sm text-[#ff6b35] hover:text-[#ff875c] transition-colors"
+                                    className={`inline-flex items-center gap-1 text-sm transition-colors ${
+                                      member.depart 
+                                        ? "text-[#ff6b35] hover:text-[#ff875c]" 
+                                        : "text-gray-400 hover:text-gray-300"
+                                    }`}
                                   >
                                     <Github className="h-4 w-4" />
                                     GitHub
@@ -221,7 +225,11 @@ export default function MembersPage() {
                                     href={member.link2}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 text-sm text-[#ff6b35] hover:text-[#ff875c] transition-colors"
+                                    className={`inline-flex items-center gap-1 text-sm transition-colors ${
+                                      member.depart 
+                                        ? "text-[#ff6b35] hover:text-[#ff875c]" 
+                                        : "text-gray-400 hover:text-gray-300"
+                                    }`}
                                   >
                                     <User className="h-4 w-4" />
                                     Link
