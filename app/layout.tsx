@@ -89,6 +89,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#d3431a" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="google-site-verification" content="K4pzINJUzd2IVohaCuHTKGshdOgM0XjyCJLQW1jwPWM" />
       </head>
       <body className={`${inter.variable} ${paperlogy.variable}`}>
         <AuthProvider>{children}</AuthProvider>
