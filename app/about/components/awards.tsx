@@ -92,74 +92,98 @@ export default function AwardSection() {
         {/* 데스크톱 버전 - 타임라인 스타일 */}
         <div className="hidden md:block max-w-full overflow-visible">
           {/* 연도 + 수상 내역 */}
-          <div className="flex justify-between items-start w-full max-w-7xl mx-auto px-8 relative">
+          <div className="flex justify-center items-start w-full max-w-7xl mx-auto px-8 relative gap-4">
             {/* 선 위치 */}
-            <div className="absolute left-8 right-8 top-[8px] h-[2px] bg-[#ff6b35]" />
-            {years.map((year) => (
-              <div key={year} className="flex flex-col items-center min-w-0 flex-1 relative min-h-[300px]">
-                <button 
-                  onClick={() => setSelectedYear(year)} 
-                  onMouseEnter={() => setSelectedYear(year)}
-                  className="flex flex-col items-center whitespace-nowrap relative z-10"
-                >
-                  <div
-                    className={`w-3 h-3 rounded-full mb-1 relative -top-[-3px] transition-all duration-500 ease-in-out ${
-                      selectedYear === year
-                        ? "border-2 scale-150 shadow-[0_0_12px_rgba(217,70,166,0.6)]"
-                        : ""
-                    }`}
-                    style={{
-                      background: selectedYear === year 
-                        ? 'transparent'
-                        : 'linear-gradient(135deg, #8B4789 0%, #D946A6 50%, #FF6B35 100%)',
-                      borderColor: selectedYear === year 
-                        ? '#D946A6'
-                        : 'transparent'
-                    }}
-                  />
-                  <span
-                    className={`transition-all duration-500 ease-in-out whitespace-nowrap ${
-                      selectedYear === year
-                        ? "text-2xl md:text-3xl font-bold"
-                        : "text-base md:text-lg"
-                    }`}
-                    style={{
-                      background: 'linear-gradient(135deg, #8B4789 0%, #D946A6 50%, #FF6B35 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text'
-                    }}
+            <div className="absolute left-1/2 -translate-x-1/2 top-[8px] h-[2px] bg-[#ff6b35]" style={{ width: 'calc(100% - 4rem)' }} />
+            {years.map((year, index) => {
+              // 선택된 연도의 인덱스 찾기
+              const selectedIndex = years.findIndex(y => y === selectedYear)
+              
+              // 선택된 연도에 따라 선명하게 보여줄 범위 결정
+              let isInRange
+              let isMainGroup // 중앙에 배치될 그룹인지
+              if (selectedIndex < 6) {
+                // 선택된 연도가 최신 6개 안에 있으면 최신 6개를 선명하게
+                isInRange = index < 6
+                isMainGroup = index < 6
+              } else {
+                // 선택된 연도가 그 밖에 있으면 선택된 연도를 포함한 최신 6개를 선명하게
+                isInRange = index >= selectedIndex - 5 && index <= selectedIndex
+                isMainGroup = index >= selectedIndex - 5 && index <= selectedIndex
+              }
+              
+              // 선택된 연도가 아니면서 범위 밖이면 흐리게
+              const opacity = selectedYear === year ? 1 : (isInRange ? 1 : 0.6)
+              
+              // 중앙 그룹은 flex-1로 균등 배치, 사이드 그룹은 고정 너비
+              const flexClass = isMainGroup ? "flex-1" : "w-24"
+              
+              return (
+                <div key={year} className={`flex flex-col items-center ${flexClass} relative min-h-[300px] transition-all duration-500`} style={{ opacity }}>
+                  <button 
+                    onClick={() => setSelectedYear(year)} 
+                    onMouseEnter={() => setSelectedYear(year)}
+                    className="flex flex-col items-center whitespace-nowrap relative z-10 transition-all duration-300"
                   >
-                    {year}
-                  </span>
-                </button>
+                    <div
+                      className={`w-3 h-3 rounded-full mb-1 relative -top-[-3px] transition-all duration-500 ease-in-out ${
+                        selectedYear === year
+                          ? "border-2 scale-150 shadow-[0_0_12px_rgba(217,70,166,0.6)]"
+                          : ""
+                      }`}
+                      style={{
+                        background: selectedYear === year 
+                          ? 'transparent'
+                          : 'linear-gradient(135deg, #8B4789 0%, #D946A6 50%, #FF6B35 100%)',
+                        borderColor: selectedYear === year 
+                          ? '#D946A6'
+                          : 'transparent'
+                      }}
+                    />
+                    <span
+                      className={`transition-all duration-500 ease-in-out whitespace-nowrap ${
+                        selectedYear === year
+                          ? "text-2xl md:text-3xl font-bold"
+                          : "text-base md:text-lg"
+                      }`}
+                      style={{
+                        background: 'linear-gradient(135deg, #8B4789 0%, #D946A6 50%, #FF6B35 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      }}
+                    >
+                      {year}
+                    </span>
+                  </button>
 
-                {/* 선택된 연도 설명 */}
-                <div 
-                  className={`absolute top-20 left-1/2 -translate-x-1/2 flex flex-col items-start gap-1 transition-all duration-500 ease-in-out ${
-                    selectedYear === year 
-                      ? 'opacity-100 pointer-events-auto' 
-                      : 'opacity-0 pointer-events-none'
-                  }`}
-                >
-                  {awardsByYear[year].map((award, index) => {
-                    const parts = award.split(", ")
-                    const title = parts[0]
-                    const prize = parts[1]
-                    const organization = parts.slice(2).join(", ")
-                    
-                    return (
-                      <div
-                        key={index}
-                        className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
-                      >
-                        {title}, <span className="font-bold" style={{ color: getPrizeColor(prize) }}>{prize}</span>, {organization}
-                      </div>
-                    )
-                  })}
+                  {/* 선택된 연도 설명 */}
+                  <div 
+                    className={`absolute top-20 left-1/2 -translate-x-1/2 flex flex-col items-start gap-1 transition-all duration-500 ease-in-out ${
+                      selectedYear === year 
+                        ? 'opacity-100 pointer-events-auto' 
+                        : 'opacity-0 pointer-events-none'
+                    }`}
+                  >
+                    {awardsByYear[year].map((award, awardIndex) => {
+                      const parts = award.split(", ")
+                      const title = parts[0]
+                      const prize = parts[1]
+                      const organization = parts.slice(2).join(", ")
+                      
+                      return (
+                        <div
+                          key={awardIndex}
+                          className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
+                        >
+                          {title}, <span className="font-bold" style={{ color: getPrizeColor(prize) }}>{prize}</span>, {organization}
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
