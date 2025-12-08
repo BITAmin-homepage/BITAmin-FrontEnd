@@ -24,7 +24,7 @@ export function ActivitiesSection() {
     { 
       title: "연합 데이터톤",
       description: "BITAmin은 타 동아리와 함께 데이터톤에 공동 기획 및 참여하여 \n실제 데이터를 활용한 분석부터 발표까지 진행합니다. \n이러한 활동을 통해 동아리원들은 단순한 기술 습득을 넘어 실무 감각과 협업 능력을 \n동시에 키워 나가고 있습니다.",
-      image: "/images/datathon.jpg",
+      image: "/images/datathon_v3.jpg",
     },
     { 
       title: "컨퍼런스",
