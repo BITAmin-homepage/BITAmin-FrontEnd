@@ -69,7 +69,37 @@ export const metadata: Metadata = {
     icon: '/images/bitamin-favicon.png',
     shortcut: '/images/bitamin-favicon.png',
     apple: '/images/bitamin-favicon.png',
+    other: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        url: '/images/bitamin-favicon.png',
+      },
+    ],
   },
+  openGraph: {
+    title: "비타민 - 대학생 연합 빅데이터 동아리",
+    description: "대학생 연합 빅데이터 동아리 비타민 공식 홈페이지",
+    url: 'https://www.bitamin.ai.kr',
+    siteName: '비타민',
+    images: [
+      {
+        url: '/images/bitamin-favicon.png',
+        width: 512,
+        height: 512,
+        alt: '비타민 로고',
+      },
+    ],
+    locale: 'ko_KR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: "비타민 - 대학생 연합 빅데이터 동아리",
+    description: "대학생 연합 빅데이터 동아리 비타민 공식 홈페이지",
+    images: ['/images/bitamin-favicon.png'],
+  },
+  metadataBase: new URL('https://www.bitamin.ai.kr'),
 }
 
 export const viewport = {
