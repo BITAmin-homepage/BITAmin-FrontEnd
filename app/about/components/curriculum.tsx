@@ -9,12 +9,12 @@ export default function Curriculum() {
     {
       label: "First Vacation Semester",
       regular: [
-        ["1주차", "딥러닝 입문, 퍼셉트론, 신경망"],
-        ["2주차", "오차역전파"],
-        ["3주차", "매개변수 갱신, 배치정규화 학습"],
-        ["4주차", "CNN 모델 구조 학습"],
-        ["5주차", "RNN, LSTM 모델 구조 학습"],
-        ["6주차", <>Seq2Seq,<br className="md:hidden" /> Transformer 구조 학습</>],
+        ["1주차", "퍼셉트론, 신경망의 기본 구조"],
+        ["2주차", "오차역전파, 경사하강법"],
+        ["3주차", "배치정규화, 최적화기법"],
+        ["4주차", "CNN, Regularization"],
+        ["5주차", "AutoEncoder, GAN, Diffusion"],
+        ["6주차", "RNN, LSTM, GRU"],
       ],
       project: [
         ["1~7주차", "프로젝트 수행"],
@@ -24,15 +24,11 @@ export default function Curriculum() {
     {
       label: "First Semester",
       regular: [
-        ["1주차", <>머신러닝 개요,<br className="md:hidden" /> 전처리&EDA&시각화</>],
-        ["3주차", <>분류 기본 모델 및<br className="md:hidden" /> 성능 평가 학습</>],
-        ["5주차", <>
-          <span className="hidden md:inline">회귀 기본 모델 및 성능 평가 학습,<br />군집 분석 모델 및 성능 평가 학습</span>
-          <span className="md:hidden">분류 기본 모델 및<br />성능 평가 학습</span>
-        </>],
+        ["1주차", "Transformer, BERT, GPT"],
+        ["3주차", "ViT, Swin Transformer"],
+        ["5주차", "LLM, VLM"],
         ["6~8주차", "중간고사 휴회 기간"],
-        ["9주차", <>Overfitting,<br className="md:hidden" />Regularization,<br className="md:hidden" /> 앙상블 알고리즘 학습</>],
-        ["11주차", "차원축소 기법 학습"],
+        ["9주차", "Fine-tuning, LoRA, Distillation"],
       ],
       project: [
         ["1주차", "프로젝트 팀빌딩"],
@@ -47,12 +43,12 @@ export default function Curriculum() {
     {
       label: "Second Vacation Semester",
       regular: [
-        ["1주차", "딥러닝 입문, 퍼셉트론, 신경망"],
-        ["2주차", "오차역전파"],
-        ["3주차", "매개변수 갱신, 배치정규화 학습"],
-        ["4주차", "CNN 모델 구조 학습"],
-        ["5주차", "RNN, LSTM 모델 구조 학습"],
-        ["6주차", <>Seq2Seq,<br className="md:hidden" /> Transformer 구조 학습</>],
+        ["1주차", "퍼셉트론, 신경망의 기본 구조"],
+        ["2주차", "오차역전파, 경사하강법"],
+        ["3주차", "배치정규화, 최적화기법"],
+        ["4주차", "CNN, Regularization"],
+        ["5주차", "AutoEncoder, GAN, Diffusion"],
+        ["6주차", "RNN, LSTM, GRU"],
       ],
       project: [
         ["1~7주차", "프로젝트 수행"],
