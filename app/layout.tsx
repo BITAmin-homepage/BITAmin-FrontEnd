@@ -66,15 +66,14 @@ export const metadata: Metadata = {
   description: "대학생 연합 빅데이터 동아리 비타민 공식 홈페이지",
   generator: 'v0.app',
   icons: {
-    icon: '/images/bitamin-favicon.png',
-    shortcut: '/images/bitamin-favicon.png',
-    apple: '/images/bitamin-favicon.png',
-    other: [
-      {
-        rel: 'icon',
-        type: 'image/png',
-        url: '/images/bitamin-favicon.png',
-      },
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/images/bitamin-favicon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/images/bitamin-favicon.png', type: 'image/png', sizes: '16x16' },
+    ],
+    shortcut: '/favicon.png',
+    apple: [
+      { url: '/images/bitamin-favicon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
   openGraph: {
@@ -120,6 +119,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="google-site-verification" content="K4pzINJUzd2IVohaCuHTKGshdOgM0XjyCJLQW1jwPWM" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="/images/bitamin-favicon.png" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/images/bitamin-favicon.png" />
       </head>
       <body className={`${inter.variable} ${paperlogy.variable}`}>
         <AuthProvider>{children}</AuthProvider>
