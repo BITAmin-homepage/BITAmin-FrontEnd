@@ -95,9 +95,9 @@ export default function AwardSection() {
         </h2>
 
         {/* 데스크톱 버전 - 타임라인 스타일 */}
-        <div className="hidden md:block max-w-full overflow-visible">
-          {/* 연도 + 수상 내역 */}
-          <div className="flex justify-center items-start w-full max-w-7xl mx-auto px-8 relative gap-4">
+        <div className="hidden md:block max-w-full">
+          {/* 연도 타임라인 */}
+          <div className="flex justify-center items-start w-full max-w-7xl mx-auto px-8 relative gap-4 mb-12">
             {/* 선 위치 */}
             <div className="absolute left-1/2 -translate-x-1/2 top-[8px] h-[2px] bg-[#ff6b35]" style={{ width: 'calc(100% - 4rem)' }} />
             {years.map((year, index) => {
@@ -124,7 +124,7 @@ export default function AwardSection() {
               const flexClass = isMainGroup ? "flex-1" : "w-24"
               
               return (
-                <div key={year} className={`flex flex-col items-center ${flexClass} relative min-h-[300px] transition-all duration-500`} style={{ opacity }}>
+                <div key={year} className={`flex flex-col items-center ${flexClass} relative transition-all duration-500`} style={{ opacity }}>
                   <button 
                     onClick={() => setSelectedYear(year)} 
                     onMouseEnter={() => setSelectedYear(year)}
@@ -161,31 +161,26 @@ export default function AwardSection() {
                       {year}
                     </span>
                   </button>
+                </div>
+              )
+            })}
+          </div>
 
-                  {/* 선택된 연도 설명 */}
-                  <div 
-                    className={`absolute top-20 left-1/2 -translate-x-1/2 flex flex-col items-start gap-1 transition-all duration-500 ease-in-out ${
-                      selectedYear === year 
-                        ? 'opacity-100 pointer-events-auto' 
-                        : 'opacity-0 pointer-events-none'
-                    }`}
-                  >
-                    {awardsByYear[year].map((award, awardIndex) => {
-                      const parts = award.split(", ")
-                      const title = parts[0]
-                      const prize = parts[1]
-                      const organization = parts.slice(2).join(", ")
-                      
-                      return (
-                        <div
-                          key={awardIndex}
-                          className="text-white/90 text-sm leading-relaxed whitespace-nowrap"
-                        >
-                          {title}, <span className="font-bold" style={{ color: getPrizeColor(prize) }}>{prize}</span>, {organization}
-                        </div>
-                      )
-                    })}
-                  </div>
+          {/* 수상 내역 - 화면 중앙에 고정 배치 */}
+          <div className="flex flex-col items-center gap-1 min-h-[300px]">
+            {awardsByYear[selectedYear].map((award, awardIndex) => {
+              const parts = award.split(", ")
+              const title = parts[0]
+              const prize = parts[1]
+              const organization = parts.slice(2).join(", ")
+              
+              return (
+                <div
+                  key={`${selectedYear}-${awardIndex}`}
+                  className="text-white/90 text-sm leading-relaxed animate-fadeIn"
+                  style={{ animationDelay: `${awardIndex * 0.05}s` }}
+                >
+                  {title}, <span className="font-bold" style={{ color: getPrizeColor(prize) }}>{prize}</span>, {organization}
                 </div>
               )
             })}
