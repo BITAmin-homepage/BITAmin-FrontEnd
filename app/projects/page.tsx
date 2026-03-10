@@ -110,8 +110,11 @@ export default function ProjectsPage() {
       const result = await response.json()
 
       if (result.success) {
-        // 백엔드 응답 데이터를 그대로 사용 (projectId 포함)
-        setProjects(result.data)
+        // projectId 내림차순(최신순) 정렬
+        const sorted = [...result.data].sort(
+          (a, b) => (b.projectId ?? 0) - (a.projectId ?? 0)
+        )
+        setProjects(sorted)
       }
     } catch (error) {
     } finally {
