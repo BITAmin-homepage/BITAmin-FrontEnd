@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Upload, X, FileText, ImageIcon, Trophy, Medal, Star, Loader2 } from "lucide-react"
+import { CircularUploadProgress } from "@/components/circular-upload-progress"
+import { uploadFormDataWithProgress } from "@/lib/upload-with-progress"
 
 interface Project {
   id: number
@@ -31,7 +33,10 @@ interface Project {
 export default function EditProjectPage({ params }: { params: { id: string } }) {
   const { isAuthenticated, user } = useAuth()
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [serverProcessing, setServerProcessing] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -82,16 +87,18 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       alert("프로젝트 정보를 불러오는 중 오류가 발생했습니다.")
       router.push("/projects")
     } finally {
-      setLoading(false)
+      setInitialLoading(false)
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setSaving(true)
+    setUploadProgress(0)
+    setServerProcessing(false)
 
     try {
-      // 1. 기본 정보 업데이트
+      setUploadProgress(5)
       const response = await fetch(`/api/projects/${params.id}`, {
         method: "PUT",
         headers: {
@@ -106,75 +113,61 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
         throw new Error(result.error || "Failed to update project")
       }
 
-      // 2. 파일 업로드 (있는 경우) - 직접 백엔드 호출 (Vercel 페이로드 제한 우회)
+      setUploadProgress(10)
+
       if (thumbnailFile || pptFile) {
         const token = localStorage.getItem("access_token")
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
-        
-        // 썸네일 업로드
+        const authHeader = token ? `Bearer ${token}` : ""
+
+        const both = Boolean(thumbnailFile && pptFile)
+
         if (thumbnailFile) {
           const thumbnailFormData = new FormData()
           thumbnailFormData.append("file", thumbnailFile)
           thumbnailFormData.append("type", "thumbnail")
           thumbnailFormData.append("projectId", String(params.id))
 
-          const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: thumbnailFormData,
-          })
-
-          if (!thumbnailResponse.ok) {
-            const contentType = thumbnailResponse.headers.get("content-type")
-            let errorMessage
-            if (contentType?.includes("application/json")) {
-              const errorData = await thumbnailResponse.json()
-              errorMessage = errorData.message || errorData.error || "썸네일 업로드에 실패했습니다."
-            } else {
-              errorMessage = await thumbnailResponse.text() || "썸네일 업로드에 실패했습니다."
-            }
-            throw new Error(errorMessage)
+          await uploadFormDataWithProgress(
+            `${backendUrl}/api/project/upload`,
+            thumbnailFormData,
+            { Authorization: authHeader },
+            (p) =>
+              setUploadProgress(
+                both ? 10 + Math.round(p * 0.4) : 10 + Math.round(p * 0.9)
+              ),
+            () => setServerProcessing(true)
+          )
+          setServerProcessing(false)
+          if (both) {
+            setUploadProgress(50)
           }
-          
-          // 성공 시: text로 URL 받기
-          await thumbnailResponse.text()
         }
 
-        // PPT 파일 업로드
         if (pptFile) {
           const pptFileSizeMB = pptFile.size / (1024 * 1024)
           const pptFileType = pptFileSizeMB <= 10 ? "ppt" : "pdf"
-          
+
           const pptFormData = new FormData()
           pptFormData.append("file", pptFile)
           pptFormData.append("type", pptFileType)
           pptFormData.append("projectId", String(params.id))
 
-          const pptResponse = await fetch(`${backendUrl}/api/project/upload`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: pptFormData,
-          })
-
-          if (!pptResponse.ok) {
-            const contentType = pptResponse.headers.get("content-type")
-            let errorMessage
-            if (contentType?.includes("application/json")) {
-              const errorData = await pptResponse.json()
-              errorMessage = errorData.message || errorData.error || "PPT 파일 업로드에 실패했습니다."
-            } else {
-              errorMessage = await pptResponse.text() || "PPT 파일 업로드에 실패했습니다."
-            }
-            throw new Error(errorMessage)
-          }
-          
-          // 성공 시: text로 URL 받기
-          await pptResponse.text()
+          await uploadFormDataWithProgress(
+            `${backendUrl}/api/project/upload`,
+            pptFormData,
+            { Authorization: authHeader },
+            (p) =>
+              setUploadProgress(
+                both ? 50 + Math.round(p * 0.5) : 10 + Math.round(p * 0.9)
+              ),
+            () => setServerProcessing(true)
+          )
+          setServerProcessing(false)
         }
+        setUploadProgress(100)
+      } else {
+        setUploadProgress(100)
       }
 
       alert("프로젝트가 수정되었습니다!")
@@ -182,7 +175,9 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     } catch (error) {
       alert("프로젝트 수정 중 오류가 발생했습니다.")
     } finally {
-      setLoading(false)
+      setSaving(false)
+      setUploadProgress(0)
+      setServerProcessing(false)
     }
   }
 
@@ -209,7 +204,7 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
     return null
   }
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -227,12 +222,14 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
       <Header />
 
       {/* 파일 업로드 중 오버레이 */}
-      {loading && (thumbnailFile || pptFile) && (
+      {saving && (thumbnailFile || pptFile) && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-8 flex flex-col items-center gap-4 shadow-2xl border border-gray-200">
-            <Loader2 className="w-16 h-16 text-[#d3431a] animate-spin" />
-            <p className="text-xl font-semibold text-gray-900">파일 업로드 중...</p>
-            <p className="text-sm text-gray-600">잠시만 기다려주세요</p>
+          <div className="bg-gray-900 rounded-lg p-8 flex flex-col items-center gap-5 shadow-2xl border border-gray-700">
+            <CircularUploadProgress value={uploadProgress} />
+            <p className="text-xl font-semibold text-white">파일 업로드 중</p>
+            {serverProcessing && (
+              <p className="text-sm text-gray-400 text-center animate-pulse">압축 작업 진행 중입니다…</p>
+            )}
           </div>
         </div>
       )}
@@ -455,11 +452,11 @@ export default function EditProjectPage({ params }: { params: { id: string } }) 
               </div>
 
               <div className="flex gap-4">
-                <Button type="submit" className="bg-[#d3431a] hover:bg-[#b8371a] text-white" disabled={loading}>
-                  {loading ? (
+                <Button type="submit" className="bg-[#d3431a] hover:bg-[#b8371a] text-white" disabled={saving}>
+                  {saving ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      파일 업로드 중...
+                      저장 중...
                     </>
                   ) : (
                     "프로젝트 수정"

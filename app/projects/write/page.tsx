@@ -16,6 +16,8 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Upload, X, FileText, ImageIcon, Trophy, Medal, Star, ChevronRight, ChevronLeft, Check, Calendar as CalendarIcon, Loader2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import { CircularUploadProgress } from "@/components/circular-upload-progress"
+import { uploadFormDataWithProgress } from "@/lib/upload-with-progress"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
 
@@ -24,6 +26,8 @@ export default function WriteProjectPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [serverProcessing, setServerProcessing] = useState(false)
   const [projectId, setProjectId] = useState<number | null>(null)
 
   const [formData, setFormData] = useState({
@@ -99,6 +103,8 @@ export default function WriteProjectPage() {
     }
 
     setLoading(true)
+    setUploadProgress(0)
+    setServerProcessing(false)
 
     try {
       const token = localStorage.getItem("auth_token")
@@ -120,6 +126,7 @@ export default function WriteProjectPage() {
         period: formData.conferenceName || "",
       }
 
+      setUploadProgress(6)
       const projectInfoResponse = await fetch("/api/project/uploadInfo", {
         method: "POST",
         headers: {
@@ -139,70 +146,45 @@ export default function WriteProjectPage() {
       if (!createdProjectId) {
         throw new Error("프로젝트 ID를 받지 못했습니다.")
       }
-      
-      // 2. 썸네일 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
+
+      setUploadProgress(12)
+
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
+
+      // 2. 썸네일 업로드 (XHR로 진행률 추적)
       const thumbnailFormData = new FormData()
       thumbnailFormData.append("file", thumbnailFile)
       thumbnailFormData.append("type", "thumbnail")
       thumbnailFormData.append("projectId", String(createdProjectId))
 
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
-      const thumbnailResponse = await fetch(`${backendUrl}/api/project/upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: thumbnailFormData,
-      })
+      await uploadFormDataWithProgress(
+        `${backendUrl}/api/project/upload`,
+        thumbnailFormData,
+        { Authorization: `Bearer ${token}` },
+        (p) => setUploadProgress(12 + Math.round(p * 0.38)),
+        () => setServerProcessing(true)
+      )
+      setServerProcessing(false)
+      setUploadProgress(50)
 
-      // 성공/실패에 따라 다르게 처리
-      if (!thumbnailResponse.ok) {
-        // 실패 시: JSON으로 에러 메시지 파싱
-        const contentType = thumbnailResponse.headers.get("content-type")
-        if (contentType?.includes("application/json")) {
-          const errorData = await thumbnailResponse.json()
-          throw new Error(errorData.message || errorData.error || "썸네일 업로드에 실패했습니다.")
-        } else {
-          const errorText = await thumbnailResponse.text()
-          throw new Error(errorText || "썸네일 업로드에 실패했습니다.")
-        }
-      }
-      
-      // 성공 시: text로 URL 받기
-      await thumbnailResponse.text()
-
-      // 3. 프로젝트 파일(PPT) 업로드 (직접 백엔드 호출 - Vercel 페이로드 제한 우회)
+      // 3. 프로젝트 파일(PPT) 업로드
       const projectFileSizeMB = projectFile.size / (1024 * 1024)
       const projectFileType = projectFileSizeMB <= 10 ? "ppt" : "pdf"
-      
+
       const projectFormData = new FormData()
       projectFormData.append("file", projectFile)
       projectFormData.append("type", projectFileType)
       projectFormData.append("projectId", String(createdProjectId))
 
-      const projectResponse = await fetch(`${backendUrl}/api/project/upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: projectFormData,
-      })
-
-      // 성공/실패에 따라 다르게 처리
-      if (!projectResponse.ok) {
-        // 실패 시: JSON으로 에러 메시지 파싱
-        const contentType = projectResponse.headers.get("content-type")
-        if (contentType?.includes("application/json")) {
-          const errorData = await projectResponse.json()
-          throw new Error(errorData.message || errorData.error || "프로젝트 파일 업로드에 실패했습니다.")
-        } else {
-          const errorText = await projectResponse.text()
-          throw new Error(errorText || "프로젝트 파일 업로드에 실패했습니다.")
-        }
-      }
-      
-      // 성공 시: text로 URL 받기
-      await projectResponse.text()
+      await uploadFormDataWithProgress(
+        `${backendUrl}/api/project/upload`,
+        projectFormData,
+        { Authorization: `Bearer ${token}` },
+        (p) => setUploadProgress(50 + Math.round(p * 0.5)),
+        () => setServerProcessing(true)
+      )
+      setServerProcessing(false)
+      setUploadProgress(100)
 
       alert("프로젝트가 성공적으로 업로드되었습니다!")
       // 프로젝트 목록 페이지로 이동
@@ -214,6 +196,8 @@ export default function WriteProjectPage() {
       alert(`프로젝트 업로드 중 오류가 발생했습니다: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       setLoading(false)
+      setUploadProgress(0)
+      setServerProcessing(false)
     }
   }
 
@@ -270,10 +254,12 @@ export default function WriteProjectPage() {
       {/* 파일 업로드 중 오버레이 */}
       {loading && currentStep === 2 && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-gray-900 rounded-lg p-8 flex flex-col items-center gap-4 border border-gray-700">
-            <Loader2 className="w-16 h-16 text-[#d3431a] animate-spin" />
-            <p className="text-xl font-semibold text-white">파일 업로드 중...</p>
-            <p className="text-sm text-gray-400">잠시만 기다려주세요</p>
+          <div className="bg-gray-900 rounded-lg p-8 flex flex-col items-center gap-5 border border-gray-700">
+            <CircularUploadProgress value={uploadProgress} />
+            <p className="text-xl font-semibold text-white">파일 업로드 중</p>
+            {serverProcessing && (
+              <p className="text-sm text-gray-400 text-center animate-pulse">압축 작업 진행 중입니다…</p>
+            )}
           </div>
         </div>
       )}
