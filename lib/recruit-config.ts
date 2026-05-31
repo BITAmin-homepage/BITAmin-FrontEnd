@@ -16,7 +16,7 @@
  *   - "Recruiting" 버튼 클릭 시 → 모집 마감 안내 모달 표시
  *   - 지원 불가
  */
-export const IS_RECRUITING_ACTIVE = false
+export const IS_RECRUITING_ACTIVE = true
 
 // ============================================
 // 사용 방법:
