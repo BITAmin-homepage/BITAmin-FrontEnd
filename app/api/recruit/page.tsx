@@ -9,8 +9,8 @@ import { GraduationCap, Heart, Sparkles, ChevronDown, Instagram, MessageCircle }
 import Image from "next/image"
 
 const RECRUITMENT_CONFIG = {
-  staffFormUrl: "https://forms.gle/PrRWtLHeAmafe9aX7", // 운영진 지원 폼 URL
-  memberFormUrl: "https://forms.gle/3pGHNHVgfAtxN7Hj7", // 멤버 지원 폼 URL
+  staffFormUrl: "https://docs.google.com/forms/d/1AUYxegnre9GEscGlzExsGN5jyZwooejQY1CMXrblWYk/edit", // 운영진 지원 폼 URL
+  memberFormUrl: "https://docs.google.com/forms/d/1XcGHWv0EGuBTOZNqpzW3BO1dFP28nW8X2CFUXJPaLLw/edit", // 멤버 지원 폼 URL
   cohort: 17,
   instagramUrl: "https://www.instagram.com/bitamin_official",
   naverCafeUrl: "https://cafe.naver.com/bitamin123",
