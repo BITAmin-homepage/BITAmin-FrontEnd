@@ -88,7 +88,7 @@ export default function RecruitPage() {
   const schedule = {
     application: {
       title: "서류 모집",
-      date: "12.1(월) ~ 12.22(월)",
+      date: "6.1(월) ~ 6.23(화) 18:00",
     },
     staff: [
       { title: "운영진 서류 결과 발표", date: "6.24(수)" },
