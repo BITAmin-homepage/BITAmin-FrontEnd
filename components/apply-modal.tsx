@@ -13,7 +13,7 @@ interface ApplyModalProps {
 
 // 모집 설정
 const RECRUITMENT_CONFIG = {
-  cohort: 17, // 기수
+  cohort: 18, // 기수
 }
 
 export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
