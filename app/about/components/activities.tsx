@@ -23,7 +23,7 @@ export default function ActivitiesSection() {
           발표를 진행하는 형식입니다.
         </>
       ),
-      image: "/images/session.jpg",
+      image: "/images/session_v1.jpg",
     },
     {
       title: "컨퍼런스",
@@ -98,7 +98,7 @@ export default function ActivitiesSection() {
           실무 감각과 협업 능력을 동시에<br className="md:hidden" /> 키워 나가고 있습니다.
         </>
       ),
-      image: "/images/데이터톤2026.png",
+      image: "/images/datathon_v5.jpg",
     },
     {
       title: <>홈커밍<br />데이</>,
@@ -117,7 +117,7 @@ export default function ActivitiesSection() {
           얻을 수 있습니다.
         </>
       ),
-      image: "/images/단체사진2026.jpg",
+      image: "/images/homecoming_v3.jpg",
     },
     {
       title: "네트워킹",
@@ -134,7 +134,7 @@ export default function ActivitiesSection() {
       같은 꿈을 향해 나아가는 소중한 동료를 얻을 수 있는 
       절호의 기회입니다.
       `,
-      image: "/images/엠티2026.png",
+      image: "/images/network2026.jpg",
     },
   ]
 
