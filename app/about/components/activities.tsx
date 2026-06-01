@@ -117,7 +117,7 @@ export default function ActivitiesSection() {
           얻을 수 있습니다.
         </>
       ),
-      image: "/images/homecoming_v2.jpg",
+      image: "/images/단체사진2026.jpg",
     },
     {
       title: "네트워킹",
@@ -134,7 +134,7 @@ export default function ActivitiesSection() {
       같은 꿈을 향해 나아가는 소중한 동료를 얻을 수 있는 
       절호의 기회입니다.
       `,
-      image: "/images/network.jpg",
+      image: "/images/엠티2026.png",
     },
   ]
 
