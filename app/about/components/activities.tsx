@@ -98,7 +98,7 @@ export default function ActivitiesSection() {
           실무 감각과 협업 능력을 동시에<br className="md:hidden" /> 키워 나가고 있습니다.
         </>
       ),
-      image: "/images/datathon_v5.jpg",
+      image: "/images/datathon_v6.jpg",
     },
     {
       title: <>홈커밍<br />데이</>,
