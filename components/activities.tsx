@@ -9,7 +9,7 @@ export function ActivitiesSection() {
     { 
       title: "정규 세션",
       description: "BITAmin은 총 1년간 정규 세션에서 각 커리큘럼에 맞는 내용을 학습합니다.\n멤버들은 조를 나누어서 커리큘럼에 맞는 내용을 발표 및 학습합니다.",
-      image: "/images/session.jpg", // 정규세션 사진
+      image: "/images/session_v1.jpg", // 정규세션 사진
     },
     { 
       title: "스터디",
@@ -24,7 +24,7 @@ export function ActivitiesSection() {
     { 
       title: "연합 데이터톤",
       description: "BITAmin은 타 동아리와 함께 데이터톤에 공동 기획 및 참여하여 \n실제 데이터를 활용한 분석부터 발표까지 진행합니다. \n이러한 활동을 통해 동아리원들은 단순한 기술 습득을 넘어 실무 감각과 협업 능력을 \n동시에 키워 나가고 있습니다.",
-      image: "/images/datathon_v3.jpg",
+      image: "/images/datathon_v6.jpg",
     },
     { 
       title: "컨퍼런스",
@@ -34,12 +34,12 @@ export function ActivitiesSection() {
     { 
       title: "홈커밍데이",
       description: "BITAmin은 매년 홈커밍데이를 개최하여 선배님들과의 유대감을 다지고 \n취업과 대학원 진학에 도움이 되는 실질적인 정보를 얻을 수 있습니다.",
-      image: "/images/homecoming_v2.jpg",
+      image: "/images/homecoming_v3.jpg",
     },
     { 
       title: "네트워킹",
       description: "BITAmin은 학업적인 성장뿐만 아니라 기수 간 친목을 위한 다양한 네트워킹 활동도 \n함께 진행합니다. MT를 통해 서로 더 가까워지는 시간을 마련하고, \n소모임을 통해 같은 취미를 가진 부원들이 자유롭게 모여 즐거운 시간을 보냅니다.",
-      image: "/images/network.jpg",
+      image: "/images/network2026.jpg",
     },
   ]
 
