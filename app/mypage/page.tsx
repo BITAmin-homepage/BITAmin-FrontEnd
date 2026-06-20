@@ -209,8 +209,7 @@ export default function MyPage() {
           formData.append("file", profileImageFile)
           formData.append("memberId", userId.toString())
           
-          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://api.bitamin.ai.kr"
-          const uploadResponse = await fetch(`${backendUrl}/api/members/upload/profile`, {
+          const uploadResponse = await fetch(`/api/members/profile/upload`, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
