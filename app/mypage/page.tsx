@@ -401,6 +401,20 @@ export default function MyPage() {
                 const storedProfileImage = userId ? localStorage.getItem(`profile_image_${userId}`) : null
                 const currentProfileImage = (currentUser as any).profileImage || storedProfileImage || ""
                 setProfileImagePreview(currentProfileImage)
+                setEditData({
+                  name: (currentUser as any).name || "",
+                  gender: (currentUser as any).gender || "",
+                  birthDate: (currentUser as any).birthDate || "",
+                  school: (currentUser as any).school || "",
+                  phone: (currentUser as any).phone || "",
+                  email: (currentUser as any).email || "",
+                  cohort: (currentUser as any).cohort || 0,
+                  role: ((currentUser as any).role === "ROLE_ADMIN" || (currentUser as any).role === "ADMIN") ? "ADMIN" : "MEMBER",
+                  depart: (currentUser as any).depart || "멤버",
+                  link1: (currentUser as any).link1 || "",
+                  link2: (currentUser as any).link2 || "",
+                  profileImage: currentProfileImage,
+                })
               }
             }}
           >
